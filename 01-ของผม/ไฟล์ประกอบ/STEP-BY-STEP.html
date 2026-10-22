@@ -2,7 +2,7 @@
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>INT161 · ทำทีละขั้นและรวมโค้ด</title>
 <style>
-html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{margin:0;background:#f1f3f6;color:#203046;font:17px/1.7 system-ui,sans-serif}main{max-width:1220px;margin:auto;padding:25px}header{display:flex;justify-content:space-between;gap:15px;align-items:center}h1{font-size:25px;margin:0}h2{font-size:22px;margin:0 0 18px}h3{font-size:18px;margin:22px 0 10px}p{margin:10px 0}a{color:#195da5}button,input,select{font:inherit}button,.link-button{cursor:pointer;border:1px solid #bfd0e3;background:white;color:#204b78;border-radius:7px;padding:10px 15px}button:disabled{opacity:.5;cursor:default}.primary{background:#195da5;color:white;border-color:#195da5}.danger{color:#9a2734;border-color:#dbb4b8}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #e0a62e;outline-offset:3px}nav{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0}nav button[aria-current="step"]{background:#195da5;color:white}.panel{background:white;border:1px solid #d7dfe9;border-radius:11px;padding:27px;margin:18px 0}.panel[hidden], [hidden]{display:none!important}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 22px}label{display:block;font-weight:600}input:not([type="checkbox"]),select{display:block;width:100%;padding:9px 11px;border:1px solid #aebed0;border-radius:5px;margin-top:5px;background:white;color:#203046}small,.muted{color:#607086;font-size:14px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.hint{padding:12px 16px;background:#eef5ff;border-left:1px solid #6796c6;border-radius:4px}.message{padding:12px 16px;border-radius:6px;background:#fff4dc;white-space:pre-wrap}.message.error{background:#fff0f0;color:#8a2834}.checkline{display:flex;gap:10px;align-items:flex-start;margin:15px 0}.checkline input{margin-top:8px}.checkline label{font-weight:400}.task-list{padding:0;list-style:none}.task-list li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e0e6ed;padding:10px 0}.task-list li div{display:flex;gap:7px}.task-list button{font-size:13px;padding:4px 9px}.task-list span{overflow-wrap:anywhere}.codebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0}.codebar select{flex:1;min-width:160px;margin:0}.codebar button[aria-pressed="true"]{background:#dceaff}pre{background:#252b34;color:#e9eef5;border-radius:8px;padding:20px;overflow:auto;font:14px/1.8 Consolas,monospace;margin:12px 0;max-height:680px;white-space:pre}code{font-family:Consolas,monospace}p code,li code{background:#eaf0f6;padding:1px 4px;border-radius:3px}details{border:1px solid #d5dfe9;border-radius:7px;padding:12px 16px;margin:17px 0}summary{cursor:pointer;font-weight:600}ol{padding-left:24px}li{margin:9px 0}.badge{background:#e2edf9;border-radius:20px;padding:4px 13px;font-size:14px;white-space:nowrap}footer{font-size:13px;color:#607086;margin:20px 0}.diff-removed{border-left:4px solid #bd5360}.diff-added{border-left:4px solid #4d9a70}.split{display:grid;grid-template-columns:280px minmax(0,1fr);gap:25px}.history{min-width:0}.output{min-width:0}@media(max-width:850px){main{padding:15px}.grid,.split{grid-template-columns:1fr}.panel{padding:20px}h1{font-size:21px}header{align-items:flex-start}header>a{font-size:14px}pre{font-size:12px;padding:14px;max-height:520px}nav{gap:6px}nav button{font-size:14px;padding:9px}.task-list li{font-size:15px}}@media print{nav,.actions,.codebar button,footer,.history{display:none}.panel{border:0;padding:0}.split{display:block}pre{white-space:pre-wrap;max-height:none;background:white;color:black}}
+html{overflow-anchor:none;scroll-behavior:auto}#recipe-help p,#recipe-help td{overflow-wrap:anywhere}#recipe-help table{table-layout:fixed}label{min-width:0}input,select{min-width:0;max-width:100%}*{box-sizing:border-box}body{margin:0;background:#f1f3f6;color:#203046;font:17px/1.7 system-ui,sans-serif}main{max-width:1220px;margin:auto;padding:25px}header{display:flex;justify-content:space-between;gap:15px;align-items:center}h1{font-size:25px;margin:0}h2{font-size:22px;margin:0 0 18px}h3{font-size:18px;margin:22px 0 10px}p{margin:10px 0}a{color:#195da5}button,input,select{font:inherit}button,.link-button{cursor:pointer;border:1px solid #bfd0e3;background:white;color:#204b78;border-radius:7px;padding:10px 15px}button:disabled{opacity:.5;cursor:default}.primary{background:#195da5;color:white;border-color:#195da5}.danger{color:#9a2734;border-color:#dbb4b8}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #e0a62e;outline-offset:3px}nav{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0}nav button[aria-current="step"]{background:#195da5;color:white}.panel{background:white;border:1px solid #d7dfe9;border-radius:11px;padding:27px;margin:18px 0}.panel[hidden], [hidden]{display:none!important}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 22px}label{display:block;font-weight:600}input:not([type="checkbox"]),select{display:block;width:100%;padding:9px 11px;border:1px solid #aebed0;border-radius:5px;margin-top:5px;background:white;color:#203046}small,.muted{color:#607086;font-size:14px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.hint{padding:12px 16px;background:#eef5ff;border-left:1px solid #6796c6;border-radius:4px}.message{padding:12px 16px;border-radius:6px;background:#fff4dc;white-space:pre-wrap}.message.error{background:#fff0f0;color:#8a2834}.checkline{display:flex;gap:10px;align-items:flex-start;margin:15px 0}.checkline input{margin-top:8px}.checkline label{font-weight:400}.task-list{padding:0;list-style:none}.task-list li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e0e6ed;padding:10px 0}.task-list li div{display:flex;gap:7px}.task-list button{font-size:13px;padding:4px 9px}.task-list span{overflow-wrap:anywhere}.codebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0}.codebar select{flex:1;min-width:160px;margin:0}.codebar button[aria-pressed="true"]{background:#dceaff}pre{background:#252b34;color:#e9eef5;border-radius:8px;padding:20px;overflow:auto;font:14px/1.8 Consolas,monospace;margin:12px 0;max-height:680px;white-space:pre}code{font-family:Consolas,monospace}p code,li code{background:#eaf0f6;padding:1px 4px;border-radius:3px}details{border:1px solid #d5dfe9;border-radius:7px;padding:12px 16px;margin:17px 0}summary{cursor:pointer;font-weight:600}ol{padding-left:24px}li{margin:9px 0}.badge{background:#e2edf9;border-radius:20px;padding:4px 13px;font-size:14px;white-space:nowrap}footer{font-size:13px;color:#607086;margin:20px 0}.diff-removed{border-left:4px solid #bd5360}.diff-added{border-left:4px solid #4d9a70}.split{display:grid;grid-template-columns:280px minmax(0,1fr);gap:25px}.history{min-width:0}.output{min-width:0}@media(max-width:850px){main{padding:15px}.grid,.split{grid-template-columns:1fr}.panel{padding:20px}h1{font-size:21px}header{align-items:flex-start}header>a{font-size:14px}pre{font-size:12px;padding:14px;max-height:520px}nav{gap:6px}nav button{font-size:14px;padding:9px}.task-list li{font-size:15px}}@media print{nav,.actions,.codebar button,footer,.history{display:none}.panel{border:0;padding:0}.split{display:block}pre{white-space:pre-wrap;max-height:none;background:white;color:black}}
 </style><style id="kit-navigation-style">.kit-navigation{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:1220px;margin:0 auto;padding:12px 20px;font:15px/1.5 system-ui}.kit-navigation a,.kit-navigation button{display:inline-block;border:1px solid #b6c7d9;border-radius:6px;background:#fff;color:#164e85;padding:9px 13px;text-decoration:none;font:inherit;cursor:pointer;min-height:42px}.kit-navigation :focus-visible{outline:3px solid #d89c23;outline-offset:3px}@media print{.kit-navigation{display:none}}</style></head>
 <body><nav class="kit-navigation" aria-label="ทางไปหน้าต่าง ๆ"><a href="../../00-เปิดเลือกชุด.html">เลือก 3 ชุด</a><button type="button" onclick="if(history.length>1){history.back()}else{location.href='index.html'}">ย้อนกลับ</button><a href="index.html">หน้าหลัก</a><a href="STEP-BY-STEP.html">ทำทีละขั้น</a><a href="START-TREE.html#search">ค้นหาโจทย์</a><a href="WEEK8-ALL.html">ตัวอย่าง Week 8</a><a href="FRIENDS.html">ดูของเพื่อน</a></nav><main>
 <header><h1>INT161 · ทำทีละขั้นและรวมโค้ด</h1></header>
@@ -52,7 +52,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 </div>
 <div class="grid">
 <label>คีย์ข้อความ<input data-map="code" value="code"></label><label>อีกคีย์ของคีย์ร่วม<input data-map="owner" value="owner_id"></label>
-<label>ตารางแม่<input data-map="parent" value="groups_table"></label><label>Foreign key<input data-map="foreign" value="group_id"></label>
+<label>ตารางแม่<input data-map="parent" value="groups_table"></label><label>คีย์ของตารางแม่<input data-map="parentKey" value="id"></label><label>ช่องชื่อของตารางแม่<input data-map="parentName" value="name"></label><label>URL ของรายการแม่<input data-map="parentPath" value="/groups"></label><label>Foreign key<input data-map="foreign" value="group_id"></label>
 </div>
 <p class="muted">ดูตัวอย่างด้านบน แล้วเปลี่ยนชื่อให้ตรง SQL ของคุณ</p>
 </div>
@@ -100,7 +100,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 <script>// ประกอบเฉพาะตัวอย่างที่เตรียมไว้ ไม่อ่าน/แก้ไฟล์ใน WebStorm และไม่เรียกเครือข่าย
 (() => {
   const FILES={repo:'src/repositories-$id/repository.js',service:'src/services-$id/service.js',route:'src/routes-$id/route.js'};
-  const mappings={table:'items',key:'id',name:'name',price:'price',code:'code',owner:'owner_id',parent:'groups_table',foreign:'group_id',path:'/items'};
+  const mappings={table:'items',key:'id',name:'name',price:'price',code:'code',owner:'owner_id',parent:'groups_table',foreign:'group_id',path:'/items',parentPath:'/groups',parentKey:'id',parentName:'name'};
   const defaults=(profile,data)=>({
     host:'127.0.0.1',port:3306,user:'root',password:'',database:data.profiles[profile].database,
     studentId:'YOUR_STUDENT_ID',studentName:'YOUR_NAME',secret:'YOUR_SECRET',
@@ -110,9 +110,9 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   function cleanMapping(input={}) {
     const result={...mappings,...input};
     for(const key of Object.keys(mappings)){
-      if(key==='path'){
-        if(!/^\/[A-Za-z0-9_/-]*$/.test(result.path))throw Error('URL ใช้รูปแบบ /products ไม่ใส่ query หรือ :id ในช่องนี้');
-        result.path=result.path.replace(/\/$/,'')||'/';
+      if(key==='path'||key==='parentPath'){
+        if(!/^\/[A-Za-z0-9_/-]*$/.test(result[key]))throw Error('URL ใช้รูปแบบ /products ไม่ใส่ query หรือ :id ในช่องนี้');
+        result[key]=result[key].replace(/\/$/,'')||'/';
       }else if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(result[key]))throw Error('ชื่อ SQL ต้องเป็นตัวอักษร/ตัวเลข/ขีดล่าง และไม่ขึ้นต้นด้วยตัวเลข: '+key);
     }
     return result;
@@ -120,11 +120,14 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   function mapPath(path,map) {
     if(!map)return path;
     const names={id:map.key,code:map.code,owner_id:map.owner};
-    return path.replace(/^\/items(?=\/|$)/,map.path).replace(/:([A-Za-z_]\w*)/g,(all,key)=>':'+(names[key]||key));
+    const childPath=path.replace(/\/items(?=\/|$)/g,map.path);
+    const mapped=/^\/groups(?=\/|$)/.test(path)?(map.parentPath||'/groups')+childPath.slice('/groups'.length):childPath;
+    return mapped.replace(/:([A-Za-z_]\w*)/g,(all,key)=>':'+(names[key]||key));
   }
   function adapt(code,map,isRoute=false) {
     if(!map)return code;
     const names={items:map.table,id:map.key,name:map.name,price:map.price,code:map.code,owner_id:map.owner,groups_table:map.parent,group_id:map.foreign};
+    code=code.replace(/\bg\.id\b/g,'g.__STEP_PARENT_KEY__').replace(/\bg\.name\b/g,'g.__STEP_PARENT_NAME__').replace(/SELECT id FROM groups_table WHERE id = \?/g,'SELECT __STEP_PARENT_KEY__ FROM groups_table WHERE __STEP_PARENT_KEY__ = ?');
     const paths=[];
     if(isRoute)code=code.replace(/(['"])(\/[^'"]*)\1/g,(all,quote,path)=>{const key='__STEP_URL_'+paths.length+'__';paths.push(quote+mapPath(path,map)+quote);return key;});
     // เปลี่ยนชื่อ SQL/ชื่อช่อง แต่คงชื่อตัวแปรท้องถิ่นไว้ ป้องกันคีย์อย่าง data/row ชนกับตัวแปรในสูตร
@@ -137,7 +140,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     code=code.replace(/(\.\s*)(id|name|price|code|owner_id|group_id)\b/g,(_,dot,name)=>dot+names[name]);
     code=code.replace(/\b(id|name|price|code|owner_id|group_id)(\s*:)/g,(_,name,colon)=>names[name]+colon);
     code=code.replace(/__STEP_STRING_([0-9]+)__/g,(_,i)=>strings[Number(i)]);
-    return code.replace(/__STEP_URL_([0-9]+)__/g,(_,i)=>paths[Number(i)]);
+    return code.replace(/__STEP_URL_([0-9]+)__/g,(_,i)=>paths[Number(i)]).replace(/__STEP_PARENT_KEY__/g,map.parentKey||'id').replace(/__STEP_PARENT_NAME__/g,map.parentName||'name');
   }
   function endpoints(entry,data) {
     const task=data.tasks[entry.task];
@@ -258,6 +261,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   const $=id=>document.getElementById(id),storageKey='int161-step-guide-v1';
   const configKeys=['host','port','user','password','database','studentId','studentName','secret','base','serverPort'];
   let state={version:1,profile:'mobile',config:engine.defaults('mobile',data),selected:[],counter:1,stage:0};
+  let mappingLoaded=false;
   let until=0,view='full',selectedFile='src/app.js',preview=null,pending=null,currentFiles={},diffs=[];
   const message=(text,error=false)=>{const el=$('message'),local=document.querySelectorAll('[data-panel-message]');el.textContent=text;el.hidden=!text||local.length>0;el.classList.toggle('error',error);local.forEach(item=>{item.textContent=text;item.hidden=!text;item.classList.toggle('error',error);});};
   function safePlan(input){
@@ -309,6 +313,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     return engine.cleanMapping(result);
   }
   function fillTasks(keep=true){
+    if(state.profile==='general'&&!mappingLoaded){const prior=state.selected.at(-1)?.map;const values=engine.cleanMapping(prior||{});document.querySelectorAll('[data-map]').forEach(el=>el.value=values[el.dataset.map]);mappingLoaded=true;}
     const previous=$('task-select').value,query=$('task-filter').value.toLowerCase().trim();
     const tasks=Object.values(data.tasks).filter(t=>t.profile===state.profile&&(!query||(t.title+' '+t.id+' '+t.request).toLowerCase().includes(query)));
     $('task-select').replaceChildren(...tasks.map(t=>new Option(t.title,t.id)));
@@ -330,7 +335,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     search:['ค้นหารายการที่ชื่อมีข้อความที่ส่งมา','ค้นบางส่วนด้วย LIKE','ตรวจชื่อ query q และพฤติกรรมข้อความว่าง'],
     sort:['ให้เรียงตามราคา จากมากไปน้อย โดยรับค่าผ่าน query','เลือกเรียงลำดับจาก query','แก้รายการคอลัมน์ที่อนุญาตให้ sort; ห้ามต่อชื่อคอลัมน์จากผู้ใช้ลง SQL โดยตรง'],
     page:['รับ page และ limit พร้อมจำนวนข้อมูลทั้งหมด','เลือกแบ่งหน้าและนับทั้งหมด','ตรวจเริ่มหน้า 0 หรือ 1, limit สูงสุด และชื่อช่อง pagination ใน JSON'],
-    combined:['ค้นชื่อ กรองกลุ่ม JOIN ชื่อกลุ่ม เปลี่ยนชื่อ JSON เรียงราคา และแบ่งหน้าใน GET เดียว','เลือกสูตรรวม ไม่เพิ่ม GET URL เดียวกันหลายสูตร','ตรวจ WHERE, JOIN, DTO, sort และ COUNT ให้ใช้เงื่อนไขเดียวกัน; ตัดเงื่อนไขที่โจทย์ไม่ใช้'],
+    combined:['กรองชื่อ ค้นข้อความ JOIN ชื่อกลุ่ม เปลี่ยนชื่อ JSON เรียงราคา และแบ่งหน้าใน GET เดียว','เลือกสูตรรวม ไม่เพิ่ม GET URL เดียวกันหลายสูตร','ตรวจ WHERE, JOIN, DTO, sort และ COUNT ให้ใช้เงื่อนไขเดียวกัน; ตัดเงื่อนไขที่โจทย์ไม่ใช้'],
     id:['ค้นหารายการด้วยรหัสตัวเลข ถ้าไม่พบตอบ 404','ดู URL ที่มี :id และ Primary Key แบบตัวเลข','ตรวจ validation ของรหัสและ JSON กรณีไม่พบ'],
     text:['ค้นหารายการด้วยรหัสข้อความ ถ้าไม่พบตอบ 404','เลือกคีย์ข้อความ ไม่แปลงรหัสเป็น Number','รักษาเลขศูนย์นำหน้าและตัวอักษรในรหัส'],
     pair:['ค้นหารายการด้วยรหัสเจ้าของและรหัสรายการร่วมกัน','เลือกคีย์สองช่อง และ WHERE ต้องมีทั้งคู่','ตรวจลำดับพารามิเตอร์และชนิดของแต่ละคีย์'],
@@ -364,20 +369,20 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     if(['filter','search'].includes(id))used.add('name');
     if(/text|pair/.test(id))used.add('code');if(/pair/.test(id))used.add('owner');
     if(/join|combined|nested|child|group/.test(id)){used.add('foreign');if(!/group/.test(id))used.add('parent');}
-    if(id==='group')used.add('price');return used;
+    if(id==='group')used.add('price');if(/join|combined|nested|child/.test(id))used.add('parentKey');if(/join|combined/.test(id))used.add('parentName');if(/nested|child/.test(id))used.add('parentPath');return used;
   }
   function renderRecipeHelp(){
     const task=currentTask(),box=$('recipe-help');box.replaceChildren();if(!task)return;
     const generic=state.profile==='general'&&!task.identity,id=task.id.slice(2);
     const title=document.createElement('h3');title.textContent='ตัวอย่างของข้อที่เลือก';box.append(title);
     if(generic){
-      const map={table:'products',path:'/products',key:'id',name:'name',price:'price',code:'code',owner:'owner_id',parent:'brands',foreign:'brand_id'};
+      const map={table:'products',path:'/products',key:'id',name:'name',price:'price',code:'code',owner:'owner_id',parent:'brands',foreign:'brand_id',parentPath:'/brands',parentKey:'id',parentName:'name'};
       const help=recipeHelp[id],prompt=document.createElement('p');prompt.textContent='โจทย์: '+help[0]+' จากตาราง products';box.append(prompt);
-      const request=document.createElement('p');request.textContent=engine.adapt(task.request,map,true).replace(/\/items(?=[/?]|$)/g,map.path);box.append(request);
-      const labels={table:'ตาราง SQL',path:'URL',key:'คีย์ตัวเลข',name:'ช่องชื่อ',price:'ช่องราคา',code:'คีย์ข้อความ',owner:'อีกคีย์',parent:'ตารางแม่',foreign:'Foreign Key'};
+      const request=document.createElement('p');request.textContent=engine.adapt(task.request,map,true).replace(/^([A-Z]+ )\/groups(?=\/|$)/,'$1'+map.parentPath).replace(/\/items(?=[/?]|$)/g,map.path);box.append(request);
+      const labels={table:'ตาราง SQL',path:'URL',key:'คีย์ตัวเลข',name:'ช่องชื่อ',price:'ช่องราคา',code:'คีย์ข้อความ',owner:'อีกคีย์',parent:'ตารางแม่',foreign:'Foreign Key',parentPath:'URL ของรายการแม่',parentKey:'คีย์ของตารางแม่',parentName:'ช่องชื่อของตารางแม่'};
       const table=document.createElement('table');table.style.cssText='width:100%;text-align:left;border-collapse:collapse';
       for(const k of usedFields(id)){const row=document.createElement('tr');for(const text of [labels[k],map[k]]){const cell=document.createElement('td');cell.textContent=text;cell.style.cssText='padding:5px 9px;border-bottom:1px solid #d4deeb';row.append(cell);}table.append(row);}box.append(table);
-      const button=document.createElement('button');button.type='button';button.textContent='กรอกตามตัวอย่าง';button.onclick=()=>{document.querySelectorAll('[data-map]').forEach(el=>el.value=map[el.dataset.map]);message('กรอกตัวอย่างแล้ว เปลี่ยนค่าให้ตรงงานคุณ แล้วกดดูโค้ด');};box.append(button);
+      const button=document.createElement('button');button.type='button';button.textContent='กรอกตามตัวอย่าง';button.onclick=()=>{document.querySelectorAll('[data-map]').forEach(el=>el.value=map[el.dataset.map]);taskInfo();message('กรอกตัวอย่างแล้ว เปลี่ยนค่าให้ตรงงานคุณ แล้วกดดูโค้ด');};box.append(button);
       const extra=document.createElement('details'),summary=document.createElement('summary');summary.textContent='จุดที่ต้องปรับในโค้ด';const note=document.createElement('p');note.textContent=help[2];extra.append(summary,note);box.append(extra);
     }else{
       const ex=(data.teacherExamples||[]).find(e=>e.task===task.id);
@@ -388,6 +393,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     }
   }
   function taskInfo(){
+    pending=null;$('conflict').hidden=true;
     const task=currentTask();$('mapping-panel').hidden=!task||state.profile!=='general'||task.identity;
 
     $('task-description').textContent=task?task.title+' · '+task.routes.map(r=>r.method+' '+r.path).join(' / '):'ไม่พบสูตร ลองคำสั้นลงหรือเลื่อนเลือกจากรายการ';
@@ -505,7 +511,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
       renderHistory();
     }catch(error){message(error.message,true);}
   }
-  document.querySelectorAll('[data-map]').forEach(el=>el.addEventListener('input',renderRecipeHelp));
+  document.querySelectorAll('[data-map]').forEach(el=>el.addEventListener('input',()=>{pending=null;$('conflict').hidden=true;renderRecipeHelp();}));
   window.addEventListener('pageshow',()=>document.querySelectorAll('details').forEach(el=>el.open=false));
   const FILES_ROUTE='src/routes-$id/route.js';
   function render(){
@@ -520,12 +526,12 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
     const profile=$('profile').value;
     if(state.selected.length){$('profile').value=state.profile;message('มีโค้ดที่สะสมแล้ว หากจะเปลี่ยนชนิดงานให้ดาวน์โหลดแผนเดิม แล้วกดเริ่มชุดใหม่',true);return;}
     const old={};for(const key of configKeys)old[key]=['port','serverPort'].includes(key)?Number($(key).value):$(key).value;
-    state.profile=profile;state.config={...old,database:data.profiles[profile].database,base:data.profiles[profile].base};fillConfig();save();
+    mappingLoaded=false;state.profile=profile;state.config={...old,database:data.profiles[profile].database,base:data.profiles[profile].base};fillConfig();save();
   };
   $('save-config').onclick=()=>{try{readConfig();save();message('ตั้งค่าแล้ว เลือกข้อแรกได้เลย');stage(2);}catch(error){message(error.message,true);}};
   $('new-project').onclick=()=>{
     if(state.selected.length&&!confirm('เริ่มชุดใหม่และนำข้อที่สะสมไว้ออกจากหน้านี้? ดาวน์โหลดแผนเก็บไว้ก่อนหากต้องใช้ต่อ'))return;
-    const profile=$('profile').value;state={version:1,profile,config:engine.defaults(profile,data),selected:[],counter:1,stage:1};until=0;preview=null;save();message('เริ่มชุดใหม่แล้ว');render();
+    const profile=$('profile').value;state={version:1,profile,config:engine.defaults(profile,data),selected:[],counter:1,stage:1};until=0;preview=null;mappingLoaded=false;save();message('เริ่มชุดใหม่แล้ว');render();
   };
   $('task-filter').oninput=()=>fillTasks();$('task-select').onchange=taskInfo;$('add-task').onclick=add;
   $('replace-task').onclick=()=>{try{if(pending)commit(pending,true);}catch(error){message(error.message,true);}};
@@ -544,7 +550,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   $('download-zip').onclick=()=>download(engine.zip(currentFiles),'INT161-'+(preview?'example':'steps-'+until)+'.zip','application/zip');
   $('export-plan').onclick=()=>download(JSON.stringify(plan(),null,2),'INT161-step-plan.json','application/json');
   $('import-plan').onchange=async()=>{
-    try{const file=$('import-plan').files[0];if(!file)return;if(file.size>1000000)throw Error('ไฟล์แผนใหญ่เกินไป');state=safePlan(JSON.parse(await file.text()));until=state.selected.length;preview=null;state.stage=1;save();render();message('เปิดแผนแล้ว กรอกรหัสผ่านMySQLและSecret Keyอีกครั้งก่อนใช้');}catch(error){message(error.message,true);}
+    try{const file=$('import-plan').files[0];if(!file)return;if(file.size>1000000)throw Error('ไฟล์แผนใหญ่เกินไป');state=safePlan(JSON.parse(await file.text()));mappingLoaded=false;until=state.selected.length;preview=null;state.stage=1;save();render();message('เปิดแผนแล้ว กรอกรหัสผ่านMySQLและSecret Keyอีกครั้งก่อนใช้');}catch(error){message(error.message,true);}
   };
   render();
 })();
