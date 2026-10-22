@@ -1,0 +1,379 @@
+--- teacher/src/app.js
++++ sakila/src/app.js
+@@ -1,15 +1,16 @@
+-// {student-id} - {student-name}
+-import express from 'express'
+-import productRouter from "./routes-$id/route.js";
+-
+-const app = express()
+-app.use(express.json())
+-
+-app.use('/', productRouter)
+-
+-app.listen(3000, () => {
+-    // {student-id} - {student-name}
+-    console.log('Example app listening on port 3000')
+-})
+-
+-app.use((err,req, res, next) => {})+// {student-id} - {student-name}
++import express from 'express';
++import productRouter from './routes-$id/route.js';
++import actorRouter from './routes-$id/actor-route.js';
++import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
++import {apiResponse} from './mappers-$id/api-response.js';
++const app = express();
++const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
++app.use(express.json());
++app.use('/countries', productRouter);
++app.use('/actors', actorRouter);
++app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
++app.use(errorHandler);
++app.listen(Number(process.env.PORT || 3000), () => {
++ console.log('Example app listening on port ' + (process.env.PORT || 3000));
++});
+--- teacher/src/configs-$id/db-config.js
++++ sakila/src/configs-$id/db-config.js
+@@ -1,10 +1,12 @@
+-//{student-id} - {student-name}
+-import mysql from 'mysql2/promise'
+-
+-const db = mysql.createPool({
+-    host: 'db-host',
+-    user: 'db-username',
+-    password: 'db-password',
+-    database: 'database-name',
+-})
+-export default db+// {student-id} - {student-name}
++import mysql from 'mysql2/promise';
++const db = mysql.createPool({
++    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
++    port: Number(process.env.DB_PORT || 3306),
++    user: process.env.DB_USER || 'db-username',
++    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
++    database: process.env.DB_NAME || 'sakila',
++    decimalNumbers: true,
++    dateStrings: true,
++});
++export default db;
+--- teacher/src/mappers-$id/api-response.js
++++ sakila/src/mappers-$id/api-response.js
+@@ -1,40 +1,13 @@
+-//{student-id} - {student-name}
+-import httpStatus from "http-status";
+-
+-export async function apiResponse(
+-    res, data, pagination = null, status = httpStatus.OK) {
+-    return await (pagination ?
+-            paginate(res, data, pagination, status.valueOf()) :
+-            success(res, data, status.valueOf())
+-    )
+-}
+-
+-/**
+- * ส่ง Success Response ทั่วไป
+- */
+-async function success(res, data, statusCode) {
+-    return res.status(statusCode).json({
+-        success: true,
+-        data: data,
+-    });
+-}
+-
+-/**
+- * ส่ง Success Response สำหรับข้อมูลแบบ Paginated
+- */
+-async function paginate(res, data, pagination, statusCode) {
+-    const {limit, page} = pagination
+-    const total = data.totalItems;
+-    return res.status(statusCode).json({
+-        success: true,
+-        data,
+-        pagination: {
+-            total: total,
+-            page: page,
+-            limit: limit,
+-            totalPages: Math.ceil(total / limit),
+-            hasNextPage: page * limit < total,
+-            hasPrevPage: page > 1
+-        }
+-    });
+-}+// {student-id} - {student-name}
++export async function apiResponse(res, data, pagination = null, status = 200) {
++    const mode = 'sakila';
++    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
++    if (mode === 'classic') return res.status(status).json({status: 'success', data});
++    const response = {success: true, data, timestamp: new Date().toISOString()};
++    if (pagination) {
++        const {page, limit} = pagination;
++        const total = data.totalItems;
++        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
++    }
++    return res.status(status).json(response);
++}
+--- teacher/src/mappers-$id/entity-dto-mapper.js
++++ sakila/src/mappers-$id/entity-dto-mapper.js
+@@ -1,45 +1,7 @@
+-//{student-id} - {student-name}
++// Sakila ชุดนี้คืน raw data ตามบทสอน จึงไม่เปลี่ยนชื่อช่อง
+ export default class EntityDtoMapper {
+-    // แปลงเป็น Less Data DTO (Summary)
+-    static toSummaryDTO(entity) {
+-        // {student-id} - {student-name}
+-        return {
+-            id: entity.productCode,
+-            name: entity.productName,
+-            scale: entity.productScale,
+-            retailPrice: entity.MSRP,
+-        };
+-    }
+-
+-    // แปลงเป็น Full Data DTO
+-    static toDetailDTO(entity) {
+-        // {student-id} - {student-name}
+-        const {MSRP,buyPrice, ...data} = entity
+-        data.retailPrice = MSRP
+-        data.price = buyPrice
+-        return data
+-    }
+-
+-    static map(entity, viewType) {
+-        // {student-id} - {student-name}
+-        if(viewType == 'summary') {
+-            return this.toSummaryDTO(entity)
+-        } else {
+-            return this.toDetailDTO(entity)
+-        }
+-    }
+-    static maps(entities, viewType) {
+-        // {student-id} - {student-name}
+-        const {totalItems} = entities
+-        let entitiesMap = {}
+-        if(viewType == 'full') {
+-            entitiesMap = entities.map(item => this.toDetailDTO(item))
+-        } else {
+-            entitiesMap = entities.map(item => this.toSummaryDTO(item))
+-        }
+-        if(totalItems) {
+-            entitiesMap.totalItems = totalItems
+-        }
+-        return entitiesMap
+-    }
+-}+ static toSummaryDTO(entity){return entity;}
++ static toDetailDTO(entity){return entity;}
++ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
++ static maps(entities,viewType){return entities.map(entity=>this.map(entity,viewType));}
++}
+--- teacher/src/middlewares-$id/error-handler.js
++++ sakila/src/middlewares-$id/error-handler.js
+@@ -0,0 +1,16 @@
++export class AppError extends Error {
++ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
++}
++export function errorHandler(err,req,res,next){
++ if(res.headersSent)return next(err);
++ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
++ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
++ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
++ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
++ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
++ if(status>=500){console.error(err);message='Internal server error';}
++ const mode='sakila';
++ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
++ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
++ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
++}
+--- teacher/src/repositories-$id/actor-repository.js
++++ sakila/src/repositories-$id/actor-repository.js
+@@ -0,0 +1,6 @@
++import db from '../configs-$id/db-config.js';
++export async function findAll(){const [rows]=await db.query('SELECT * FROM actor ORDER BY actor_id');return rows;}
++export async function findOne(id){const [rows]=await db.query('SELECT * FROM actor WHERE actor_id=?',[id]);return rows[0] || null;}
++export async function create(data){const [result]=await db.query('INSERT INTO actor SET ?',[data]);return findOne(result.insertId);}
++export async function update(id,data){await db.query('UPDATE actor SET ? WHERE actor_id=?',[data,id]);return findOne(id);}
++export async function remove(id){await db.query('DELETE FROM actor WHERE actor_id=?',[id]);}
+--- teacher/src/repositories-$id/repository.js
++++ sakila/src/repositories-$id/repository.js
+@@ -1,55 +1,6 @@
+-// {student-id} - {student-name}
+-import db from '../configs-$id/db-config.js'
+-
+-import httpStatus from "http-status";
+-
+-const TABLE_NAME = "table-name"
+-const ENTITY_NAME = "entity-name"
+-
+-const COUNT_ALL = `SELECT COUNT(*) as total FROM ${TABLE_NAME}`
+-const FIND_ALL_SQL = `SELECT * FROM ${TABLE_NAME}`
+-const FIND_ONE_SQL = `SELECT * FROM ${TABLE_NAME} WHERE primaryKey = ?`
+-const UPDATE_SQL = `UPDATE ${TABLE_NAME} SET ? WHERE primaryKey = ?`
+-const REMOVE_SQL = `DELETE FROM ${TABLE_NAME} WHERE primaryKey = ?`
+-const CREATE_SQL = `INSERT INTO ${TABLE_NAME} SET ?`
+-
+-export async function findAll(pagination) {
+-    if (!pagination) {
+-        const [rows] = await db.query(FIND_ALL_SQL)
+-        return rows
+-    }
+-    const SQL = FIND_ALL_SQL + ' LIMIT ? OFFSET ?'
+-    const {limit, offset} = pagination
+-    const [rows] = await db.query(SQL, [limit, offset])
+-    return rows
+-}
+-
+-export async function findOne(id) {
+-    const [row] = await db.query(FIND_ONE_SQL, [id])
+-    if (row.length === 0) {
+-        return null;
+-    }
+-    return row[0]
+-}
+-
+-export async function update(id, data) {
+-    await findOne(id)
+-    await db.query(UPDATE_SQL, [data, id])
+-    return findOne(id)
+-}
+-
+-export async function remove(id) {
+-    await findOne(id)
+-    const [data] = await db.query(REMOVE_SQL, [id])
+-    return data
+-}
+-
+-export async function create(data) {
+-    const key = data.productLine
+-    const [existingItem] = await db.query(FIND_ONE_SQL, [key])
+-    if (existingItem.length != 0) {
+-        return null;
+-    }
+-    const [result] = await db.query(CREATE_SQL, [data])
+-    return findOne(key)
+-}+import db from '../configs-$id/db-config.js';
++export async function findAll(){const [rows]=await db.query('SELECT * FROM country ORDER BY country_id');return rows;}
++export async function findOne(id){const [rows]=await db.query('SELECT * FROM country WHERE country_id=?',[id]);return rows[0] || null;}
++export async function create(data){const [result]=await db.query('INSERT INTO country SET ?',[data]);return findOne(result.insertId);}
++export async function update(id,data){await db.query('UPDATE country SET ? WHERE country_id=?',[data,id]);return findOne(id);}
++export async function remove(id){await db.query('DELETE FROM country WHERE country_id=?',[id]);}
+--- teacher/src/routes-$id/actor-route.js
++++ sakila/src/routes-$id/actor-route.js
+@@ -0,0 +1,10 @@
++import express from 'express';
++import * as service from '../services-$id/actor-service.js';
++import {apiResponse} from '../mappers-$id/api-response.js';
++const router=express.Router();
++router.get('/',async(req,res)=>apiResponse(res,await service.getAllObjects()));
++router.get('/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
++router.post('/',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
++router.put('/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
++router.delete('/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
++export default router;
+--- teacher/src/routes-$id/route.js
++++ sakila/src/routes-$id/route.js
+@@ -1,34 +1,10 @@
+-// {student-id} - {student-name}
+-import * as service from "../services-$id/service.js"
+-import express from "express"
+-
+-const router = express.Router()
+-
+-router.get("/", async (req, res) => {
+-    const objects = await service.getAllObjects()
+-    res.json("Please write your code for build json response as specification")
+-})
+-
+-router.get("/:id", async (req, res) => {
+-    const id = req.params.id
+-    const object = await service.getObject(id)
+-    res.json("Please write your code for build json response as specification")
+-})
+-
+-router.post("/", async (req, res) => {
+-    const object = req.body
+-    const result = await service.createObject(object)
+-    res.json({result})
+-})
+-router.put("/:id", async (req, res) => {
+-    const id = req.params.id
+-    const object = await service.updateObject()
+-    res.json(object)
+-})
+-router.delete("/:id", async (req, res) => {
+-    const id = req.params.id
+-    await service.removeObject(id)
+-    res.end()
+-})
+-
+-export default router+import express from 'express';
++import * as service from '../services-$id/service.js';
++import {apiResponse} from '../mappers-$id/api-response.js';
++const router=express.Router();
++router.get('/',async(req,res)=>apiResponse(res,await service.getAllObjects()));
++router.get('/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
++router.post('/',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
++router.put('/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
++router.delete('/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
++export default router;
+--- teacher/src/services-$id/actor-service.js
++++ sakila/src/services-$id/actor-service.js
+@@ -0,0 +1,17 @@
++import * as repo from '../repositories-$id/actor-repository.js';
++import {AppError} from '../middlewares-$id/error-handler.js';
++const fields=["first_name", "last_name"];
++function validate(body){
++ if(!body || typeof body!=='object' || Array.isArray(body))throw new AppError('JSON object required',400,'VALIDATION_ERROR');
++ const result={};
++ for(const field of fields){
++  if(typeof body[field]!=='string' || !body[field].trim())throw new AppError(`Field '${field}' is required`,400,'VALIDATION_ERROR');
++  result[field]=body[field].trim();
++ }
++ return result;
++}
++export const getAllObjects=()=>repo.findAll();
++export async function getObject(id){const row=await repo.findOne(id);if(!row)throw new AppError('Actor not found',404,'NOT_FOUND');return row;}
++export async function createObject(body){return repo.create(validate(body));}
++export async function updateObject(id,body){await getObject(id);return repo.update(id,validate(body));}
++export async function removeObject(id){await getObject(id);await repo.remove(id);}
+--- teacher/src/services-$id/service.js
++++ sakila/src/services-$id/service.js
+@@ -1,24 +1,17 @@
+-// {student-id} - {student-name}
+-import * as repo from "../repositories-$id/repository.js"
+-import mapper from "../mappers-$id/entity-dto-mapper.js"
+-
+-export async function getObject(id) {
+-    return mapper.map(await repo.findOne(id));
+-}
+-
+-export async function getAllObjects() {
+-    const objects = await repo.findAll()
+-    return objects
+-}
+-
+-export async function updateObject(id, data) {
+-    return await repo.update(id, data)
+-}
+-
+-export async function removeObject(id) {
+-    return await repo.remove(id)
+-}
+-
+-export async function createObject(data) {
+-    return await repo.create(data)
+-}
++import * as repo from '../repositories-$id/repository.js';
++import {AppError} from '../middlewares-$id/error-handler.js';
++const fields=["country"];
++function validate(body){
++ if(!body || typeof body!=='object' || Array.isArray(body))throw new AppError('JSON object required',400,'VALIDATION_ERROR');
++ const result={};
++ for(const field of fields){
++  if(typeof body[field]!=='string' || !body[field].trim())throw new AppError(`Field '${field}' is required`,400,'VALIDATION_ERROR');
++  result[field]=body[field].trim();
++ }
++ return result;
++}
++export const getAllObjects=()=>repo.findAll();
++export async function getObject(id){const row=await repo.findOne(id);if(!row)throw new AppError('Country not found',404,'NOT_FOUND');return row;}
++export async function createObject(body){return repo.create(validate(body));}
++export async function updateObject(id,body){await getObject(id);return repo.update(id,validate(body));}
++export async function removeObject(id){await getObject(id);await repo.remove(id);}

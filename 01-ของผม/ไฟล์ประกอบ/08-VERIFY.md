@@ -1,0 +1,98 @@
+# ผลตรวจชุดเทมเพลตครู — 2026-10-21
+ผ่าน **77 รายการ** แยกจากผลทดสอบชุดเก่า โดยรันแต่ละคำตอบผ่าน node src/app.js จริง
+ทดสอบด้วยdependenciesจาก package-lock.json ของครู ติดตั้งด้วย npm ci ใน01-WORK ไม่ได้ใช้frameworkหรือdependencyเพิ่ม
+
+## ตรวจที่มาของไฟล์
+- ไฟล์ source/package ใน00-ORIGINALตรงbytesจากZIPครู
+- source/package ของ01-WORKตรง00-ORIGINALก่อนผู้ใช้ลงมือ มีSTART-HERE.mdเพิ่มเพื่อบอกวิธีทำ
+- package.jsonและpackage-lock.jsonทุกชุดเฉลยตรงครู
+- ไม่มีserver.js,createAppหรือโฟลเดอร์-guideในชุดใหม่
+- apiResponseยังรับpaginationตัวที่3/statusตัวที่4; queryParserยังเรียกแบบfactory; mapperใช้defaultclass
+- JSตรวจsyntaxรวม71ไฟล์ (รวมไฟล์ต้นฉบับที่เก็บไว้แต่ไม่ใช้รัน)
+
+## วิธีตรวจ
+- ทำGETแรกจากสำเนาเทมเพลตว่างโดยคัดสามcodeblockจาก01-FIRST-TASK.mdจริง ไม่อาศัยชุดเฉลยสำเร็จ ใช้serviceเดิมครู
+- ทดสอบHTTP63รายการสำหรับSakila/Week6/Week8 +10รายการสำหรับoptional/view/fullPUT +4รายการสำหรับเส้นทางแรก
+- MySQL8พอร์ตทดสอบแยก33071 ไม่แก้ฐานข้อมูลผู้ใช้พอร์ต3306
+- Mobileใช้SQLWeek8จริง; Classic/Sakilaใช้fixtureย่อที่มีPK/FK/UNIQUEตามที่ทดสอบ ไม่ใช่ฐานข้อมูลเต็มทุกคอลัมน์
+- ส่งHTTPโดยfetchตามmethod/header/body ไม่ได้กดUIของPostmanจริง และยังไม่ได้ทดสอบกับผู้เรียนเริ่มจากศูนย์จริง
+- ไม่รับประกันข้อสอบที่ยังไม่เห็นหรือสภาพเครื่องสอบ; ข้อมูลประจำตัวและDBจริงผู้ใช้ต้องเติม
+
+## รายการผ่าน
+- identity exact teacher field names
+- mobile brands list
+- mobile brand detail
+- mobile brand missing
+- mobile page2, summary exact keys, counts
+- mobile detail exact DTO, JOIN, date
+- reject page=0
+- reject limit=-1
+- reject page=2abc
+- reject page=1&page=2
+- reject limit=
+- reject page=9007199254740992
+- empty out-of-range page
+- limit cap offset consistency
+- create autoID, null date, zero values
+- duplicate SKU409
+- mobile FK400
+- mobile missing body fields400
+- partial PUT preserves SKU
+- unchanged PUT200
+- reject nonexistent calendar date
+- reject PK only update
+- PUT missing404
+- DELETE204 empty
+- read after delete404
+- repeat delete404
+- zero total retained
+- string office key NA
+- office404 exact contract
+- create string PK readback
+- string duplicate409 message
+- blank string400
+- employee email400
+- employee FK400
+- manager FK400
+- employee unchanged200
+- employee404
+- customer FK409
+- customer delete200 JSON
+- customer repeat404
+- composite create/readback
+- composite duplicate409
+- payment validation {"amount":0}
+- payment validation {"amount":"1"}
+- payment validation {"paymentDate":"2026-02-30"}
+- payment validation {"checkNumber":""}
+- payment parent404
+- countries create201 result
+- countries list raw array
+- countries detail raw
+- countries unchanged PUT
+- countries DELETE204
+- countries missing404
+- actors create201 result
+- actors list raw array
+- actors detail raw
+- actors unchanged PUT
+- actors DELETE204
+- actors missing404
+- Sakila abc404 matches tutorial policy
+- Sakila FK409 documented improvement
+- unmatched route JSON404
+- malformed JSON400
+- no query all75 no pagination
+- list detail JOIN and exact keys
+- detail route summary
+- invalid view400
+- page-only defaults limit10
+- limit-only defaultpage and detail
+- full PUT rejects missing fields
+- full PUT complete succeeds, optional retained
+- full PUT unchanged200
+- full PUT missing404
+- First task exact snippets boot from teacher app.js
+- GET /countries returns 200
+- Raw response is an array
+- country/country_id match isolated DB

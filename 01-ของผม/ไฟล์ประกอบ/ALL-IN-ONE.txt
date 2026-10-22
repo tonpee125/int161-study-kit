@@ -1,0 +1,3094 @@
+============================================================
+00-START.md
+# เริ่มจากเทมเพลตครูจริง
+ตอนนี้ใช้ midterm-exam-esm-template.zip เป็นฐาน ชื่อไฟล์/โฟลเดอร์ตรงครู ไม่มี server.js หรือ -guide
+
+## เริ่มเลือกโจทย์ตรงนี้ก่อน
+เปิด [START-TREE.html](START-TREE.html) ด้วยเบราว์เซอร์ (ดับเบิลคลิกไฟล์ได้ ไม่ต้องรันserver)
+เลือกคำตอบตามข้อความที่เห็นในโจทย์ทีละหน้า ทุกคำตอบหลักใช้เทมเพลตกลางภาคชุดเดียว โจทย์Week8/Week6เป็นข้อกำหนดและSQL ไม่เปลี่ยนไปใช้ZIPตั้งต้นของงานนั้น
+ปลายทางแสดงเฉพาะฟังก์ชันและrouteของข้อที่เลือก พร้อมตำแหน่งเพิ่ม/แทนและวิธีทดสอบ ไม่คัดทั้งโปรเจกต์ทับ
+เป็นเอกสารลิงก์ออฟไลน์ ไม่มีJavaScript/AI และไม่มีระบบอ่านโจทย์อัตโนมัติ
+ถ้าต้องการอ่านเป็นMarkdown ใช้ [TREE/start.md](TREE/start.md); ไฟล์รวมอยู่TREE-ALL.txt
+ยังไม่ต้องเปิดWebStormเพียงเพื่ออ่านต้นไม้ เปิดโปรเจกต์เมื่อถึงหน้าลงมือทำ
+
+## ทำขั้นแรกเท่านั้นก่อน
+1. WebStorm → File → Open
+2. เลือก Desktop/INT161/INT161-Teacher-Template/01-WORK/node-express-esm-template
+3. ต้องเห็น package.json และ src/configs-$id, repositories-$id, services-$id, routes-$id, mappers-$id, middlewares-$id
+4. ถ้าแจ้ง Install dependencies กด npm install ขณะยังมีเน็ตและอยู่ในช่วงที่อนุญาต
+5. เปิดต้นไม้ เลือกโจทย์ที่กำลังฝึก แล้วกดเตรียมโครงCRUDครั้งแรกของงานนั้น หากทำข้อ2.1แล้วให้เก็บrouteไว้
+
+## โฟลเดอร์มีหน้าที่อะไร
+- 00-ORIGINAL: ไฟล์ครูไว้เทียบ ไม่แก้; ZIPต้นฉบับเก็บแยกครบ
+- 01-WORK: สำเนาเทมเพลตครูสำหรับคุณลงมือ ไม่ใช่โปรเจกต์รูปแบบใหม่
+- TREE: ขั้นตอนเพิ่มทีละข้อบนเทมเพลตกลางภาค ใช้เป็นคำตอบหลัก
+- 02-ANSWERS: โค้ดตัวอย่างครบโปรเจกต์ไว้เทียบ ไม่ใช้คัดapp.jsทับเมื่อทำทีละข้อ
+- 03-DECISION-TREE.md: อ่านโจทย์แล้วเลือกทาง
+- 04-ADD-RESOURCE.md: เพิ่มข้อถัดไปโดยเก็บข้อเดิม
+- 05-POSTMAN.md: ตรวจ method/URL/body/status
+- 06-RECOVERY.md: หาอาการเสีย
+- 07-AUDIT.md: ส่วนที่ครูเว้นไว้และสิ่งที่เราแก้
+- 08-VERIFY.md: ผลตรวจชุดใหม่นี้ แยกจากผลทดสอบชุดเก่า
+
+โฟลเดอร์ -$id คือตัวอักษรตามชื่อใน ZIP จริง อย่ารีบแทนชื่อ หากข้อสอบสั่งเปลี่ยนเป็นรหัสให้เปลี่ยนทั้งโฟลเดอร์และทุกimportพร้อมกัน
+อย่าเปิด examples/sakila ของชุดเก่าต่อ และอย่ารัน test-service.js เพราะมีคำสั่งลบข้อมูลทดลองของครู
+คู่มือเป็นเอกสารอ้างอิงและsourceที่อ่านเอง ไม่มี AI หรือระบบรับโจทย์อัตโนมัติ กติกาข้อสอบจริงเป็นหลัก
+
+
+============================================================
+01-FIRST-TASK.md
+# งานแรก — GET /countries บนเทมเพลตครู
+โจทย์ฝึกนี้มาจากบทสอน Sakila ไม่ใช่ยืนยันว่าข้อสอบจริงใช้countryหรือฐานsakila
+เป้าหมายรอบนี้: ใช้ app.js/route.js/service.js/repository.js ที่ครูให้แล้ว GET รายการได้
+ไม่ต้องอ่านทั้งคู่มือก่อนทำ
+
+## 1 เปิดโปรเจกต์ให้ถูก
+เปิด01-WORK/node-express-esm-template ที่เห็นpackage.jsonกับsrc อย่าเปิดทั้งDesktopหรือเฉพาะsrc
+รัน npm install ขณะอนุญาตให้ต่อเน็ต packageครูมี express,http-status,mysql2 ไม่มีstart script
+
+## 2 เชื่อมฐานก่อน
+เปิด src/configs-$id/db-config.js ของ01-WORK เปลี่ยนสี่ค่า db-host,db-username,db-password,database-name
+ตัวอย่าง host localhost, userตามเครื่อง, passwordของMySQLเครื่องนั้น, database sakila
+เปิด WebStorm Database → + → Data Source → MySQL ใช้ค่าเดียวกันกดTest Connection ต้องผ่าน
+เปิด Query Console รัน SELECT country_id,country FROM sakila.country LIMIT 1;
+ถ้าไม่มีsakilaให้ใช้SQLที่ครูให้หรือเตรียมSakilaก่อนฝึก อย่าเดาชื่อตารางหรือล้างฐานข้อมูลอื่น
+
+## 3 เปิด repository.js ของครู — เปลี่ยนเฉพาะ findAll
+เปิด src/repositories-$id/repository.js เปลี่ยน TABLE_NAME จาก table-name เป็น country
+แทนฟังก์ชัน findAll เดิมด้วย:
+```js
+export async function findAll(pagination) {
+    const [rows] = await db.query('SELECT * FROM country ORDER BY country_id');
+    return rows;
+}
+```
+ยังไม่ต้องแก้findOne/create/update/removeเพื่อทดสอบGETรายการ ถ้าจะทำเส้นเหล่านั้นเปิดชุดsakilaใน02-ANSWERS
+
+## 4 เปิด service.js — ใช้ getAllObjects เดิมได้
+src/services-$id/service.js มี getAllObjects เรียก await repo.findAll และ returnอยู่แล้ว ใช้ได้สำหรับรายการraw
+รอบนี้ยังไม่ใช้getObjectซึ่งmapperต้นฉบับเป็นproduct DTO ไม่ใช่country
+
+## 5 เปิด route.js — เปลี่ยนเฉพาะ GET /
+ใน src/routes-$id/route.js แทนเฉพาะ router.get("/",...) ก้อนแรกด้วย:
+```js
+router.get('/', async (req, res) => {
+    const objects = await service.getAllObjects();
+    res.json(objects);
+});
+```
+อย่าเพิ่มGET/ใหม่ซ้ำใต้ก้อนplaceholderเดิม เพราะก้อนแรกจะตอบก่อน
+
+## 6 เปิด app.js — เปลี่ยน mount และเติม handler ว่าง
+เปลี่ยน app.use('/', productRouter) เป็น app.use('/countries', productRouter)
+แทน app.use((err,req,res,next)=>{}) ว่างด้วย:
+```js
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(err.statusCode || 500).json({error: err.code || 'SERVER_ERROR', message: 'Request failed'});
+});
+```
+นี่เป็นhandlerขั้นต่ำกันrequestค้างสำหรับGETแรก ไม่ใช่เฉลยerrorทุกกรณี; ชุดเต็ม02มีerror-handlerที่map404/400/409ตามโจทย์
+app.listen3000เดิมเก็บไว้ ไม่เพิ่มserver.js ไม่listenซ้ำ
+
+## 7 รันและตรวจ
+Terminal Alt+F12 ที่รากโปรเจกต์ → node src/app.js
+ต้องเห็น Example app listening on port 3000 ปล่อยTerminalนี้ทำงานอยู่
+Postman desktop: GET http://localhost:3000/countries Body none → Send
+ผล200และJSON arrayเทียบข้อมูลจริงในcountry ไม่ใช่ข้อความPlease write...
+ถ้าerrorใช้06-RECOVERYตามข้อความ; ห้ามRun src/test-service.js
+
+## 8 ต่อเส้นอื่นเมื่อGETแรกผ่าน
+เปิด02-ANSWERS/sakila/HOW-TO.md และCODE.md เพื่อเติม GET/:id,POST,PUT,DELETE
+แต่ละไฟล์ยังชื่อเดิมของครู เพิ่มactorเฉพาะเมื่อทำcountryผ่านแล้วตาม04-ADD-RESOURCE
+
+
+============================================================
+02-READ-QUESTION.md
+# ถอดโจทย์ก่อนเลือกทาง
+ไม่ต้องพิมพ์คำถามให้เอกสารเข้าใจ ให้วางโจทย์ไว้ข้างคู่มือนี้แล้วคัดข้อความจริง
+
+| ช่องที่ต้องเติม | ดูจากไหน | ตัวอย่าง | ถ้าไม่พบ |
+|---|---|---|---|
+| Method | GET/POST/PUT/DELETE หน้าหัวข้อ | POST | อ่านหัวข้อเพิ่ม/อ่าน/แก้/ลบ แล้วตรวจ endpoint อีกครั้ง |
+| URL ทั้งเส้น | Method & URI / Endpoint | /api/YOUR_STUDENT_ID/productlines | ดูการ mount router ใน app.js ด้วย |
+| ค่าหลัง : | เช่น :officeCode | officeCode | ถ้าไม่มีอาจเป็นรายการ ไม่ใช่รายตัว |
+| ชื่อตารางจริง | Resource และ CREATE TABLE | productlines | เปิด SQL หรือหน้าต่าง Database |
+| ชื่อคีย์และชนิด | PRIMARY KEY และชนิดคอลัมน์ | productLine VARCHAR(50) | SHOW CREATE TABLE ชื่อตาราง; |
+| สร้างรหัสเองไหม | AUTO_INCREMENT | ไม่มี → รับจาก Body | ห้ามอนุมานจากชื่อ id |
+| ช่องรับเข้า | Request Body และเงื่อนไข | productLine,textDescription | อย่าใช้ response แทน request |
+| ช่องตอบกลับ | Response Body / DTO | id,name,price | แยกชื่อ JSON ออกจากชื่อ SQL |
+| query | Query Parameters | page,limit,view | ไม่มีข้อกำหนดอย่าเติมฟีเจอร์เอง |
+| สำเร็จ | Response Status | 201 | ดูสเปก ไม่คัด default จาก template |
+| ล้มเหลว | เงื่อนไข/JSON error | 400/404/409 | จด code และ message ตามโจทย์ |
+| รูปห่อ JSON | ตัวอย่างทั้งก้อน | status หรือ success | เปิด 07-AUDIT.md |
+
+## ตัวอย่างถอดงานครู
+Week 6 เพิ่ม productline: POST; ตาราง productlines; PK productLine เป็นข้อความ; Body ส่ง PK มาเอง; ชื่อว่าง 400; ซ้ำ 409; สำเร็จ 201 → classic
+Week 6 payment: POST; customerNumber มาจาก URL, checkNumber มาจาก Body; คีย์คู่; ตรวจลูกค้าก่อน; amount > 0; วันที่ YYYY-MM-DD → classic
+Week 8 รายการสินค้า: GET; page/limit; response data เป็น array เฉพาะ summary; pagination.total ต้องนับทุกแถว ไม่ใช่ความยาวของหน้านี้ → mobile
+Sakila country: ตาราง country แต่ URL countries; PK country_id ไม่ใช่ id; country_id/last_update ไม่ต้องส่งตอนเพิ่ม → sakila
+
+## อ่านไม่เข้าใจ ให้เริ่มจากรูปแทนศัพท์
+- data: [...] = หลายรายการ; data: {...} = รายตัว; ดูเงื่อนไขประกอบ ไม่ใช่ตัดสินจากรูปเพียงอย่างเดียว
+- :id ไม่ใช่ข้อความที่พิมพ์ส่งจริง เช่น /products/12 ไม่ใช่ /products/:id
+- ?page=2&limit=10 คือ query; /products/12 คือ path; {...} ใต้ Request Body คือ body
+- brand_name ไม่มีใน products แต่ response ต้องมี → ดู FK brand_id และตาราง brands ก่อนเปิดชุด JOIN
+- ถ้าสเปกกับตัวอย่างขัดกัน ให้จดจุดขัดกันแล้วสอบถามผู้คุม/ครูตามช่องทางที่อนุญาต ไม่ใช้ความเคยชินตัดสิน
+
+## ยืนยันก่อนคัดลอก
+เขียนประโยค: ฉันทำ [METHOD] [URL] อ่าน/เขียน [TABLE] ด้วยคีย์ [KEY] รับ [BODY] คืน [FIELDS] สำเร็จ [STATUS] ผิดพลาด [CODES]
+ถ้ายังเติมไม่ได้ ให้กลับดูสเปกหรือ SQL จุดนั้นก่อน ไม่สุ่มเลือกชุด
+
+
+============================================================
+03-DECISION-TREE.md
+# เลือกโจทย์บนเทมเพลตกลางภาคชุดเดียว
+เปิด [หน้าเลือกหลัก](TREE/start.md) หรือ START-TREE.html ไม่มีขั้นให้สลับZIPตามชนิดโจทย์
+
+1. ดูMethod/URL/Body/Responseในโจทย์แล้วเลือกGET/POST/PUT/DELETE
+2. เลือกเงื่อนไขย่อยจากตัวอย่างที่ตรงกับโจทย์
+3. ถ้าเป็นCRUDข้อแรกของงาน เตรียมโครงครั้งเดียวตามรูปแบบข้อมูลของงานนั้น:
+   - [Mobile / Week8](TREE/base-mobile.md)
+   - [Classicmodels / Week6](TREE/base-classic.md)
+   - [Sakila country / actor](TREE/base-sakila.md)
+4. คัดเฉพาะก้อนฟังก์ชันและrouteที่คำตอบระบุ เก็บข้อก่อนหน้า
+5. ทดสอบPostmanตามสัญญาของข้อใหม่ แล้วตรวจข้อก่อนซ้ำ
+
+ข้อ2.1ไม่ต้องเตรียมชั้นฐานข้อมูล ทำโดยเพิ่มrouteในapp.jsตาม [วิธีทำเฉพาะข้อ](TREE/empty-identity.md)
+การเปลี่ยนโจทย์ทั้งงานที่ใช้DB/responseคนละรูปแบบควรใช้สำเนาใหม่ของเทมเพลตกลางภาคเดิม ไม่ใช่รวมทุกฐานไว้ในโปรเจกต์เดียวโดยไม่ออกแบบ
+
+
+============================================================
+04-ADD-RESOURCE.md
+# ทำข้อใหม่โดยไม่ลบข้อที่ผ่าน — ตัวอย่างcountryต่อactor
+ไฟล์ครู generic repository.js/service.js/route.js ใช้เป็นcountryชุดแรก เมื่อทำคนละตารางเพิ่มชื่อไฟล์ใหม่ได้
+
+## เพิ่มเพียง3ไฟล์
+1. คัด repositories-$id/repository.js → actor-repository.js เปลี่ยน TABLE_NAME=actor, KEYในWHERE=actor_id, writable first_name,last_name
+2. คัด services-$id/service.js → actor-service.js เปลี่ยนimportไปactor-repository.js และตรวจfirst_name,last_name
+3. คัด routes-$id/route.js → actor-route.js เปลี่ยนimportไปactor-service.js
+4. ในapp.jsเพิ่ม import actorRouter from './routes-$id/actor-route.js';
+5. เพิ่ม app.use('/actors',actorRouter); หลังexpress.jsonและก่อนnot-found/error handler
+6. mount '/countries' เดิมอยู่ครบ เปิดCODEของsakilaเพื่อดูไฟล์ทั้งหกกับapp.jsที่รวมถูกแล้ว
+7. restart → GET/countriesต้องยัง200 → POST/actors → PUT/actors/รหัสใหม่ → DELETE →GET404
+
+## ถ้าครูให้prefixรหัสนักศึกษา
+app.use('/api/รหัสตัวเอง/countries',productRouter) กับ app.use('/api/รหัสตัวเอง/actors',actorRouter)
+routerภายในยัง / และ /:id ไม่เขียนprefixซ้ำสองชั้น
+ตัวอย่างSakilaในบทสอนไม่มีprefixนี้ ต้องดูข้อสอบจริง
+
+## ห้ามทำ
+อย่าแทนrepository.jsของcountryด้วยSQLactorโดยยังmountcountryเดิม ไม่เช่นนั้น/countriesจะตอบactor
+อย่าแทนapp.jsทั้งไฟล์เมื่อมีงานอื่นแล้ว คัดเฉพาะimportและmount
+ไม่เพิ่มdependency ไม่เปลี่ยนฐานข้อมูล/constraintเพื่อหลบerror ไม่listenซ้ำ
+
+
+============================================================
+05-POSTMAN.md
+# ทดสอบด้วย Postman แบบอ่านผลเป็น
+ใช้ desktop สร้าง HTTP request ได้แม้ไม่ได้บันทึก Collection หน้าตาแต่ละเวอร์ชันอาจต่างกัน ให้ฝึกแบบออฟไลน์ก่อนสอบ
+1. เปิด request เลือก Method ให้ตรงโจทย์
+2. ใส่ URL เต็ม เช่น http://localhost:3000/api/YOUR_STUDENT_ID/products เปลี่ยนรหัสเป็นของตัวเอง
+3. GET รายการ: Params ใส่ page=1 และ limit=10 เฉพาะเมื่อมี pagination อย่าใส่ซ้ำใน URL กับตาราง Params
+4. GET รายตัว: แทน :id ด้วยรหัสจริง Body none
+5. POST/PUT: Body → raw → JSON ตรวจ Headers มี Content-Type: application/json
+6. คัดเฉพาะ JSON จริง ห้าม comments, ... หรือ comma ตัวท้าย ตัวเลขไม่ใส่เครื่องหมายคำพูดหากโจทย์กำหนด number
+7. กด Send ดู status + body + ข้อมูลจริง ไม่ดูแค่ 200
+8. เมื่อแก้โค้ด Ctrl+C ที่ terminal ของแอปแล้วรันใหม่ เว้นแต่ใช้ watch ที่ทำงานอยู่จริง
+
+## ลำดับทดสอบที่ใช้ซ้ำได้
+GET รายการ → GET id ที่มี → GET id ที่ไม่มี → POST ใหม่ → จดรหัสที่ response คืน → GET รหัสนั้น → PUT รหัสนั้น → GET ยืนยันค่า → PUT ค่าเดิม → DELETE รหัสนั้น → GET รหัสนั้นต้อง 404 → DELETE ซ้ำตามสเปก
+ใช้เฉพาะข้อมูลทดลองที่เพิ่มเอง อย่าคัดเลข 110 จากรูป ตัวเลขอาจข้ามเมื่อ insert ล้มเหลว
+
+| ชุด | Request ทดสอบ | คาดหวัง |
+|---|---|---|
+| sakila | POST /countries body {"country":"GuidePractice"} | 201 และ result.country_id เก็บเลขไว้ |
+| sakila | PUT /countries/รหัสใหม่ body {"country":"GuidePracticeUpdated"} | 200 ค่าเปลี่ยน |
+| sakila | POST /actors body {"first_name":"Guide","last_name":"Practice"} | 201 เก็บ result.actor_id |
+| classic | GET /api/รหัสตัวเอง/offices/NA | 200 ถ้ามีจริง ไม่มีก็ 404; ไม่บังคับแปลงเป็นเลข |
+| classic | POST /api/รหัสตัวเอง/productlines body {"productLine":"GuidePractice","textDescription":"Practice"} | 201; ส่งซ้ำ 409; ส่งชื่อว่าง 400 |
+| classic | POST /api/รหัสตัวเอง/customers/รหัสที่มี/payments body {"checkNumber":"GUIDE-001","paymentDate":"2026-01-01","amount":1} | 201; คู่เดิมซ้ำ 409; amount=0 → 400 |
+| mobile | GET /api/รหัสตัวเอง/products?page=2&limit=10 | 200 page=2,limit=10 จำนวนข้อมูลไม่เกิน 10 |
+| mobile | GET /api/รหัสตัวเอง/products/รหัสที่มี | detail มี brandName ไม่ใช่ summary |
+| mobile | PUT /api/รหัสตัวเอง/products/รหัสทดลอง body {"name":"Changed","price":100,"stock_quantity":0} | 200 ช่องเดิมที่ไม่ได้ส่งยังอยู่ |
+
+## ตรวจที่คนมักพลาด
+- หน้า pagination ที่เกินข้อมูลต้องไม่ค้าง total ยังเป็นจำนวนทั้งหมด data=[]
+- total=0 ต้องมี total=0 ไม่หายเพราะใช้ if(total)
+- 204 body ต้องว่าง ไม่พยายามกด parse JSON
+- error เป็น JSON ตามสเปก ไม่ใช่ HTML/stack trace
+- JSON request อาจใช้ brand_id แต่ response ต้อง brandId จึงห้ามใช้ชื่อเดียวกันทั้งหมดโดยเดา
+- ส่งซ้ำตรวจ UNIQUE จริงเฉพาะที่ schema/โจทย์กำหนด ชื่อ country ของ Sakila เดิมไม่ใช่ UNIQUE เสมอไป
+- Collection ใช้เก็บ request เพื่อฝึกได้ แต่คู่มือนี้ไม่พึ่งการเข้าสู่ระบบ Postman หรือสคริปต์เลือกเฉลย
+
+
+============================================================
+06-RECOVERY.md
+# เปิดตามอาการ — ทางรับมือปัญหา
+| อาการ | แยกอย่างไร | ตรวจ/แก้ตามลำดับ |
+|---|---|---|
+| Cannot find package express/mysql2 | แอปยังเริ่มไม่ได้ | เปิด terminal ที่มี package.json → ดู node_modules → เตรียม dependencies ขณะอนุญาตให้ต่อเน็ต |
+| Missing script: start | package.json ไม่มี start | ใช้คำสั่ง entry ที่มีจริง ใช้ node src/app.js |
+| Cannot use import / require is not defined | ESM ไม่ตรง | type:module, import/export, .js; ห้ามผสม module.exports จากใบงานโดยไม่แปลง |
+| ERR_MODULE_NOT_FOUND ชี้ไฟล์ใน src | import ผิด | ชื่อไฟล์/โฟลเดอร์/-$id/.js/ตัวพิมพ์เล็กใหญ่ ให้ตรงจริง |
+| EADDRINUSE 3000 | มีแอปฟังพอร์ตอยู่ | หยุด instance ที่คุณรันใน Run/Terminal แล้วรันตัวที่ถูก ห้ามปิด process อื่นแบบเดา |
+| Could not send request พอร์ต 3000 | ยังไม่มี HTTP response | แอปหยุด/พอร์ตผิด → ดู terminal → เปิดแอป → ส่งใหม่ |
+| JSON 500 มี ECONNREFUSED DB | Express รับได้แต่ DB ไม่ได้ | MySQL ทำงานหรือไม่ host/port ใน db-config ถูกหรือไม่ |
+| Access denied | ติดต่อ DB ถึงแต่เข้าไม่ได้ | user/password และสิทธิ์; ใช้ค่าที่ผู้คุมแจ้ง ห้ามล้างหรือ reset DB เครื่องสอบเอง |
+| Unknown database / Table doesn't exist | schema ไม่ตรง | ตรวจ database ใน config และรัน SQL ที่โจทย์ให้กับ target ถูกตัว |
+| Unknown column id | คีย์ชื่ออื่น | ดู PRIMARY KEY เปลี่ยน WHERE ของ find/update/delete ให้ครบ |
+| Unknown column name | Body/SQL ใช้ชื่อผิด | เทียบชื่อคอลัมน์จริงกับ request และการแปลงชื่อ ห้ามแก้ DTO จน DB ผิด |
+| HTML Cannot GET | Method/path ไม่ตรง | prefix รหัสตัวเอง, พหูพจน์, mount router, ลำดับ route แล้ว restart |
+| POST body undefined | parser ไม่อ่าน | Postman raw JSON + header + express.json ก่อน route |
+| 400 JSON syntax | JSON ไม่ถูก | เอา comments/comma ท้ายออก key ใช้ double quotes |
+| request หมุนไม่จบ | ไม่ตอบ/ไม่ next | middleware ทุกทางต้อง next หรือส่ง response; อย่าปล่อย error handler ว่างแบบ template |
+| ได้ {} / Promise | ลืม await | route → service → repo ทุกชั้นคืนค่าที่ resolve แล้ว |
+| แก้แล้วค่าไม่เปลี่ยน | ส่งต่อไม่ครบ/แอปเก่า | route ส่ง id+body; service ส่งต่อ; WHERE ถูก; restart; GET อ่านกลับ |
+| PUT ค่าเดิมกลายเป็น404 | ตัดสินจาก affectedRows | findOne ตรวจการมีอยู่ก่อน อย่าใช้จำนวนแถวเปลี่ยนตัดสินอย่างเดียว |
+| ER_DUP_ENTRY 1062 | PK/UNIQUE ซ้ำ | อ่านคีย์ที่โจทย์กำหนด → handler409 → ทดสอบค่าที่ไม่ซ้ำ อย่าลบ constraint |
+| ER_NO_REFERENCED_ROW_2 1452 | FK ชี้แม่ไม่มี | ตรวจ id แม่ที่มีจริง/nullable; Week6 กำหนด400 |
+| ER_ROW_IS_REFERENCED_2 1451 | ข้อมูลลูกยังอ้างอิง | ตอบตามสเปก; อย่าเปลี่ยน FK หรือลบลูกทั้งหมดเพื่อให้ผ่าน |
+| page2 ข้ามแถว | offset ผิด | offset=(page-1)*limit หลังปรับ limit แล้ว |
+| total เท่าจำนวนหน้านี้ | COUNT ผิด | query COUNT แยกและใช้ WHERE เดียวกับ filter |
+| total หายเมื่อไม่มีข้อมูล | เช็ก truthy | ใช้ total !== undefined; 0 เป็นค่าถูกต้อง |
+| timestamp ไม่ผ่าน | คัดเวลาคงที่/รูปแบบผิด | new Date().toISOString() ตอนสร้าง response ถ้าสเปกระบุ ISO |
+| date เลื่อนไปหนึ่งวัน | timezone | DATE เก็บเป็น YYYY-MM-DD; config dateStrings:true; อย่าสุ่มตัด ISO หลังเปลี่ยน timezone |
+| ทดสอบ repo เสร็จแต่ไม่จบ | pool ยังเปิด | script ทดสอบใช้ finally await db.end(); อย่า end pool ใน request ของ server |
+| grader ผ่านบางข้อ | ตัวตรวจไม่ครอบคลุมทุกอย่าง | เปิดข้อแรกที่ fail เทียบ contract; ทดสอบเส้นอื่นซ้ำหลังแก้ helper |
+
+## กรณีที่ไม่ได้เตรียมไว้ตรงตัว
+1. จดสิ่งที่ต่างจากตัวอย่างเพียงจุดเดียว เช่น ชื่อคีย์หรือ status
+2. แยกว่าต่างที่ DB, validation, route หรือ response อย่าแก้ทุกชั้นพร้อมกัน
+3. เปลี่ยนจุดนั้นแล้วส่ง request เล็กที่สุดที่พิสูจน์ได้
+4. ถ้ายังไม่เข้าใจสเปกหรือเป็นปัญหาเครื่อง ให้ถามผู้คุมตามกติกา ไม่พึ่ง AI/อินเทอร์เน็ตระหว่างสอบ
+5. เก็บส่วนที่ผ่านไว้ สำรองก่อนเปลี่ยนหลายไฟล์ อย่าแทนทั้งโปรเจกต์ด้วยอีกชุดเมื่อทำไปแล้วหลายข้อ
+
+## ปิดงาน
+บันทึกทุกไฟล์ ตรวจรหัส/URL ของตัวเอง เปิด ZIP ตรวจว่ามี src และ package.json ไม่มีโฟลเดอร์ซ้อนผิดชั้น ส่งชื่อ/รูปแบบตามข้อสอบ ไม่รวม node_modules หากครูระบุให้ตัดออก
+ห้ามรัน SQL เริ่มต้นซ้ำช่วงท้ายโดยไม่ดู DROP เพราะอาจล้างงานทดลองและข้อมูลที่ต้องใช้
+
+
+============================================================
+07-AUDIT.md
+# ตรวจเทมเพลตครูจริงก่อนทำคำตอบ
+## สิ่งที่คงเดิม
+ชื่อsrc/app.jsและไฟล์genericทั้งหกโฟลเดอร์-$id; package.jsonและlockfileเดิมทุกไบต์; ESM; route→service→repository
+apiResponse(res,data,pagination=null,status=200) ตำแหน่งพารามิเตอร์ตรงครู; queryParser() เป็นmiddleware factory; mapperเป็นdefaultclass
+ชุดคำตอบไม่เพิ่มserver.js ไม่สร้างcreateApp ไม่เพิ่มdependency
+
+## สิ่งที่ครูเว้นไว้/จุดที่ต้องแก้ตามโจทย์
+- app.js errorhandlerว่าง ทำให้errorไม่มีresponse ต้องเติม
+- route GETยังตอบข้อความplaceholder; PUTไม่ส่งid/body; POST/DELETEยังไม่ได้statusตามโจทย์
+- repository TABLE_NAME/primaryKeyเป็นplaceholder; createใช้data.productLine จึงใช้กับautoIDไม่ได้โดยไม่แก้
+- serviceยังไม่ส่งpagination/viewครบ และยังไม่จัด404ก่อนmap
+- pagination offsetใช้pageSizeดิบแม้limitถูกcap ต้องคำนวณจากlimitจริง
+- mapper.maps ใช้if(totalItems) ทำtotal0หาย ต้องตรวจ!==undefined
+- api-responseต้นฉบับไม่มีtimestamp; จะเพิ่มหรือไม่ขึ้นกับสเปกจริง
+- test-service.jsมีtop-levelลบรหัส26และimportoffice-service.jsที่ไม่มี ไม่ใช้เป็นentry
+
+## ไฟล์เพิ่มที่จำเป็น
+middlewares-$id/error-handler.js: AppErrorและhandlerให้ใช้propertyชุดเดียวกัน
+Sakilaเพิ่มactor-repository.js/actor-service.js/actor-route.jsเพื่อทำresourceที่สองโดยไม่ทับcountry
+ทุกไฟล์เพิ่ม/แก้แสดงในHOW-TOและCHANGES.diffของแต่ละชุด
+
+## ความต่างของสัญญาresponse
+Sakila: GET/PUT raw,POST result,DELETE204; FK409เป็นการปรับปรุงจากบทสอนที่ยังได้500
+Week6: status/data/error,DELETEลูกค้า200พร้อมข้อความ
+Week8: success/data/timestamp,DTO7/13ช่อง,DELETEสินค้า204
+ห้ามผสมhelperคนละชุด; คัดชุดตามสเปก ไม่ถือว่าJSONของtemplateเป็นข้อสอบจริงที่ตายตัว
+
+
+============================================================
+08-VERIFY.md
+# ผลตรวจชุดเทมเพลตครู — 2026-10-21
+ผ่าน **77 รายการ** แยกจากผลทดสอบชุดเก่า โดยรันแต่ละคำตอบผ่าน node src/app.js จริง
+ทดสอบด้วยdependenciesจาก package-lock.json ของครู ติดตั้งด้วย npm ci ใน01-WORK ไม่ได้ใช้frameworkหรือdependencyเพิ่ม
+
+## ตรวจที่มาของไฟล์
+- ไฟล์ source/package ใน00-ORIGINALตรงbytesจากZIPครู
+- source/package ของ01-WORKตรง00-ORIGINALก่อนผู้ใช้ลงมือ มีSTART-HERE.mdเพิ่มเพื่อบอกวิธีทำ
+- package.jsonและpackage-lock.jsonทุกชุดเฉลยตรงครู
+- ไม่มีserver.js,createAppหรือโฟลเดอร์-guideในชุดใหม่
+- apiResponseยังรับpaginationตัวที่3/statusตัวที่4; queryParserยังเรียกแบบfactory; mapperใช้defaultclass
+- JSตรวจsyntaxรวม71ไฟล์ (รวมไฟล์ต้นฉบับที่เก็บไว้แต่ไม่ใช้รัน)
+
+## วิธีตรวจ
+- ทำGETแรกจากสำเนาเทมเพลตว่างโดยคัดสามcodeblockจาก01-FIRST-TASK.mdจริง ไม่อาศัยชุดเฉลยสำเร็จ ใช้serviceเดิมครู
+- ทดสอบHTTP63รายการสำหรับSakila/Week6/Week8 +10รายการสำหรับoptional/view/fullPUT +4รายการสำหรับเส้นทางแรก
+- MySQL8พอร์ตทดสอบแยก33071 ไม่แก้ฐานข้อมูลผู้ใช้พอร์ต3306
+- Mobileใช้SQLWeek8จริง; Classic/Sakilaใช้fixtureย่อที่มีPK/FK/UNIQUEตามที่ทดสอบ ไม่ใช่ฐานข้อมูลเต็มทุกคอลัมน์
+- ส่งHTTPโดยfetchตามmethod/header/body ไม่ได้กดUIของPostmanจริง และยังไม่ได้ทดสอบกับผู้เรียนเริ่มจากศูนย์จริง
+- ไม่รับประกันข้อสอบที่ยังไม่เห็นหรือสภาพเครื่องสอบ; ข้อมูลประจำตัวและDBจริงผู้ใช้ต้องเติม
+
+## รายการผ่าน
+- identity exact teacher field names
+- mobile brands list
+- mobile brand detail
+- mobile brand missing
+- mobile page2, summary exact keys, counts
+- mobile detail exact DTO, JOIN, date
+- reject page=0
+- reject limit=-1
+- reject page=2abc
+- reject page=1&page=2
+- reject limit=
+- reject page=9007199254740992
+- empty out-of-range page
+- limit cap offset consistency
+- create autoID, null date, zero values
+- duplicate SKU409
+- mobile FK400
+- mobile missing body fields400
+- partial PUT preserves SKU
+- unchanged PUT200
+- reject nonexistent calendar date
+- reject PK only update
+- PUT missing404
+- DELETE204 empty
+- read after delete404
+- repeat delete404
+- zero total retained
+- string office key NA
+- office404 exact contract
+- create string PK readback
+- string duplicate409 message
+- blank string400
+- employee email400
+- employee FK400
+- manager FK400
+- employee unchanged200
+- employee404
+- customer FK409
+- customer delete200 JSON
+- customer repeat404
+- composite create/readback
+- composite duplicate409
+- payment validation {"amount":0}
+- payment validation {"amount":"1"}
+- payment validation {"paymentDate":"2026-02-30"}
+- payment validation {"checkNumber":""}
+- payment parent404
+- countries create201 result
+- countries list raw array
+- countries detail raw
+- countries unchanged PUT
+- countries DELETE204
+- countries missing404
+- actors create201 result
+- actors list raw array
+- actors detail raw
+- actors unchanged PUT
+- actors DELETE204
+- actors missing404
+- Sakila abc404 matches tutorial policy
+- Sakila FK409 documented improvement
+- unmatched route JSON404
+- malformed JSON400
+- no query all75 no pagination
+- list detail JOIN and exact keys
+- detail route summary
+- invalid view400
+- page-only defaults limit10
+- limit-only defaultpage and detail
+- full PUT rejects missing fields
+- full PUT complete succeeds, optional retained
+- full PUT unchanged200
+- full PUT missing404
+- First task exact snippets boot from teacher app.js
+- GET /countries returns 200
+- Raw response is an array
+- country/country_id match isolated DB
+
+
+============================================================
+09-SOURCE.md
+# แหล่งอ้างอิงและขอบเขต
+- midterm-exam-esm-template.zip ที่ผู้ใช้ให้: ไฟล์ตั้งต้นและโครงสร้างหลัก
+- OneDrive_3_21-10-2569.zip: งานWeek6ห้าข้อ,Week8spec/SQL/test-runner,สไลด์Week1–7
+- https://sitprogramming.sit.kmutt.ac.th/docs/int161-express-sakila/index.html : country/actorและPostman
+ชุดเก่าเป็นที่มาของbusiness rulesที่นำมาปรับ แต่ผลทดสอบเก่าไม่นับเป็นผลผ่านของสถาปัตยกรรมใหม่นี้
+ต้นฉบับZIPเก็บครบ; โฟลเดอร์00-ORIGINALคัดเฉพาะsource/package ไม่รวมmacmetadataและIDEsettings ไม่มีการรันtest-service/SQLครูอัตโนมัติ
+การฝึกและเอกสารเตรียมล่วงหน้าขึ้นกับกติกาสอบจริง ไม่รับประกันผ่านหรือรองรับทุกเหตุการณ์
+
+
+============================================================
+10-TREE-VERIFY.md
+# ผลตรวจต้นไม้เลือกทาง
+
+- 120 หน้าการตัดสินใจและคำตอบ เชื่อมด้วยตัวเลือก 399 ลิงก์ ตรวจว่ามีปลายทางจริงและเข้าถึงได้จากหน้าเริ่มต้นทั้งหมด
+- ปรับคำถามให้เทียบหัวข้อโจทย์ครูและบอกจุดที่ต้องอ่านในโจทย์ อธิบายค่าเริ่มต้น, DTO, AUTO_INCREMENT และการส่งบางช่องก่อนถามให้เลือก
+- ตรวจทางลัดชื่อข้อ Week8 ทั้ง8หัวข้อ ว่ากดแล้วถึงกรณีที่ตรงกับชื่อข้อจริง
+- 25 กรณีคำตอบตามงานที่เตรียมไว้ แต่ละกรณีมีทางเริ่มจากเทมเพลตว่างและทางรักษางานข้อก่อน
+- ทุกหน้าสำหรับเริ่มจากเทมเพลตว่างมีโค้ดเต็มของชุดที่เลือก ใช้ชื่อไฟล์ครู และวิธีทดสอบ
+- ตรวจใน Chromium ว่าแต่ละหน้าแสดงเพียงหน้าที่เลือก ไม่แสดงทั้งเอกสารปะปน
+- ลองกดเดิน 5 เส้นทาง: GETแบ่งหน้า, POSTpayment, PUTบังคับครบแล้วเพิ่มต่องานเดิม, DELETEลูกค้า200 และทางไม่รู้MethodไปดูSQL
+- ตรวจหน้าจอแคบ390px ทั้งหน้าเริ่มต้น หน้าเลือก หน้ายืนยัน หน้าโค้ดเต็ม และหน้าเพิ่มต่องานเดิม ไม่ล้นแนวนอน
+- เปิดด้วย file:// ไม่มีHTTP requestออกไปภายนอก ไม่มีscript ไม่มีCDN ไม่ต้องเปิดserver
+- ทดสอบ API ของชุดโค้ดตาม08-VERIFY.md แยกจากการตรวจการนำทางนี้
+
+## วิธีเปิด
+
+ดับเบิลคลิก START-TREE.html แล้วกดตัวเลือก ใช้ปุ่มย้อนกลับของเบราว์เซอร์ย้อนข้อก่อน
+ถ้าHTMLไม่แสดงในตัวอ่านเอกสาร ให้เปิดด้วยเบราว์เซอร์ หรือใช้ TREE/start.md และกดลิงก์ระหว่างMarkdown
+ไฟล์ TREE-ALL.txt ใช้ค้นด้วยCtrl+F แต่ไม่ใช่หน้ากดเลือกทีละขั้น
+
+## ขอบเขตที่ยังต้องใช้ดุลยพินิจ
+
+ครอบคลุม25กรณีที่เตรียมและตรวจไว้ ไม่อ้างว่าครอบคลุมทุกschemaหรือข้อสอบที่ยังไม่เห็น
+ถ้าโจทย์เปลี่ยนชื่อคีย์/Body/DTOหรือนโยบาย ต้องถอดสเปกก่อน กิ่งที่ยังไม่มีคำตอบตรงจะบอกข้อจำกัดและให้ดูSQL ไม่สุ่มเลือกเฉลยให้
+ทางเพิ่มต่องานเดิมระบุบล็อกrouteและชั้นที่เกี่ยวข้อง แต่ไม่รวมโค้ดกับโปรเจกต์ของผู้ใช้ให้อัตโนมัติ ต้องรักษาข้อก่อนและทดสอบซ้ำ
+ยังไม่ได้ทดลองให้ผู้เรียนที่ไม่เคยเรียนใช้เองจริง จึงยังรับประกันความสำเร็จของผู้ใช้ทุกคนไม่ได้
+
+## หน้าเตรียมก่อนเริ่ม
+เพิ่ม12หน้าสำหรับเปิดโปรเจกต์ ติดตั้งdependency ต่อData Source นำเข้าSQL ตั้งdb-config ตรวจSELECT1จากNode เปิดExpressและเตรียมPostman แยกWeek8/กลางภาค ตรวจเดินครบทั้งสองเส้นทาง และตรวจหน้าจอ390pxเพิ่มเติม
+
+## คำตอบฐานกลางภาคชุดเดียว
+ปลายทาง24กรณีCRUDแสดงเฉพาะก้อนฟังก์ชันและroute มีขั้นเตรียมโครงครั้งเดียวสามชุดตามรูปแบบข้อมูล ไม่เปลี่ยนเทมเพลต ข้อ2.1ยังใช้routeเดียว ตรวจนำทางรวม120หน้าและ10เส้นทาง รวมทางเตรียมโครง3แบบ ดูผลAPIเพิ่มทีละข้อใน13-RECIPE-VERIFY.md
+
+
+============================================================
+11-IDENTITY-FIX.md
+# แก้คู่มือข้อ 2.1 ให้ตรงงานจริง
+
+หน้า empty-identity และ merge-identity ใช้คำแนะนำเพิ่มเฉพาะrouteในsrc/app.jsเดิม
+ไม่รวมapp.jsทั้งโปรเจกต์และไม่บังคับคัดimportโฟลเดอร์-$idไปใช้กับWeek8
+ระบุตำแหน่งหลังexpress.jsonและก่อนlisten/not-found handler พร้อมตรวจconst IDไม่ให้ซ้ำ
+ไม่ต้องเพิ่มrepository/service/mapperหรืออ่านฐานข้อมูลเพื่อสร้างresponseของข้อนี้
+
+ทดสอบ2026-10-22: คัดก้อนrouteจากเอกสารจริงไปวางในสำเนาapp.jsของZIPครูทั้งWeek8และกลางภาค ใช้รหัสฝึกกับค่าทดสอบจำลอง
+ทั้งสองชุดตอบHTTP200, success=true, dataสามช่องตามสเปก และtimestampปัจจุบัน ผ่านสองrequestต่อเทมเพลต
+ไม่แก้ไฟล์งานที่ผู้ใช้กำลังฝึก และไม่ใช้ชื่อ/secretของนักศึกษาจริงเป็นค่าทดสอบ
+
+
+============================================================
+12-SINGLE-TEMPLATE.md
+# ใช้เทมเพลตกลางภาคชุดเดียวกับหลายโจทย์
+
+ฐานที่ใช้คือ `midterm-exam-esm-template.zip` ชื่อไฟล์หลักคงเป็น `src/app.js`, `repository.js`, `service.js`, `route.js` ในโฟลเดอร์ `-$id`
+โจทย์ Week8 / Week6 / Sakila เป็นแหล่งข้อกำหนดและข้อมูล ไม่ใช่เหตุให้สลับโครงโปรเจกต์
+
+## ลำดับทำ
+
+1. เปิดสำเนาเทมเพลตกลางภาค `01-WORK/node-express-esm-template`
+2. เปิดโจทย์ของงานที่ต้องการไว้ข้าง ๆ และใช้ SQL ของงานนั้น เช่น Week8 ใช้ mobile_distributor
+3. เลือกข้อจาก START-TREE.html เช่น Week8 ข้อ2.1ให้เพิ่มrouteในapp.jsเดิมได้เลย
+4. ก่อนเริ่มCRUDครั้งแรก เปิดลิงก์ “เตรียมโครงCRUD” ของชุดโจทย์นั้น ทำเพียงครั้งเดียว เก็บข้อ2.1ในapp.jsไว้
+5. แต่ละข้อต่อไปเพิ่มหรือแทนเฉพาะฟังก์ชันและrouteที่หน้าเว็บระบุ ไม่แทนapp.jsทั้งไฟล์
+6. บันทึก หยุดแอปเก่า รันnode src/app.jsใหม่ แล้วทดสอบทั้งข้อใหม่และข้อก่อน
+
+## ข้อที่ใช้ได้
+
+- Week8: ข้อมูลประจำตัว, แบรนด์รายการ/รายตัว, สินค้าแบ่งหน้า/รายละเอียด/เพิ่ม/แก้/ลบ
+- Week6: offices, productlines, employees, customers, payments พร้อมคีย์ข้อความ คีย์คู่ และFK
+- Sakila: countryและactor CRUD พร้อมตัวอย่างเพิ่มactorโดยเก็บcountryเดิม
+- เงื่อนไขเสริมที่มีชุดตรวจ: PUTต้องส่งครบ, ไม่ส่งqueryคืนทั้งหมด, view summary/detail
+
+ใช้โครงชุดเดียว ไม่ได้หมายความว่าให้เอาฐานข้อมูลและresponseสามงานมาปะปนในโปรเจกต์เดียวกัน
+เมื่อเปลี่ยนงานทั้งชุด ให้ใช้สำเนาใหม่ของเทมเพลตกลางภาคเดิม ตั้งDB/helperตามสเปกของงานนั้น เพราะMobile,Week6,Sakilaใช้รูปแบบresponseต่างกัน
+หากชื่อคอลัมน์ คีย์ DTO หรือนโยบายเปลี่ยน ต้องปรับจากSQL/สเปกและทดสอบ ไม่รับประกันโจทย์ที่ยังไม่เห็น
+
+## ถ้าเคยเริ่มจาก Week8-Try
+
+เก็บโปรเจกต์นั้นเป็นสำรอง อย่าคัดไฟล์-$idไปปนกับโฟลเดอร์ไม่มี-$id
+สำหรับเส้นทางใหม่ให้เปิด01-WORKซึ่งเป็นกลางภาค แล้วเปิดสเปกWeek8เดิมไว้เทียบ โค้ดในหน้าคำตอบใหม่อ้างชื่อไฟล์กลางภาคทั้งหมดแล้ว
+
+## ตัวอย่างครบโปรเจกต์เก่า
+
+02-ANSWERSยังเก็บไว้เป็นแหล่งเทียบโค้ดครบ แต่คำตอบหลักสำหรับทำทีละข้ออยู่ในTREEและหน้าเว็บ ไม่ต้องคัดทั้งชุดมาทับงานที่ทำแล้ว
+
+
+============================================================
+13-RECIPE-VERIFY.md
+# ผลตรวจคำตอบแบบเพิ่มทีละข้อบนฐานกลางภาค
+
+ตรวจวันที่ 2026-10-22 โดยเริ่มจากZIPกลางภาคครูจริง คัดส่วนโค้ดที่แสดงในเอกสารไปประกอบในสำเนาทดสอบ ไม่ใช้ZIPWeek8เป็นฐานโค้ด
+
+- 63 รายการพฤติกรรมAPI: Mobile/Week6/Sakila ผ่านบนโปรเจกต์ที่ประกอบจากก้อนโค้ดในหน้าคำตอบ
+- 10 รายการสำหรับนโยบายทางเลือก: optional pagination, summary/detail view และfull PUT
+- 23 ขั้นเพิ่มงานต่อกัน: Mobile8หัวข้อ, Week6ห้าข้อ, country/actorสิบข้อ ตรวจendpointก่อนหน้าซ้ำหลังเพิ่มแต่ละข้อ
+- 24 กรณีเพิ่มเป็นข้อแรกหลังเตรียมโครงCRUD: เปิดแอปและส่งrequestผ่านโดยไม่ต้องอาศัยฟังก์ชันจากข้ออื่นที่คู่มือไม่ได้ระบุ
+- ข้อ2.1ตรวจแยกก่อนหน้านี้แล้ว ใช้routeในapp.jsโดยไม่ต้องเตรียมชั้นฐานข้อมูล
+
+จำนวนเหล่านี้เป็นคนละมุมการตรวจและมีส่วนทับกัน ไม่ใช่จำนวนข้อสอบที่คาดว่าจะออก
+ใช้MySQL8พอร์ตทดสอบ33071แยกจากฐานข้อมูลผู้ใช้พอร์ต3306
+Mobileใช้SQLWeek8จริง ส่วนClassicmodels/Sakilaใช้fixtureย่อที่มีคีย์และความสัมพันธ์ตามกรณีตรวจ ไม่ได้ทดสอบทุกคอลัมน์ของฐานเต็ม
+ใช้dependenciesตามlockfileครู ไม่มีdependencyเพิ่มในโปรเจกต์ที่แสดง
+สคริปต์ประกอบและทดสอบอยู่ฝั่งผู้จัดทำ ไม่รวมเป็นโปรแกรมทำข้อสอบอัตโนมัติในชุดเอกสาร
+ยังไม่ได้ทดลองกับผู้เรียนที่ไม่มีพื้นฐานจริง และไม่รับประกันข้อสอบที่ยังไม่เห็น
+
+
+============================================================
+14-GENERAL-SEARCH.md
+# คู่มือทั่วไปและช่องค้นหาออฟไลน์
+
+เปิด START-TREE.html แล้ววางข้อความโจทย์ในช่องด้านบน กดค้นหา หรือเลือก GET / POST / PUT / DELETE ผลค้นหามาจากคำสำคัญในดัชนีที่เตรียมไว้ ไม่ใช้ AI ไม่มี API และไม่ส่งข้อความออกนอกเครื่อง
+
+มีตัวอย่างทั่วไป 28 แบบ พร้อมโค้ดครบ 7 ไฟล์ต่อแบบ แยก repository / service / route และไฟล์ร่วมตามโครงเทมเพลตกลางภาค แต่ละหน้าบอกวิธีเปลี่ยนชื่อตาราง คีย์ ช่อง Body ชื่อ DTO และ URL เป็นของงานตน กล่องโค้ดมีปุ่มคัดลอก ถ้าเบราว์เซอร์ไม่อนุญาต clipboard จะเลือกข้อความให้แล้วกด Ctrl+C ได้
+
+กรณีทำหลายข้อในไฟล์เดียว อย่าคัด run/read ซ้ำชื่อ ให้ตั้งชื่อฟังก์ชันแยกและแก้การเรียกทั้งสามชั้น หากมีงานเดิมอย่าคัดไฟล์เต็มทับ งานครูเดิมและหน้า Week8 ยังอยู่เป็นตัวอย่างสำหรับเทียบ
+
+ผลตรวจ: ตัวอย่างทั่วไปทั้ง28แบบผ่าน HTTP กับ MySQL แยกสำหรับทดสอบ117 assertions รวมคีย์เลข/ข้อความ/คีย์ร่วม JOIN DTO การแบ่งหน้า การเพิ่ม การแก้ค่าคงเดิม ค่า0 การลบ ข้อมูลซ้ำ409 และ FKลบไม่ได้409 ส่วนหน้าเว็บตรวจครบ160หน้า ลิงก์ภายใน การค้นหา ปุ่มคัดลอก และขนาดหน้าจอมือถือ ไม่มี request ออกอินเทอร์เน็ต
+
+มีJavaScriptในหน้าเว็บสำหรับค้นหาคำสำคัญและคัดลอกข้อความเท่านั้น ส่วนโค้ดAPIเป็นตัวอย่างที่เตรียมไว้ ผู้ใช้ยังต้องตรวจเทียบสเปกจริง ระบบไม่เข้าใจทุกประโยค ไม่ปรับschemaให้อัตโนมัติ และไม่รับรองโจทย์นอกเนื้อหาที่มี
+
+
+ปรับการค้นหา: แยกMethod ทรัพยากร และเงื่อนไข เช่นรายตัว/แบ่งหน้า/DTO/JOIN/ส่งครบหรือบางช่อง รองรับหัวข้อใหญ่Products APIและBrands APIโดยแสดงหมวดรวมแทนการเดาข้อย่อย ตรวจ151ข้อความ รวม32ส่วนโจทย์จริงจากWeek8ทั้ง4ไฟล์ และตัวอย่างถอดความของทุกสูตรทั่วไป/endpointอ้างอิง ทั้งหมดผ่าน ระบบแจ้งเมื่อPUTยังไม่ระบุส่งครบหรือบางช่อง และDELETEยังไม่ระบุ200/204
+
+
+============================================================
+16-STEP-BY-STEP.md
+# ทำทีละขั้น พร้อมสะสมโค้ด
+
+เปิด STEP-BY-STEP.html ด้วยเบราว์เซอร์ ไม่ต้องรันเซิร์ฟเวอร์เพื่อใช้หน้านี้
+
+1. ทำตามหน้าเปิด WebStorm แล้วเลือกสำเนาเทมเพลตกลางภาค
+2. กรอกชุดงาน MySQL และข้อมูลจากโจทย์
+3. เปิด “สะสมโค้ดกับข้อก่อน” เลือกข้อ แล้วกดเพิ่ม
+4. ดูไฟล์เต็มหลังรวม หรือส่วนที่เปลี่ยนในขั้นนี้ คัดลอกตามชื่อไฟล์ได้
+5. กด “ทำข้อต่อไป” เพิ่มข้ออื่น เมื่อครบแล้วกด “เสร็จแล้ว · รวมทั้งหมด” และดาวน์โหลด ZIP
+
+มี56ตัวเลือกจากสูตรทั่วไป28แบบ งานครู24กรณี และข้อระบุตัวตนของแต่ละชุด โดยแยกเป็นทั่วไป / Week8 / Week6 / Sakila เลือกชนิดงานหนึ่งชุดต่อโปรเจกต์ หาก Method/URL ชนกันจะให้ยืนยันแทนเฉพาะข้อที่ชนหรือยกเลิก ไม่เปลี่ยนชุดเดิมก่อนเลือก
+
+โค้ดแต่ละข้อมีขอบเขตของตนเพื่อไม่ให้ชื่อฟังก์ชันซ้ำ และเรียง route ตายตัวก่อน route พารามิเตอร์ เช่น /items/count ก่อน /items/:id
+
+การสะสมรวมเฉพาะข้อที่เลือกในหน้าเว็บ ไม่อ่านโค้ดที่แก้เองใน WebStorm หากแก้ไฟล์เองเพิ่มเติมต้องเก็บส่วนนั้นก่อนคัดทับ โหมดทั่วไปเปลี่ยนชื่อตาราง/คีย์/ช่องตัวอย่างได้ ส่วน schema หรือกฎอื่นที่ต่างต้องปรับตามโจทย์
+
+แผนจำในเบราว์เซอร์เมื่อระบบอนุญาต และดาวน์โหลด/เปิดแผนJSONทำต่อได้ รหัสผ่านMySQLและSecret Keyไม่ถูกเก็บในแผนหรือlocalStorage ต้องกรอกใหม่หลังโหลดหน้า ส่วนZIPโค้ดมีค่าเชื่อมต่อที่กรอกไว้จริง จึงเก็บไฟล์เป็นของตน
+
+ผลตรวจ: 56ตัวเลือกอิสระและชุดสะสมรวม101snapshot ผ่านการตรวจ863โมดูล; APIของโค้ดรวมชุดครูผ่าน63จุดและทางเลือก10จุด; สูตรทั่วไปผ่าน117จุด; เพิ่มทีละข้อจริง14ขั้นผ่าน86จุดโดยendpointก่อนยังทำงาน รวมถึงคีย์ชื่อdataและการเรียงcountก่อนid ตรวจบนMySQLแยกพอร์ต33071 ไม่เชื่อมฐานผู้ใช้พอร์ต3306
+
+ตรวจหน้าเว็บ: เพิ่ม8ข้อWeek8, แทน/ยกเลิกข้อที่ชน, ปิดสะสมเพื่อดูตัวอย่างเดี่ยว, ย้อนดูแต่ละขั้น, โหลดหน้าและเปิดแผนทำต่อ, คัดลอกและดาวน์โหลดZIP, หน้าจอมือถือ และไม่มีrequestออกอินเทอร์เน็ต
+
+หน้านี้เป็นโปรแกรมประกอบตัวอย่างที่เตรียมไว้ ไม่ใช้AI ไม่อ่านโจทย์ใหม่เพื่อสร้างคำตอบอัตโนมัติ และไม่รับรองschemaหรือข้อกำหนดที่ยังไม่ได้ปรับตามโจทย์จริง
+
+
+============================================================
+FINAL-CHECK.md
+# ผลตรวจชุดส่งต่อ
+
+ตรวจวันที่ 22 ตุลาคม 2026
+
+- หน้าอ่าน 160 หน้าแสดงผลและเข้าถึงปุ่มนำทางได้
+- ตรวจลิงก์ไฟล์และ anchor ในหน้าหลัก 1,361 ลิงก์ ไม่พบปลายทางหาย
+- ค้นหา 151 รูปแบบ รวมข้อความจากสเปก Week 8 ผ่าน
+- ชุดประกอบโค้ด 56 แบบ: 101 snapshots, JavaScript 863 modules ตรวจ syntax ผ่าน
+- ตัวอย่างเดียวต่อสูตร 28 สูตร กรอกตัวอย่างและสะสมโค้ดผ่าน
+- ทดสอบ Week 8 8 ขั้น และตัวอย่างทั่วไป 3 ขั้นในเบราว์เซอร์ผ่าน
+- ทดสอบแก้ URL ชน, ยกเลิก, ย้อนดูโค้ด, เปิดแผนเดิม, คัดลอกและดาวน์โหลดผ่าน
+- เอกสาร Week 8 มี 4 สเปก, 8 endpoints, โค้ดตัวอย่าง 66 ก้อนตรวจ syntax ผ่าน
+- เปิดชุด READY-STARTER และ READY-WEEK8 แล้วเรียก /health ได้ 200
+- ตรวจหน้าเว็บบนจอ 390px และ 1366px ไม่มีเนื้อหาล้นแนวนอนในหน้าหลักที่ทดสอบ
+- ไม่พบการเรียกเครือข่ายภายนอกระหว่างทดสอบหน้าเว็บ
+
+## ขอบเขต
+รอบนี้ตรวจ UX ลิงก์ โค้ดประกอบ และเซิร์ฟเวอร์ health ไม่ได้เชื่อม MySQL ของผู้ใช้หรือรันคำสั่งแก้ข้อมูลในฐานผู้ใช้ การทำโจทย์ใหม่ต้องเทียบ schema, validation และ response กับสเปกจริง
+
+ของเพื่อนเก็บเป็นต้นฉบับ เพิ่มเฉพาะหน้าเปิดและปุ่มนำทาง ไม่ได้แก้โค้ดเพื่อนให้เป็นเฉลยของครู
+
+
+============================================================
+README.md
+# INT161 — เริ่มอ่านตรงนี้
+
+## เปิดสรุปบทเรียน
+
+**ดาวน์โหลด ZIP → แตกไฟล์ → เปิด `00-เปิดสรุปบทเรียน.html` ด้วย Brave / Chrome / Edge → กดปุ่ม “เปิดสรุปบทเรียน”**
+
+หรือเปิด [index.html](index.html) ในเบราว์เซอร์ หากเปิดจาก GitHub โดยตรงจะเห็นโค้ด HTML ต้องดาวน์โหลดและแตกไฟล์ก่อน
+
+ไม่ต้องติดตั้ง dependency หรือเปิด Live Server เพื่ออ่านเอกสาร ใช้ `index.html` เป็นหน้าหลักได้หากใช้เซิร์ฟเวอร์ในเครื่อง
+
+- [สรุปบทเรียน](START-TREE.html)
+- [ฉบับ Markdown](TREE/start.md)
+- [ขั้นตอนเริ่มฝึก](01-FIRST-TASK.md)
+
+เมื่อต้องการฝึกเขียน API จึงเปิดโปรเจกต์ `01-WORK/node-express-esm-template` ใน WebStorm และตั้งค่า MySQL ตามคู่มือ
+
+
+============================================================
+WEEK8-ทำตามทุกข้อ.md
+# Week 8 — ทำตามตั้งแต่เริ่มจนจบทุกข้อ
+
+หน้านี้อ่านเลื่อนลงได้ทั้งหมด ไม่ต้องเลือกแขนง ทำตามลำดับ 0 → 2.1 → 2.2 → 2.3 แล้วตรวจท้ายหน้า
+
+เป็นเฉลยอธิบายสำหรับฝึกจากใบงาน Mobile Phone Distributor ของครู โดยย้ายโจทย์มาทำบนเทมเพลตกลางภาคเดิม ชื่อโฟลเดอร์จึงเป็น configs-$id / routes-$id ไม่ใช่ชื่อใน ZIP Week8
+
+ข้อความโจทย์ด้านล่างอ้างจากสเปกชุด00001 และแทนข้อมูลส่วนบุคคลด้วย YOUR_STUDENT_ID / YOUR_NAME / YOUR_SECRET ให้เปิดสเปกที่ตนใช้ข้างกันแล้วกรอกค่าจริงให้ตรงกันทุกจุด นี่ไม่ใช่การยืนยันข้อสอบจริง
+
+## ใช้หน้านี้อย่างไร
+
+1. เปิดโปรเจกต์ 01-WORK/node-express-esm-template ใน WebStorm และเปิดหน้านี้ในเบราว์เซอร์
+2. หากมีงานเดิม ให้สำรองทั้งโฟลเดอร์ก่อน เริ่มฝึกในสำเนาใหม่เพื่อไม่ทับงานเดิม ห้ามสลับไป Week8-Try ระหว่างทำหน้านี้
+3. ทำส่วน0ครั้งเดียว แล้วทำแต่ละข้อจากบนลงล่าง อ่านโจทย์ → วางโค้ดตามชื่อไฟล์ → บันทึก → restart → ทดสอบ
+4. คำว่าเพิ่มหมายถึงเก็บโค้ดข้อก่อน คำว่าแทนเฉพาะฟังก์ชันหมายถึงลบก้อนชื่อเดิมก่อนวาง ห้ามประกาศชื่อเดิมซ้ำ
+5. ในชื่อโฟลเดอร์ -$id ให้คงตามเทมเพลตจริง ไม่เปลี่ยนเป็นรหัสนักศึกษา; รหัสจริงใส่ในตัวแปร ID และ URL
+
+
+# เลือกใบงาน Week8 — มี4ไฟล์
+
+ตรวจเทียบไฟล์ต้นฉบับครบแล้ว: ทั้ง4ไฟล์เป็นงาน Mobile Phone Distributor เดียวกัน ครบข้อ2.1, 2.2(สองendpoint), 2.3(ห้าendpoint) ต่างกันเฉพาะข้อมูลประจำตัว ไม่ใช่4ระบบหรือ4ชุดCRUDที่ต่างกัน
+
+ให้ใช้ไฟล์ที่ครูกำหนดหรือไฟล์ที่เลือกฝึกเพียงชุดเดียว แล้วทำขั้นตอน0และเฉลยทุกข้อด้านล่างร่วมกัน ห้ามผสมรหัสจากไฟล์หนึ่งกับชื่อหรือsecretจากอีกไฟล์
+
+## ชุด00001 — exam-spec-67130500001.md
+
+ใน app.js ใช้ ID=67130500001 อ่านชื่อและsecretKeyจากหัว Student Profile ของไฟล์00001 ทุก URL เริ่ม /api/67130500001/ เช่น /api/67130500001/student-info
+
+## ชุด00002 — exam-spec-67130500002.md
+
+ใน app.js ใช้ ID=67130500002 อ่านชื่อและsecretKeyจากหัว Student Profile ของไฟล์00002 ทุก URL เริ่ม /api/67130500002/ เช่น /api/67130500002/student-info
+
+## ชุด00003 — exam-spec-67130500003.md
+
+ใน app.js ใช้ ID=67130500003 อ่านชื่อและsecretKeyจากหัว Student Profile ของไฟล์00003 ทุก URL เริ่ม /api/67130500003/ เช่น /api/67130500003/student-info
+
+## ชุด00004 — exam-spec-67130500004.md
+
+ใน app.js ใช้ ID=67130500004 อ่านชื่อและsecretKeyจากหัว Student Profile ของไฟล์00004 ทุก URL เริ่ม /api/67130500004/ เช่น /api/67130500004/student-info
+
+## ไฟล์ประกอบอื่นต้องทำอะไร
+
+init-database.sql: ฐานข้อมูลร่วมทั้ง4ชุด นำเข้าในขั้นตอน0ครั้งแรก ระวังการล้างข้อมูลเดิม
+
+node-express-esm-template.zip ของWeek8: เป็นโครงที่แจกคู่ใบงาน ชื่อไฟล์ต่างจากกลางภาค หน้านี้ใช้เทมเพลตกลางภาคตามที่ตกลง ไม่ต้องนำโค้ดจากสองโครงมาปน
+
+tests/test-runner.mjs: ตัวตรวจงานหนึ่งรหัส ต้องเปิดแอปและใช้ฐานฝึกก่อนเรียก ดูหัวข้อตรวจท้ายหน้า
+
+tests/batch-grade.mjs: เครื่องมือตรวจหลายรหัส ไม่ใช่โจทย์APIเพิ่มสำหรับนักศึกษา ไม่จำเป็นต่อการทำ8endpoint
+
+tests/test-report-67130500001.json: รายงานผลเดิม ไม่ใช่ข้อใหม่และไม่ยืนยันว่าโปรเจกต์ของเราผ่านแล้ว
+
+ทุกชุดทำตามลำดับเดียวกัน: 0 → 2.1 → 2.2(ก) → 2.2(ข) → 2.3(1) → 2.3(2) → 2.3(3) → 2.3(4) → 2.3(5) → ตรวจครบก่อนจบ
+
+
+# 0. เตรียมเครื่องและโปรเจกต์ครั้งเดียว
+
+เปิด Terminal ของ WebStorm ตรวจว่าโฟลเดอร์ปัจจุบันมี package.json แล้วรัน npm install ขณะยังมีอินเทอร์เน็ต เตรียม dependencies ก่อนฝึกออฟไลน์
+
+```text
+npm install
+```
+
+ใน WebStorm เปิด Database → + → Data Source → MySQL ใส่ Host=localhost, Port=3306, User=root และรหัสผ่าน MySQL ของเครื่องตน กด Test Connection → Apply → OK ถ้าไม่มี driver ให้เตรียมก่อนออฟไลน์
+
+เปิด database/init-database.sql อ่านก่อนรัน ถ้ามี DROP DATABASE จะล้างข้อมูลเดิม ให้ใช้ฐานฝึกที่สำรองแล้ว รัน SQL ครั้งแรกเพื่อสร้าง mobile_distributor ไม่รันซ้ำหลังเริ่ม POST/PUT/DELETE
+
+เลือก data source และ schema ให้ถูกแล้วรันคำสั่งตรวจนี้ ควรมี brands22 และ products75 เมื่อเพิ่งนำเข้า seed ครู
+
+```sql
+SELECT COUNT(*) AS brands FROM mobile_distributor.brands;
+SELECT COUNT(*) AS products FROM mobile_distributor.products;
+```
+
+เปิด src/configs-$id/db-config.js แทนค่าตัวอย่างด้วยข้อมูลของเครื่องตน Database ต้อง mobile_distributor การตั้ง Data Source ผ่านไม่ได้ตั้งค่าฝั่ง Node ให้โดยอัตโนมัติ
+
+```js
+// ใช้ mysql2/promise เพื่อ await การเชื่อมต่อและคำสั่ง SQL
+import mysql from 'mysql2/promise';
+export default mysql.createPool({
+ host: '127.0.0.1', port: 3306,
+ user: 'root', password: 'YOUR_MYSQL_PASSWORD',
+ database: 'mobile_distributor',
+ decimalNumbers: true, dateStrings: true, connectionLimit: 5
+});
+```
+
+YOUR_MYSQL_PASSWORD ไม่ใช่ secretKey ของข้อ2.1 ใช้รหัสผ่าน MySQL ของตน ถ้าเครื่องตั้งรหัสว่างจริงจึงใช้สตริงว่าง
+
+ต่อไปเตรียมไฟล์ร่วมด้านล่างครั้งเดียว จากนั้นอย่าล้าง repository/service/route ซ้ำเมื่อขึ้นข้อใหม่
+
+# เตรียมโครงกลางภาคครั้งเดียว — Mobile / Week8
+
+ทำครั้งแรกก่อนเริ่มCRUDบนสำเนาเทมเพลตกลางภาค หากทำแค่ข้อ2.1ในapp.jsแล้วก็ยังต้องเตรียมส่วนCRUDนี้ แต่เก็บroute2.1เดิมไว้ ขั้นนี้ไม่แทนapp.jsทั้งไฟล์
+ถ้ามีฟังก์ชันCRUDที่ทำเองแล้ว ห้ามแทนโครงสามไฟล์ซ้ำ ให้คงงานเดิมและตรวจimports/helperที่ขาดจากรายการด้านล่าง
+
+## 1. ตั้งฐานข้อมูล
+ตั้งsrc/configs-$id/db-config.jsตามหน้าเตรียม ให้ฐานตรงโจทย์ เพิ่มdecimalNumbers:trueและdateStrings:trueในpoolเพื่อให้จำนวนเงินและวันที่ตรงตัวอย่าง ไม่คัดทับรหัสผ่านที่ตั้งถูกแล้ว
+
+## 2. เคลียร์เฉพาะโค้ดต้นแบบที่ยังไม่ใช่งานของเรา
+ไฟล์genericสามชั้นมีplaceholderและCRUDทดลองของครู แทนเป็นโครงว่างด้านล่างครั้งเดียว ฟังก์ชันจริงจะเพิ่มทีละข้อ หากมีงานเดิมห้ามแทนทั้งไฟล์ ให้ใช้วิธีเพิ่มเฉพาะส่วนตามหน้าของข้อนั้น
+
+### src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+// แปลงข้อผิดพลาดเป็น HTTP/JSON ที่คาดเดาได้ เช่น SKUซ้ำ409, ข้อมูลอ้างอิงไม่มี400
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ // MySQLแจ้ง UNIQUEซ้ำ เช่นSKU → HTTP409 ตามโจทย์
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ // brand_id อ้างถึงแบรนด์ที่ไม่มี → HTTP400
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ // บันทึกปัญหาฝั่งเซิร์ฟเวอร์ แต่ไม่ส่งรายละเอียด SQL/รหัสผ่านกลับให้ผู้ใช้
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='mobile';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+### src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+// ห่อผลลัพธ์เป็น success/data/timestamp; status เป็นอาร์กิวเมนต์ตัวที่4 ส่วนตัวที่3คือpagination
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'mobile';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+### src/repositories-$id/repository.js
+```js
+// ใช้ pool ที่ตั้งค่า MySQL ของเครื่องตนใน db-config.js
+import db from '../configs-$id/db-config.js';
+```
+
+### src/services-$id/service.js
+```js
+// ชั้น service เรียก repository เพื่อแยก SQL ออกจากกฎการทำงาน
+import * as repo from '../repositories-$id/repository.js';
+// ใช้ mapper เลือกและเปลี่ยนชื่อช่องข้อมูลให้ตรง DTO ที่โจทย์ต้องการ
+import mapper from '../mappers-$id/entity-dto-mapper.js';
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError} from '../middlewares-$id/error-handler.js';
+```
+
+### src/routes-$id/route.js
+```js
+// ใช้ Express สร้างแอปหรือ Router สำหรับรับ HTTP request
+import express from 'express';
+// route เรียก service เพื่อทำงานและตรวจเงื่อนไขก่อนตอบกลับ
+import * as service from '../services-$id/service.js';
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError} from '../middlewares-$id/error-handler.js';
+// ใช้ตัวห่อ response ร่วม เพื่อให้ success/data/timestamp มีรูปแบบเดียวกัน
+import {apiResponse} from '../mappers-$id/api-response.js';
+// นำ middleware แบ่งหน้ามาใช้เฉพาะ endpoint รายการสินค้า
+import {queryParser} from '../middlewares-$id/pagination-middleware.js';
+const router = express.Router();
+export default router;
+```
+
+## 3. แก้ app.js เฉพาะจุด
+เก็บimport expressและการสร้างapp/express.json/listenเดิมไว้ ไม่เพิ่มlistenตัวที่สอง
+เพิ่มimportนี้ด้านบนแทนerror-handlerตัวอื่นถ้าใช้ชุดนี้:
+```js
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError, errorHandler} from './middlewares-$id/error-handler.js';
+```
+ประกาศIDรหัสจากสเปกก่อนrouteหนึ่งครั้ง ถ้ามีแล้วเปลี่ยนเฉพาะค่า ไม่ประกาศซ้ำ:
+```js
+// เปลี่ยนเป็นรหัสในสเปกที่เลือก; รหัสนี้ต้องตรงกับ base path ใน Postman
+const ID = 'YOUR_STUDENT_ID';
+```
+หาบรรทัด app.use ที่mount productRouter ของต้นฉบับ แล้วเปลี่ยนบรรทัดนั้นเป็น:
+```js
+// ต่อ prefix /api/รหัสนักศึกษา เข้ากับ paths ใน route.js อย่าเติม prefix ซ้ำใน Router
+app.use(`/api/${ID}`, productRouter);
+```
+แทนerror middlewareว่างของครูด้วยก้อนนี้ที่ท้ายส่วนrouter ถ้ามีerror handlerอื่นที่กำลังตอบอยู่ให้ใช้เพียงตัวเดียวตามสเปกชุดนี้:
+```js
+// catch-all404 ต้องอยู่หลัง route ทั้งหมด มิฉะนั้นจะดัก request ก่อนถึงคำตอบ
+app.use((req, res, next) => next(new AppError('Route not found', 404, 'ROUTE_NOT_FOUND')));
+// error middleware อยู่หลัง routes และ catch-all เพื่อรับข้อผิดพลาดจากทุกข้อ
+app.use(errorHandler);
+```
+ทุกapp.get/app.useของrouteที่จะเพิ่มภายหลังต้องอยู่ก่อนตัวตอบ404นี้ โค้ดข้อ2.1ที่เพิ่มไว้ก่อนหน้านี้ต้องอยู่ครบ
+
+## ทำครั้งเดียวต่อโปรเจกต์
+อย่าสลับhelperของงานMobileกับWeek6หรือSakilaในโปรเจกต์เดียวกัน เพราะรูปแบบresponseต่างกัน ถ้าเปลี่ยนงานหรือฐานให้ใช้สำเนาใหม่ของเทมเพลตกลางภาคเดิม ไม่ใช่เปลี่ยนเทมเพลต
+
+## ทำข้อแรก
+- [ทำข้อแรกของชุดนี้](empty-brands-list.md)
+- [กลับเลือกข้อ](start.md)
+
+
+# 2.1 ระบุตัวตน
+
+## โจทย์จากใบงานครู
+
+### 2.1 ระบบระบุตัวตน (Identity Verification) - 10 คะแนน
+* **Method:** `GET`
+* **Endpoint:** `/api/YOUR_STUDENT_ID/student-info`
+* **Response Status:** `200 OK`
+* **JSON Body:**
+```json
+{
+  "success": true,
+  "data": {
+    "studentId": "YOUR_STUDENT_ID",
+    "name": "YOUR_NAME",
+    "secretKey": "YOUR_SECRET"
+  },
+  "timestamp": "2026-10-08T15:00:00.000Z"
+}
+```
+
+## เข้าใจก่อนวางโค้ด
+
+เพิ่ม route ใน app.js เท่านั้น ข้อนี้ไม่อ่านฐานข้อมูล ใช้ชื่อ รหัส และ secretKey จากสเปกชุดเดียวกัน ส่วน timestamp สร้างใหม่ตอนรับ request
+
+## ลงมือทำตามลำดับ
+
+# 2.1 ระบบระบุตัวตน — เพิ่มเฉพาะใน src/app.js
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-identity)
+
+ใช้กับทั้งเทมเพลต Week8 และกลางภาค ข้อนี้ตอบข้อมูลประจำตัวจากสเปก ไม่อ่านตาราง MySQL และไม่ต้องเพิ่ม repository, service, mapper หรือ import ใหม่
+คงโค้ดข้ออื่นในโปรเจกต์ไว้ ไม่แทน app.js ทั้งไฟล์
+
+## 1. ตรวจรหัสที่ประกาศอยู่แล้ว
+
+เปิด `src/app.js` หาบรรทัด `const ID = ...` เช่นใน ZIP Week8 ให้เปลี่ยนค่าเป็นรหัสในสเปกที่กำลังฝึก
+ตัวอย่างรูปแบบบรรทัดนี้: แทน YOUR_STUDENT_ID ด้วยรหัสจริงก่อนรัน
+
+```js
+// เปลี่ยนเป็นรหัสในสเปกที่เลือก; รหัสนี้ต้องตรงกับ base path ใน Postman
+const ID = 'YOUR_STUDENT_ID';
+```
+
+ถ้ามี const ID อยู่แล้ว ให้แก้บรรทัดเดิม ไม่ประกาศซ้ำ
+ถ้าไม่มี ให้เพิ่มเพียงหนึ่งบรรทัดในระดับบนสุด ก่อน route ด้านล่าง
+ถ้าใช้ตัวแปร studentId อยู่แล้ว ให้ใช้ชื่อนั้นแทน ID ในก้อน route ทั้งสองตำแหน่ง หรือใช้ ID ตามตัวอย่างให้ครบ อย่าใช้สลับกัน
+เมื่อฝึกสเปก exam-spec-67130500001.md ใช้รหัส 67130500001; ถ้าใช้สเปกอีกไฟล์ให้ใช้รหัสของไฟล์นั้น
+
+## 2. เพิ่ม route ก้อนนี้ในตำแหน่งที่กำหนด
+
+วางหลัง `app.use(express.json())` และก่อน `app.listen(...)` รวมถึงก่อน middleware ที่ตอบ 404 หากมี
+ไม่วางไว้ใน callback ของ app.listen หรือใน route อื่น
+หากมี `/student-info` อยู่แล้ว ให้แทนเฉพาะ route นั้น ไม่เพิ่มซ้ำ
+แทน YOUR_NAME และ YOUR_SECRET ด้วยค่าจากสเปกของตัวเอง
+
+```js
+// ข้อ2.1: routeระบุตัวตน ใช้ข้อมูลจากสเปกชุดเดียวกัน ไม่ต้อง query ฐานข้อมูล
+app.get(`/api/${ID}/student-info`, (req, res) => {
+    res.status(200).json({
+        success: true,
+        data: {
+            studentId: ID,
+            name: 'YOUR_NAME',
+            secretKey: 'YOUR_SECRET'
+        },
+        timestamp: new Date().toISOString()
+    });
+});
+```
+
+ใช้ก้อนนี้ได้โดยไม่อ้างไฟล์ `routes-$id` หรือ `apiResponse` เพราะใช้ Express ที่ app.js เดิมมีอยู่แล้ว
+การเปิดแอปอาจยังต้องมี dependencies ของเทมเพลตครบ แต่ route นี้ไม่จำเป็นต้องต่อ DB เพื่อสร้าง response
+ไม่ต้องแก้ mount ของ offices/productlines/products เพื่อทำข้อ 2.1
+
+## 3. รันและส่ง Postman
+
+บันทึก Ctrl+S หากแอปรันอยู่ให้ Ctrl+C ใน Terminal ของแอป แล้วรันใหม่จากรากโปรเจกต์:
+
+```text
+node src/app.js
+```
+
+Postman เลือก GET, Body none ใช้ URL ตามรหัสเดียวกับตัวแปร ID
+สำหรับสเปก 67130500001 ที่กำลังฝึก:
+
+```text
+http://localhost:3000/api/67130500001/student-info
+```
+
+ต้องได้ HTTP 200 OK และ JSON แบบนี้ โดยชื่อ/ค่าลับต้องตรงสเปกที่ใช้ ไม่คัด placeholder ไปส่ง:
+
+```json
+{
+  "success": true,
+  "data": {
+    "studentId": "YOUR_STUDENT_ID",
+    "name": "YOUR_NAME",
+    "secretKey": "YOUR_SECRET"
+  },
+  "timestamp": "2026-10-22T00:00:00.000Z"
+}
+```
+
+timestamp ในกล่องเป็นตัวอย่างรูปแบบเท่านั้น โค้ดด้านบนสร้างเวลาใหม่จริงทุกครั้ง อย่าพิมพ์วันตัวอย่างเป็นค่าคงที่
+
+## ตรวจเมื่อยังไม่ผ่าน
+
+- 404: เทียบรหัสใน URL กับ ID, ตรวจตำแหน่ง route ว่าอยู่ก่อนตัวตอบ404, แล้ว restart
+- ชื่อหรือ secretKey ไม่ตรง: เทียบข้อมูลในสเปกไฟล์ที่กำลังฝึก ไม่ใช้ข้อมูลของอีกคน
+- ID has already been declared: มี const ID ซ้ำ ให้เหลือการประกาศเดิมเพียงครั้งเดียว
+- ID is not defined: ยังไม่ประกาศ ID หรือใช้ชื่อ studentId อยู่ ให้ใช้ชื่อตรงกัน
+- Import ไม่พบ: ย้อนคืนการคัด app.js ทั้งชุดกลางภาคถ้าเผลอทำไป แล้วเพิ่มเฉพาะ route ตามหน้านี้ในไฟล์ Week8
+- ไม่เห็นผลเปลี่ยน: บันทึกไฟล์และหยุดแอปเก่าก่อนเปิดใหม่
+
+## อ่านต่อ
+
+
+
+
+
+
+
+# 2.2 (ก) แบรนด์ทั้งหมด
+
+## โจทย์จากใบงานครู
+
+#### [GET] รายการแบรนด์ทั้งหมด
+* **Endpoint:** `/api/YOUR_STUDENT_ID/brands`
+* **Status:** `200 OK`
+* **Response Body:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "country_of_origin": "United States",
+      "website": "https://www.apple.com",
+      "is_active": 1,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "timestamp": "2026-10-08T15:00:00.000Z"
+}
+```
+
+## เข้าใจก่อนวางโค้ด
+
+repository อ่านตาราง brands → service ส่งรายการ → route ห่อ success/data/timestamp ไม่แปลงชื่อคอลัมน์แบรนด์เป็น DTO ของสินค้า
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: อ่านแบรนด์ทั้งหมด
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=brands-list)
+
+
+ข้อที่ทำ: GET /brands
+ผลตอบตามกรณีนี้: 200 success/data/timestamp
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `brands` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านแบรนด์โดยคงชื่อคอลัมน์ฐานข้อมูล ตามตัวอย่าง Brands API
+export async function brands(){const [r]=await db.query('SELECT * FROM brands ORDER BY id');return r;}
+```
+
+### 2. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `getBrands` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.2(ก): ขอรายการแบรนด์ทั้งหมดจาก repository
+export const getBrands=()=>repo.brands();
+```
+
+### 3. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.get('/brands',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ GET /brands หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/brands',async(req,res)=>apiResponse(res,await service.getBrands()));
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+GET http://localhost:3000/api/YOUR_STUDENT_ID/brands
+```
+Body → none
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+GET /api/รหัสตัวเอง/brands →รายการ; seedครู22แถว
+
+
+
+
+
+# 2.2 (ข) แบรนด์ตาม ID
+
+## โจทย์จากใบงานครู
+
+#### [GET] ข้อมูลแบรนด์ตามรหัส ID
+* **Endpoint:** `/api/YOUR_STUDENT_ID/brands/:id`
+* **Status:** `200 OK` (พบข้อมูล) หรือ `404 Not Found` (ไม่พบข้อมูล)
+
+## เข้าใจก่อนวางโค้ด
+
+รับ id จาก URL แล้วใช้ SQL parameter ? หากไม่มีแถว service ต้องโยน 404 ไม่ตอบ 200 พร้อม null
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: อ่านแบรนด์รายตัว
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=brand-detail)
+
+
+ข้อที่ทำ: GET /brands/:id
+ผลตอบตามกรณีนี้: 200; ไม่มี404
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `brand` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ค้นหาแบรนด์ด้วย id; ถ้าไม่มีแถวให้ชั้น service ตัดสินใจตอบ404
+export async function brand(id){const [r]=await db.query('SELECT * FROM brands WHERE id=?',[id]);return r[0] || null;}
+```
+
+### 2. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `getBrand` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.2(ข): ขอแบรนด์ตาม id ถ้าไม่พบตอบ404
+export async function getBrand(id){const row=await repo.brand(id);if(!row)throw new AppError('Brand not found',404,'BRAND_NOT_FOUND');return row;}
+```
+
+### 3. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.get('/brands/:id',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ GET /brands/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/brands/:id',async(req,res)=>apiResponse(res,await service.getBrand(req.params.id)));
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+GET http://localhost:3000/api/YOUR_STUDENT_ID/brands/:id
+```
+Body → none
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+GET /brands/1 Appleเมื่อใช้seedครู; /brands/999999→404
+
+
+
+
+
+# 2.3 (1) สินค้าแบ่งหน้า
+
+## โจทย์จากใบงานครู
+
+#### 1) [GET] รายการสินค้าแบบแบ่งหน้าและแปลง DTO (30 คะแนน)
+* **Endpoint:** `/api/YOUR_STUDENT_ID/products`
+* **Query Parameters:**
+  * `page`: หมายเลขหน้า (เริ่มต้นที่ 1, ค่า default คือ 1)
+  * `limit`: จำนวนรายการต่อหน้า (เช่น 10)
+* **การแปลง DTO (Summary DTO):**
+  ข้อมูลใน `data` จะต้องแสดงเฉพาะฟิลด์สรุป:
+  * `id`
+  * `sku`
+  * `name`
+  * `brandId` (หรือ `brand_id`)
+  * `category`
+  * `price`
+  * `status`
+* **Response Body:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "sku": "APL-IP15PM-256-NT",
+      "name": "iPhone 15 Pro Max",
+      "brandId": 1,
+      "category": "FLAGSHIP",
+      "price": 48900.00,
+      "status": "AVAILABLE"
+    }
+  ],
+  "pagination": {
+    "total": 75,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 8,
+    "hasNextPage": true,
+    "hasPrevPage": false
+  },
+  "timestamp": "2026-10-08T15:00:00.000Z"
+}
+```
+
+## เข้าใจก่อนวางโค้ด
+
+middleware แปลง page/limit เป็น offset → repository อ่านรายการและนับทั้งหมด → mapper เลือก Summary DTO 7 ช่อง → response เพิ่ม pagination ค่า default limit=10 และเพดาน100 เป็นค่าที่ตัวอย่างนี้เลือก เพราะสเปกยกตัวอย่าง10แต่ไม่ได้ระบุเพดาน
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: สินค้ารายการแบ่งหน้า Summary DTO
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-page)
+
+
+ข้อที่ทำ: GET /products
+ผลตอบตามกรณีนี้: 200 summary7ช่อง + pagination + timestamp
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/mappers-$id/entity-dto-mapper.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+### 2. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `findAll` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านเฉพาะหน้าที่ขอและนับสินค้าทั้งหมด แยกจำนวนทั้งหมดออกจากจำนวนในหน้านี้
+export async function findAll({limit,offset}){
+ // อ่านข้อมูลด้วย SQL; ค่าจาก request ส่งผ่าน placeholders ไม่ต่อเข้า SQL โดยตรง
+ const [rows]=await db.query('SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?',[limit,offset]);
+ // อ่านข้อมูลด้วย SQL; ค่าจาก request ส่งผ่าน placeholders ไม่ต่อเข้า SQL โดยตรง
+ const [[{total}]]=await db.query('SELECT COUNT(*) AS total FROM products');rows.totalItems = Number(total);return rows;
+}
+```
+
+### 3. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `getAllObjects` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.3(1): อ่านสินค้าตาม pagination แล้วเลือก Summary DTO สำหรับรายการ
+export async function getAllObjects(pagination){return mapper.maps(await repo.findAll(pagination),'summary');}
+```
+
+### 4. src/middlewares-$id/pagination-middleware.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError} from './error-handler.js';
+// อ่าน page/limit จาก URL ตรวจจำนวนเต็มบวก แล้วคำนวณ offset=(page-1)*limit
+export const queryParser = () => (req,res,next) => {
+ // query เป็นข้อความ จึงตรวจรูปแบบก่อนแปลงเป็นตัวเลข ไม่ยอมรับ 2abc หรือค่าซ้ำแบบarray
+ function positive(value,fallback){if(value===undefined)return fallback;if(typeof value!=='string'||! /^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new AppError('Invalid pagination',400,'VALIDATION_ERROR');return Number(value);}
+ const page=positive(req.query.page,1),limit=Math.min(positive(req.query.limit,10),100),offset=(page-1)*limit;
+ if(!Number.isSafeInteger(offset))throw new AppError('Page too large',400,'VALIDATION_ERROR');
+ req.pagination={page,limit,offset};next();
+}
+```
+
+### 5. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.get('/products',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ GET /products หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/products',queryParser(),async(req,res)=>{
+ const objects = await service.getAllObjects(req.pagination);
+ await apiResponse(res, objects, req.pagination);
+});
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+GET http://localhost:3000/api/YOUR_STUDENT_ID/products
+```
+สำหรับแบ่งหน้า เติม `?page=2&limit=10`
+Body → none
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+?page=2&limit=10 →idแรก11 total75เมื่อใช้seedครู; page999→[]; queryผิด400; total0ยังมีค่า
+
+
+
+
+
+# 2.3 (2) รายละเอียดสินค้า
+
+## โจทย์จากใบงานครู
+
+#### 2) [GET] ดูรายละเอียดสินค้าตาม ID (Detail DTO) (10 คะแนน)
+* **Endpoint:** `/api/YOUR_STUDENT_ID/products/:id`
+* **Status:** `200 OK` เมื่อพบสินค้า หรือ `404 Not Found` หากไม่พบ
+* **Response Body (Detail DTO):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "sku": "APL-IP15PM-256-NT",
+    "name": "iPhone 15 Pro Max",
+    "brandId": 1,
+    "brandName": "Apple",
+    "category": "FLAGSHIP",
+    "price": 48900.00,
+    "ramGb": 8,
+    "storageGb": 256,
+    "color": "Natural Titanium",
+    "stockQuantity": 15,
+    "status": "AVAILABLE",
+    "releaseDate": "2023-09-22"
+  },
+  "timestamp": "2026-10-08T15:00:00.000Z"
+}
+```
+
+## เข้าใจก่อนวางโค้ด
+
+repository JOIN brands เพื่อได้ brandName → service ตรวจว่าพบ → mapper แปลง Detail DTO 13 ช่อง ต้องใช้ชื่อ camelCase ตามตัวอย่างตอบกลับ
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: รายละเอียดสินค้า JOIN Detail DTO
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-detail)
+
+
+ข้อที่ทำ: GET /products/:id
+ผลตอบตามกรณีนี้: 200 detail13ช่อง; ไม่มี404
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/mappers-$id/entity-dto-mapper.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+### 2. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `findOne` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านสินค้ารายตัวพร้อมชื่อแบรนด์สำหรับ Detail DTO ใช้ ? รับค่า id อย่างปลอดภัย
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+```
+
+### 3. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `existing` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ค้นหาสินค้าก่อน ถ้าไม่พบโยน 404 เพื่อให้ GET/PUT/DELETE ตอบตรงโจทย์
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+```
+
+### 4. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `getObject` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.3(2): ตรวจว่าสินค้ามีจริงแล้วแปลงเป็น Detail DTO
+export async function getObject(id){return mapper.toDetailDTO(await existing(id));}
+```
+
+### 5. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.get('/products/:id',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ GET /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/products/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+GET http://localhost:3000/api/YOUR_STUDENT_ID/products/:id
+```
+Body → none
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+id1brandName Appleเมื่อใช้seed; dateYYYY-MM-DD; ไม่มีช่องอื่นหลุด
+
+
+
+
+
+# 2.3 (3) เพิ่มสินค้า
+
+## โจทย์จากใบงานครู
+
+#### 3) [POST] เพิ่มสินค้าใหม่ (10 คะแนน)
+* **Endpoint:** `/api/YOUR_STUDENT_ID/products`
+* **Status:** `201 Created` เมื่อบันทึกสำเร็จ หรือ `409 Conflict` เมื่อ SKU ซ้ำ
+* **Request Body:**
+```json
+{
+  "sku": "TEST-SKU-999",
+  "name": "Test Phone 2026",
+  "brand_id": 1,
+  "category": "FLAGSHIP",
+  "price": 29900.00,
+  "ram_gb": 8,
+  "storage_gb": 256,
+  "color": "Black",
+  "stock_quantity": 10,
+  "status": "AVAILABLE",
+  "release_date": "2026-01-01"
+}
+```
+
+## เข้าใจก่อนวางโค้ด
+
+รับ Body เป็น snake_case ตามโจทย์ → ตรวจค่าที่จำเป็น → INSERT → ใช้ insertId อ่านสินค้าที่เพิ่มกลับมาตอบ201 ถ้า SKU ซ้ำ error handler แปลงเป็น409 จด data.id ที่สร้างได้ไว้ใช้สองข้อถัดไป
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: เพิ่มสินค้า autoID UNIQUE FK
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-create)
+
+
+ข้อที่ทำ: POST /products
+ผลตอบตามกรณีนี้: 201; SKUซ้ำ409; FKไม่มี400
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/mappers-$id/entity-dto-mapper.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+### 2. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `findOne` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านสินค้ารายตัวพร้อมชื่อแบรนด์สำหรับ Detail DTO ใช้ ? รับค่า id อย่างปลอดภัย
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+```
+
+### 3. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `existing` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ค้นหาสินค้าก่อน ถ้าไม่พบโยน 404 เพื่อให้ GET/PUT/DELETE ตอบตรงโจทย์
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+```
+
+### 4. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `required` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ช่องที่สินค้าต้องมีเมื่อผ่านการเติมค่าเริ่มต้นแล้ว; ชื่อรับเข้าใช้ snake_case ตาม Bodyครู
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+```
+
+### 5. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `writable` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// รายชื่อช่องที่ผู้ใช้แก้ได้ ไม่รับ id หรือช่องระบบจาก Body
+const writable=[...required,'stock_quantity','status','release_date'];
+```
+
+### 6. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `fail` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// หยุดทำงานด้วย HTTP 400 เมื่อค่าที่รับเข้าไม่ถูกต้อง แล้วส่งต่อให้ errorHandler จัดรูป JSON
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+```
+
+### 7. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `object` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// รับเฉพาะ JSON object ป้องกัน null, array และชนิดข้อมูลที่ไม่ใช่ object
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+```
+
+### 8. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `pick` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// เลือกเฉพาะช่องที่อนุญาตให้เขียน ไม่เอาทุกช่องจาก Body ไปสร้าง SQL โดยตรง
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+```
+
+### 9. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `validate` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ตรวจข้อมูลก่อนบันทึก ทั้งช่องจำเป็น ชนิดข้อมูล ราคา สต็อก และวันที่
+function validate(p){
+ // ตรวจว่าไม่มีช่องจำเป็นหายไปหรือเป็น null
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ // ช่องข้อความต้องเป็น string และไม่ว่าง
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ // รหัสแบรนด์ RAM และความจุต้องเป็นจำนวนเต็มบวก
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ // ราคาเป็นตัวเลขจริงที่ไม่ติดลบ ไม่รับข้อความหรือ NaN
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ // สต็อกต้องเป็นจำนวนเต็มตั้งแต่0ขึ้นไป
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ // ถ้าใส่วันวางขาย ต้องเป็น YYYY-MM-DD และเป็นวันที่มีจริง เช่นไม่รับ 2026-02-30
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+```
+
+### 10. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `create` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// INSERT สินค้า แล้วอ่านกลับด้วย insertId ที่ MySQL สร้าง ไม่คาดเดาเลข id เอง
+export async function create(data){const [result]=await db.query('INSERT INTO products SET ?',[data]);return findOne(result.insertId);}
+```
+
+### 11. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `createObject` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.3(3): เติมค่าเริ่มต้น ตรวจ Body แล้วเพิ่มสินค้าและตอบ Detail DTO ของรายการใหม่
+export async function createObject(body){const data=validate({stock_quantity:0,status:'AVAILABLE',release_date:null,...pick(body)});return mapper.toDetailDTO(await repo.create(data));}
+```
+
+### 12. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.post('/products',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ POST /products หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.post('/products',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+POST http://localhost:3000/api/YOUR_STUDENT_ID/products
+```
+Body → raw → JSON:
+```json
+{
+  "sku": "GUIDE-001",
+  "name": "Guide",
+  "brand_id": 1,
+  "category": "STANDARD",
+  "price": 100,
+  "ram_gb": 8,
+  "storage_gb": 128,
+  "color": "Black",
+  "stock_quantity": 0,
+  "status": "AVAILABLE",
+  "release_date": "2026-01-01"
+}
+```
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+POST201จดdata.id; SKUเดิม409; brand_idไม่มี400; ช่องขาด400
+
+
+
+
+
+# 2.3 (4) แก้สินค้า
+
+## โจทย์จากใบงานครู
+
+#### 4) [PUT] แก้ไขข้อมูลสินค้า (10 คะแนน)
+* **Endpoint:** `/api/YOUR_STUDENT_ID/products/:id`
+* **Status:** `200 OK` เมื่อแก้ไขสำเร็จ หรือ `404 Not Found` หากไม่พบ ID
+
+## เข้าใจก่อนวางโค้ด
+
+ตัวอย่างนี้รองรับส่งเฉพาะช่องที่แก้ ตามชุดทดสอบ Week8 ที่ส่ง name/price/stock_quantity ตรวจสินค้าว่ามีก่อนแล้ว UPDATE เฉพาะช่องที่อนุญาต ช่องที่ไม่ส่งคงค่าเดิม หากโจทย์อื่นกำหนดส่งครบทุกช่องต้องเลือกแบบ PUT ครบช่องในคู่มือหลัก
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: แก้สินค้าแบบส่งบางช่อง
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-update)
+
+
+ข้อที่ทำ: PUT /products/:id
+ผลตอบตามกรณีนี้: 200; ไม่มี404; bodyผิด400
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/mappers-$id/entity-dto-mapper.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+### 2. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `findOne` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านสินค้ารายตัวพร้อมชื่อแบรนด์สำหรับ Detail DTO ใช้ ? รับค่า id อย่างปลอดภัย
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+```
+
+### 3. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `existing` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ค้นหาสินค้าก่อน ถ้าไม่พบโยน 404 เพื่อให้ GET/PUT/DELETE ตอบตรงโจทย์
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+```
+
+### 4. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `required` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ช่องที่สินค้าต้องมีเมื่อผ่านการเติมค่าเริ่มต้นแล้ว; ชื่อรับเข้าใช้ snake_case ตาม Bodyครู
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+```
+
+### 5. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `writable` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// รายชื่อช่องที่ผู้ใช้แก้ได้ ไม่รับ id หรือช่องระบบจาก Body
+const writable=[...required,'stock_quantity','status','release_date'];
+```
+
+### 6. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `fail` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// หยุดทำงานด้วย HTTP 400 เมื่อค่าที่รับเข้าไม่ถูกต้อง แล้วส่งต่อให้ errorHandler จัดรูป JSON
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+```
+
+### 7. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `object` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// รับเฉพาะ JSON object ป้องกัน null, array และชนิดข้อมูลที่ไม่ใช่ object
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+```
+
+### 8. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `pick` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// เลือกเฉพาะช่องที่อนุญาตให้เขียน ไม่เอาทุกช่องจาก Body ไปสร้าง SQL โดยตรง
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+```
+
+### 9. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `validate` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ตรวจข้อมูลก่อนบันทึก ทั้งช่องจำเป็น ชนิดข้อมูล ราคา สต็อก และวันที่
+function validate(p){
+ // ตรวจว่าไม่มีช่องจำเป็นหายไปหรือเป็น null
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ // ช่องข้อความต้องเป็น string และไม่ว่าง
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ // รหัสแบรนด์ RAM และความจุต้องเป็นจำนวนเต็มบวก
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ // ราคาเป็นตัวเลขจริงที่ไม่ติดลบ ไม่รับข้อความหรือ NaN
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ // สต็อกต้องเป็นจำนวนเต็มตั้งแต่0ขึ้นไป
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ // ถ้าใส่วันวางขาย ต้องเป็น YYYY-MM-DD และเป็นวันที่มีจริง เช่นไม่รับ 2026-02-30
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+```
+
+### 10. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `update` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// UPDATE เฉพาะสินค้าที่ id ตรง แล้วอ่านค่าหลังแก้กลับไปตอบ
+export async function update(id,data){await db.query('UPDATE products SET ? WHERE id=?',[data,id]);return findOne(id);}
+```
+
+### 11. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `updateObject` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.3(4): อ่านค่าเก่าก่อน ผสานเฉพาะช่องที่ส่งมา ตรวจแล้วอัปเดต
+export async function updateObject(id,body){
+ const old=await existing(id),patch=pick(body);if(!Object.keys(patch).length)fail('No writable fields');
+ const data=validate({...pick(old),...patch});return mapper.toDetailDTO(await repo.update(id,data));
+}
+```
+
+### 12. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.put('/products/:id',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ PUT /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.put('/products/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+PUT http://localhost:3000/api/YOUR_STUDENT_ID/products/:id
+```
+Body → raw → JSON:
+```json
+{
+  "name": "Changed",
+  "price": 100,
+  "stock_quantity": 0
+}
+```
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+skuที่ไม่ได้ส่งคงเดิม; ส่งค่าเดิมยัง200; ไม่อนุญาตแก้idอย่างเดียว
+
+
+
+### Body สำหรับลองแก้สินค้าที่สร้างเอง
+
+```json
+{"name":"Updated Practice Phone","price":25900,"stock_quantity":7}
+```
+
+แทน :id ใน URL ด้วย data.id ที่ได้จาก POST ไม่ใส่เครื่องหมาย : ลงใน URLจริง จากนั้น GET /products/เลขนั้น เพื่อตรวจสามค่าที่แก้และช่องอื่นยังอยู่
+
+
+# 2.3 (5) ลบสินค้า
+
+## โจทย์จากใบงานครู
+
+#### 5) [DELETE] ลบสินค้า (5 คะแนน)
+* **Endpoint:** `/api/YOUR_STUDENT_ID/products/:id`
+* **Status:** `204 No Content` (ไม่มี Response Body) หรือ `404 Not Found` หากไม่พบ ID
+
+## เข้าใจก่อนวางโค้ด
+
+ใช้ id ที่เพิ่งเพิ่มเอง ลบสำเร็จจบด้วย status204 และ end() จึงไม่มี JSON จากนั้น GET id เดิมต้อง404 และ DELETE ซ้ำต้อง404 อย่าใช้สินค้าตั้งต้นเพราะจะทำให้จำนวน seed ไม่ตรง
+
+## ลงมือทำตามลำดับ
+
+# วิธีทำทีละส่วน: กรณีศึกษา: ลบสินค้า204
+
+- [ทำข้อนี้ในโหมดสะสมโค้ด](STEP-BY-STEP.html?task=mobile-delete)
+
+
+ข้อที่ทำ: DELETE /products/:id
+ผลตอบตามกรณีนี้: 204ไม่มีBody; ไม่มี404
+
+## ก่อนเริ่ม
+
+เตรียมแล้วให้ข้ามขั้นนี้ เก็บ app.js และงานข้อก่อนไว้
+
+## โค้ดที่ต้องใส่
+หากมีฟังก์ชันชื่อนี้แล้ว ให้แทนก้อนเดิมและเก็บฟังก์ชันข้ออื่นไว้
+
+### 1. src/mappers-$id/entity-dto-mapper.js
+แทนทั้งไฟล์นี้ หากมีข้อก่อนใช้อยู่ ให้ทดสอบข้อก่อนหลังแก้ด้วย
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+### 2. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `findOne` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// อ่านสินค้ารายตัวพร้อมชื่อแบรนด์สำหรับ Detail DTO ใช้ ? รับค่า id อย่างปลอดภัย
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+```
+
+### 3. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `existing` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ค้นหาสินค้าก่อน ถ้าไม่พบโยน 404 เพื่อให้ GET/PUT/DELETE ตอบตรงโจทย์
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+```
+
+### 4. src/repositories-$id/repository.js
+เพิ่มฟังก์ชัน/ตัวแปร `remove` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// DELETE เฉพาะ id ที่รับมา ไม่ลบตารางหรือรายการอื่น
+export async function remove(id){await db.query('DELETE FROM products WHERE id=?',[id]);}
+```
+
+### 5. src/services-$id/service.js
+เพิ่มฟังก์ชัน/ตัวแปร `removeObject` หลังimports ก่อนหรือหลังฟังก์ชันอื่นได้ แต่ห้ามวางซ้อนในฟังก์ชันอื่น หากมีชื่อนี้แล้วแทนเฉพาะก้อนเดิม
+```js
+// ข้อ2.3(5): ตรวจว่ามีสินค้าก่อนลบ เพื่อแยกกรณี404จากการลบสำเร็จ
+export async function removeObject(id){await existing(id);await repo.remove(id);}
+```
+
+### 6. src/routes-$id/route.js
+เพิ่มหรือแทนเฉพาะ `router.delete('/products/:id',...)` วางก่อน `export default router` ไม่เพิ่มซ้ำใต้ก้อนเดิมที่ตอบก่อน
+```js
+// รับ DELETE /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.delete('/products/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+```
+
+## ทดสอบใน Postman
+บันทึกCtrl+S → หยุดแอปเดิมด้วยCtrl+C → `node src/app.js`
+```text
+DELETE http://localhost:3000/api/YOUR_STUDENT_ID/products/:id
+```
+Body → none
+แทนYOUR_STUDENT_IDด้วยรหัสจริง และแทน:id/ชื่อparamsด้วยค่าจริงที่มีในฐานข้อมูล
+DELETEรหัสทดลอง→204ว่าง; GET→404; DELETEซ้ำ→404
+
+
+
+
+
+# ตรวจครบก่อนจบ
+
+รันแอปจาก Terminal ในโฟลเดอร์ที่มี package.json ด้วยคำสั่งนี้ เทมเพลตกลางภาคไม่มี npm start อย่าใช้ npm test เพราะสคริปต์เดิมยังไม่ได้ตั้งชุดทดสอบ
+
+```text
+node src/app.js
+```
+
+เปิด Postman สร้าง HTTP Request เลือก Method แล้วใส่ URL เริ่ม http://localhost:3000/api/ตามรหัสจริง/… GET และ DELETE เลือก Body none ส่วน POST และ PUT เลือก Body → raw → JSON แล้วกด Send ตรวจทั้ง Status และ Body
+
+ลำดับตรวจ: student-info200 → brands200(22แถวเมื่อ seedเดิม) → brands/1 เป็น200 → brands/999999 เป็น404 → products?page=1&limit=10 ได้10รายการ/total75 → products/1 ได้ Detail13ช่อง → POSTข้อมูลใหม่ได้201และจดid → POST SKUเดิมอีกครั้ง409 → PUT idที่สร้างได้200 → GET idนั้นตรวจค่า → DELETE idนั้น204และBodyว่าง → GETและDELETEซ้ำ404
+
+หลัง POST totalจะเพิ่ม และหลังDELETEสินค้าที่เพิ่มจะกลับเท่าเดิม อย่าคาดว่าtotal75ตลอดเวลาหากแก้ข้อมูลเองไปแล้ว
+
+โค้ดของแต่ละข้อข้างบนใช้ชุดเดียวกับที่ทดสอบ HTTP และฐานข้อมูลฝึกแยกจากเครื่องผู้ใช้แล้ว การตั้งค่าฐานข้อมูล ชื่อ/รหัส/secret และข้อมูลที่เหลือในเครื่องตนยังต้องตรวจตามจริง
+
+## ถ้าเจอปัญหา ให้ตรวจตามอาการ
+
+Cannot find module → ตรวจสะกด imports กับโฟลเดอร์ -$id และนามสกุล .js
+
+Identifier has already been declared → วางฟังก์ชันหรือ const ชื่อเดิมซ้ำ ลบก้อนเก่าให้เหลือตัวเดียว
+
+ECONNREFUSED MySQL → ตรวจว่า MySQL เปิดอยู่และ portตรง config
+
+Access denied → user/password ฝั่ง Node ไม่ตรง MySQL; ไม่เกี่ยวกับ secretKey
+
+Unknown database/table → ยังไม่ได้นำเข้าSQLหรือใช้ databaseผิด
+
+404 ทุก URL → ตรวจรหัสใน URL ให้ตรง ID, mount /api/${ID}, และวาง routesก่อน catch-all404
+
+EADDRINUSE3000 → มีแอปเดิมใช้พอร์ตอยู่ กลับ TerminalเดิมกดCtrl+Cแล้วเริ่มใหม่
+
+แก้โค้ดแล้วผลไม่เปลี่ยน → Ctrl+S → Ctrl+C ในTerminalที่รันแอป → node src/app.js ใหม่ ตรวจว่าเปิดโปรเจกต์เดียวกับที่แก้
+
+PUT ไม่เปลี่ยน → ใช้idที่มีจริง ส่งBody raw JSONและชื่อ stock_quantity ไม่ใช่ stockQuantity ซึ่งเป็นชื่อฝั่ง DTOตอบกลับ
+
+## ชุดตรวจอัตโนมัติที่ครูให้
+
+เทมเพลตกลางภาคไม่ได้มี tests ของWeek8ติดมาด้วย หากต้องการใช้ตัวตรวจของครู ให้นำโฟลเดอร์ tests เดิมของWeek8มาในสำเนาฝึกก่อน แล้วอ่านวิธีใช้ในสเปก ใช้รหัสชุดที่เลือกและอย่ารันทดสอบกับฐานข้อมูลที่ต้องเก็บ เพราะตัวตรวจอาจเพิ่ม/แก้/ลบข้อมูล ใช้ Postmanตามลำดับด้านบนได้โดยไม่ต้องมีtests
+
+:::details โค้ดครบทุกไฟล์ — เปิดเมื่ออยากเทียบทั้งชุด
+
+ต่อไปนี้คือไฟล์ปลายทางของชุดเฉลยเดียวกัน ใช้เทียบทีละไฟล์หลังทำครบ ไม่ต้องคัดทับงานที่ทำไว้ระหว่างข้อ ข้อมูลส่วนตัวและรหัสผ่านยังต้องกรอกเอง
+
+### src/app.js
+
+```js
+// {student-id} - {student-name}
+// ใช้ Express สร้างแอปหรือ Router สำหรับรับ HTTP request
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+// ใช้ตัวห่อ response ร่วม เพื่อให้ success/data/timestamp มีรูปแบบเดียวกัน
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+// เปลี่ยนเป็นรหัสในสเปกที่เลือก; รหัสนี้ต้องตรงกับ base path ใน Postman
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+// อ่าน Body JSON ก่อนเข้า route POST/PUT มิฉะนั้น req.body จะใช้งานไม่ได้
+app.use(express.json());
+// ข้อ2.1: routeระบุตัวตน ใช้ข้อมูลจากสเปกชุดเดียวกัน ไม่ต้อง query ฐานข้อมูล
+app.get('/api/' + studentId + '/student-info', (req,res) => apiResponse(res,{studentId,name:'YOUR_NAME',secretKey:'YOUR_SECRET'}));
+// ต่อ prefix /api/รหัสนักศึกษา เข้ากับ paths ใน route.js อย่าเติม prefix ซ้ำใน Router
+app.use('/api/' + studentId, productRouter);
+// catch-all404 ต้องอยู่หลัง route ทั้งหมด มิฉะนั้นจะดัก request ก่อนถึงคำตอบ
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+// error middleware อยู่หลัง routes และ catch-all เพื่อรับข้อผิดพลาดจากทุกข้อ
+app.use(errorHandler);
+// เปิดเซิร์ฟเวอร์เพียงครั้งเดียว ค่าเริ่มต้นพอร์ต3000; รัน node src/app.js
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+
+```
+
+### src/mappers-$id/api-response.js
+
+```js
+// {student-id} - {student-name}
+// ห่อผลลัพธ์เป็น success/data/timestamp; status เป็นอาร์กิวเมนต์ตัวที่4 ส่วนตัวที่3คือpagination
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'mobile';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+
+```
+
+### src/mappers-$id/entity-dto-mapper.js
+
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ // Summary DTO ส่งเพียง7ช่อง ใช้กับGETรายการสินค้า ไม่ส่งสต็อก/สี/วันวางขายเกินโจทย์
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ // Detail DTO เพิ่มชื่อแบรนด์ RAM ความจุ สี สต็อก และวันวางขาย รวม13ช่อง
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ // เลือกชนิด DTO ตาม viewType ที่ service กำหนด
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ // แปลงทุกแถวและเก็บ totalItems ไว้ใช้สร้าง pagination แม้ผลลัพธ์จะเป็น arrayว่าง
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+
+```
+
+### src/middlewares-$id/error-handler.js
+
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+// แปลงข้อผิดพลาดเป็น HTTP/JSON ที่คาดเดาได้ เช่น SKUซ้ำ409, ข้อมูลอ้างอิงไม่มี400
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ // MySQLแจ้ง UNIQUEซ้ำ เช่นSKU → HTTP409 ตามโจทย์
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ // brand_id อ้างถึงแบรนด์ที่ไม่มี → HTTP400
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ // บันทึกปัญหาฝั่งเซิร์ฟเวอร์ แต่ไม่ส่งรายละเอียด SQL/รหัสผ่านกลับให้ผู้ใช้
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='mobile';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+
+```
+
+### src/middlewares-$id/pagination-middleware.js
+
+```js
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError} from './error-handler.js';
+// อ่าน page/limit จาก URL ตรวจจำนวนเต็มบวก แล้วคำนวณ offset=(page-1)*limit
+export const queryParser = () => (req,res,next) => {
+ // query เป็นข้อความ จึงตรวจรูปแบบก่อนแปลงเป็นตัวเลข ไม่ยอมรับ 2abc หรือค่าซ้ำแบบarray
+ function positive(value,fallback){if(value===undefined)return fallback;if(typeof value!=='string'||! /^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new AppError('Invalid pagination',400,'VALIDATION_ERROR');return Number(value);}
+ const page=positive(req.query.page,1),limit=Math.min(positive(req.query.limit,10),100),offset=(page-1)*limit;
+ if(!Number.isSafeInteger(offset))throw new AppError('Page too large',400,'VALIDATION_ERROR');
+ req.pagination={page,limit,offset};next();
+}
+
+```
+
+### src/repositories-$id/repository.js
+
+```js
+// ใช้ pool ที่ตั้งค่า MySQL ของเครื่องตนใน db-config.js
+import db from '../configs-$id/db-config.js';
+// อ่านแบรนด์โดยคงชื่อคอลัมน์ฐานข้อมูล ตามตัวอย่าง Brands API
+export async function brands(){const [r]=await db.query('SELECT * FROM brands ORDER BY id');return r;}
+// ค้นหาแบรนด์ด้วย id; ถ้าไม่มีแถวให้ชั้น service ตัดสินใจตอบ404
+export async function brand(id){const [r]=await db.query('SELECT * FROM brands WHERE id=?',[id]);return r[0] || null;}
+// อ่านสินค้ารายตัวพร้อมชื่อแบรนด์สำหรับ Detail DTO ใช้ ? รับค่า id อย่างปลอดภัย
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+// อ่านเฉพาะหน้าที่ขอและนับสินค้าทั้งหมด แยกจำนวนทั้งหมดออกจากจำนวนในหน้านี้
+export async function findAll({limit,offset}){
+ // อ่านข้อมูลด้วย SQL; ค่าจาก request ส่งผ่าน placeholders ไม่ต่อเข้า SQL โดยตรง
+ const [rows]=await db.query('SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?',[limit,offset]);
+ // อ่านข้อมูลด้วย SQL; ค่าจาก request ส่งผ่าน placeholders ไม่ต่อเข้า SQL โดยตรง
+ const [[{total}]]=await db.query('SELECT COUNT(*) AS total FROM products');rows.totalItems = Number(total);return rows;
+}
+// INSERT สินค้า แล้วอ่านกลับด้วย insertId ที่ MySQL สร้าง ไม่คาดเดาเลข id เอง
+export async function create(data){const [result]=await db.query('INSERT INTO products SET ?',[data]);return findOne(result.insertId);}
+// UPDATE เฉพาะสินค้าที่ id ตรง แล้วอ่านค่าหลังแก้กลับไปตอบ
+export async function update(id,data){await db.query('UPDATE products SET ? WHERE id=?',[data,id]);return findOne(id);}
+// DELETE เฉพาะ id ที่รับมา ไม่ลบตารางหรือรายการอื่น
+export async function remove(id){await db.query('DELETE FROM products WHERE id=?',[id]);}
+
+```
+
+### src/routes-$id/route.js
+
+```js
+// ใช้ Express สร้างแอปหรือ Router สำหรับรับ HTTP request
+import express from 'express';
+// route เรียก service เพื่อทำงานและตรวจเงื่อนไขก่อนตอบกลับ
+import * as service from '../services-$id/service.js';
+// ใช้ตัวห่อ response ร่วม เพื่อให้ success/data/timestamp มีรูปแบบเดียวกัน
+import {apiResponse} from '../mappers-$id/api-response.js';
+// นำ middleware แบ่งหน้ามาใช้เฉพาะ endpoint รายการสินค้า
+import {queryParser} from '../middlewares-$id/pagination-middleware.js';
+const router=express.Router();
+// รับ GET /brands หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/brands',async(req,res)=>apiResponse(res,await service.getBrands()));
+// รับ GET /brands/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/brands/:id',async(req,res)=>apiResponse(res,await service.getBrand(req.params.id)));
+// รับ GET /products หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/products',queryParser(),async(req,res)=>{
+ const objects = await service.getAllObjects(req.pagination);
+ await apiResponse(res, objects, req.pagination);
+});
+// รับ GET /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.get('/products/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+// รับ POST /products หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.post('/products',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+// รับ PUT /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.put('/products/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+// รับ DELETE /products/:id หลัง prefix; params มาจาก URL ส่วน body มาจาก JSON
+router.delete('/products/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+
+```
+
+### src/services-$id/service.js
+
+```js
+// ชั้น service เรียก repository เพื่อแยก SQL ออกจากกฎการทำงาน
+import * as repo from '../repositories-$id/repository.js';
+// ใช้ mapper เลือกและเปลี่ยนชื่อช่องข้อมูลให้ตรง DTO ที่โจทย์ต้องการ
+import mapper from '../mappers-$id/entity-dto-mapper.js';
+// ใช้ AppError ระบุ status/code และ errorHandler รวมการตอบข้อผิดพลาด
+import {AppError} from '../middlewares-$id/error-handler.js';
+// ช่องที่สินค้าต้องมีเมื่อผ่านการเติมค่าเริ่มต้นแล้ว; ชื่อรับเข้าใช้ snake_case ตาม Bodyครู
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+// รายชื่อช่องที่ผู้ใช้แก้ได้ ไม่รับ id หรือช่องระบบจาก Body
+const writable=[...required,'stock_quantity','status','release_date'];
+// หยุดทำงานด้วย HTTP 400 เมื่อค่าที่รับเข้าไม่ถูกต้อง แล้วส่งต่อให้ errorHandler จัดรูป JSON
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+// รับเฉพาะ JSON object ป้องกัน null, array และชนิดข้อมูลที่ไม่ใช่ object
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+// เลือกเฉพาะช่องที่อนุญาตให้เขียน ไม่เอาทุกช่องจาก Body ไปสร้าง SQL โดยตรง
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+// ตรวจข้อมูลก่อนบันทึก ทั้งช่องจำเป็น ชนิดข้อมูล ราคา สต็อก และวันที่
+function validate(p){
+ // ตรวจว่าไม่มีช่องจำเป็นหายไปหรือเป็น null
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ // ช่องข้อความต้องเป็น string และไม่ว่าง
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ // รหัสแบรนด์ RAM และความจุต้องเป็นจำนวนเต็มบวก
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ // ราคาเป็นตัวเลขจริงที่ไม่ติดลบ ไม่รับข้อความหรือ NaN
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ // สต็อกต้องเป็นจำนวนเต็มตั้งแต่0ขึ้นไป
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ // ถ้าใส่วันวางขาย ต้องเป็น YYYY-MM-DD และเป็นวันที่มีจริง เช่นไม่รับ 2026-02-30
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+// ค้นหาสินค้าก่อน ถ้าไม่พบโยน 404 เพื่อให้ GET/PUT/DELETE ตอบตรงโจทย์
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+// ข้อ2.2(ก): ขอรายการแบรนด์ทั้งหมดจาก repository
+export const getBrands=()=>repo.brands();
+// ข้อ2.2(ข): ขอแบรนด์ตาม id ถ้าไม่พบตอบ404
+export async function getBrand(id){const row=await repo.brand(id);if(!row)throw new AppError('Brand not found',404,'BRAND_NOT_FOUND');return row;}
+// ข้อ2.3(1): อ่านสินค้าตาม pagination แล้วเลือก Summary DTO สำหรับรายการ
+export async function getAllObjects(pagination){return mapper.maps(await repo.findAll(pagination),'summary');}
+// ข้อ2.3(2): ตรวจว่าสินค้ามีจริงแล้วแปลงเป็น Detail DTO
+export async function getObject(id){return mapper.toDetailDTO(await existing(id));}
+// ข้อ2.3(3): เติมค่าเริ่มต้น ตรวจ Body แล้วเพิ่มสินค้าและตอบ Detail DTO ของรายการใหม่
+export async function createObject(body){const data=validate({stock_quantity:0,status:'AVAILABLE',release_date:null,...pick(body)});return mapper.toDetailDTO(await repo.create(data));}
+// ข้อ2.3(4): อ่านค่าเก่าก่อน ผสานเฉพาะช่องที่ส่งมา ตรวจแล้วอัปเดต
+export async function updateObject(id,body){
+ const old=await existing(id),patch=pick(body);if(!Object.keys(patch).length)fail('No writable fields');
+ const data=validate({...pick(old),...patch});return mapper.toDetailDTO(await repo.update(id,data));
+}
+// ข้อ2.3(5): ตรวจว่ามีสินค้าก่อนลบ เพื่อแยกกรณี404จากการลบสำเร็จ
+export async function removeObject(id){await existing(id);await repo.remove(id);}
+
+```
+
+:::
+
+
+02-ANSWERS/sakila/HOW-TO.md
+# ใช้ชุด sakila บนเทมเพลตครู
+ฐานคือ midterm-exam-esm-template.zip เดิม โฟลเดอร์ -$id คงตาม ZIP อย่าเปลี่ยนเป็น -guide
+เปิดโปรเจกต์ 01-WORK/node-express-esm-template ไม่เปิดชุดสำเร็จแทนข้อสอบโดยไม่อ่านโจทย์
+
+## กรณีเริ่มจากเทมเพลตว่าง ยังไม่มีข้อที่ทำไว้
+1. ดูโจทย์ว่าตรงชุดนี้: country+actor CRUD บน Sakila
+2. เปิด CODE.md คัดโค้ดตามชื่อไฟล์จากหัวข้อไปวางในไฟล์ชื่อเดียวกันใน01-WORK
+3. เรียงการวาง: config → error-handler → api-response → mapper → pagination(ถ้าใช้) → repository → service → route → app
+4. เฉพาะ db-config.js ให้ใส่ค่าของเครื่องเอง อย่าคัดทับค่าที่คุณตั้งใช้ได้แล้ว; คง decimalNumbers/dateStrings ตามชุด
+5. app.js ใส่รหัส/ชื่อของคุณตามสเปก อย่าใช้ YOUR_STUDENT_ID ส่งงาน; Sakila บทสอนใช้ /countries ไม่ใช้ prefixนักศึกษา
+6. รัน node src/app.js ไม่ใช่ npm start เพราะ packageครูไม่มีstart
+7. ส่ง Postman ตามตาราง 05-POSTMAN.md ในรากคู่มือ แล้วตรวจresponseตามโจทย์
+
+## กรณีทำข้อก่อนแล้ว
+ห้ามคัด app.js ทั้งไฟล์ ให้เพิ่ม import/mount ของข้อใหม่ เก็บ express.json/routerเดิม/error handlerท้ายสุด
+ถ้าเป็นตารางเดียวกัน เพิ่มเฉพาะฟังก์ชัน/route ที่ต้องใช้ อย่าแทน service/repository ทั้งไฟล์จนข้อเดิมหาย
+หากคนละตาราง ใช้การคัดไฟล์เพิ่มแบบactor: repository/service/routeของresourceใหม่ แล้วเปลี่ยนimportเฉพาะคู่นั้น
+ตัวอย่างครบการเพิ่มresourceโดยไม่ลบของเดิมอยู่ 04-ADD-RESOURCE.md
+
+## รายการต่างจากครู (ดู CHANGES.diff เพื่อเทียบบรรทัดก่อน/หลัง)
+- `src/app.js`
+- `src/configs-$id/db-config.js`
+- `src/mappers-$id/api-response.js`
+- `src/mappers-$id/entity-dto-mapper.js`
+- `src/repositories-$id/repository.js`
+- `src/routes-$id/route.js`
+- `src/services-$id/service.js`
+
+เพิ่มไฟล์:
+- `src/middlewares-$id/error-handler.js`
+- `src/repositories-$id/actor-repository.js`
+- `src/routes-$id/actor-route.js`
+- `src/services-$id/actor-service.js`
+
+package.json และ package-lock.json คงไฟล์ครูทุกไบต์ ไม่มีdependencyเพิ่ม
+ไฟล์ src/test-service.js เก็บตามต้นฉบับเพื่อเทียบ แต่มีคำสั่งลบรหัส26และimportที่ไม่ตรง ห้ามกดRunไฟล์นี้
+
+
+02-ANSWERS/sakila/CODE.md
+# โค้ดชุด sakila — ใช้ชื่อไฟล์ครู
+อ่าน HOW-TO ก่อนคัด ใช้ node src/app.js
+
+## src/app.js
+```js
+// {student-id} - {student-name}
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+import actorRouter from './routes-$id/actor-route.js';
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+app.use(express.json());
+app.use('/countries', productRouter);
+app.use('/actors', actorRouter);
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+app.use(errorHandler);
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+```
+
+## src/configs-$id/db-config.js
+```js
+// {student-id} - {student-name}
+import mysql from 'mysql2/promise';
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER || 'db-username',
+    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
+    database: process.env.DB_NAME || 'sakila',
+    decimalNumbers: true,
+    dateStrings: true,
+});
+export default db;
+```
+
+## src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'sakila';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+## src/mappers-$id/entity-dto-mapper.js
+```js
+// Sakila ชุดนี้คืน raw data ตามบทสอน จึงไม่เปลี่ยนชื่อช่อง
+export default class EntityDtoMapper {
+ static toSummaryDTO(entity){return entity;}
+ static toDetailDTO(entity){return entity;}
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ static maps(entities,viewType){return entities.map(entity=>this.map(entity,viewType));}
+}
+```
+
+## src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='sakila';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+## src/repositories-$id/actor-repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function findAll(){const [rows]=await db.query('SELECT * FROM actor ORDER BY actor_id');return rows;}
+export async function findOne(id){const [rows]=await db.query('SELECT * FROM actor WHERE actor_id=?',[id]);return rows[0] || null;}
+export async function create(data){const [result]=await db.query('INSERT INTO actor SET ?',[data]);return findOne(result.insertId);}
+export async function update(id,data){await db.query('UPDATE actor SET ? WHERE actor_id=?',[data,id]);return findOne(id);}
+export async function remove(id){await db.query('DELETE FROM actor WHERE actor_id=?',[id]);}
+```
+
+## src/repositories-$id/repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function findAll(){const [rows]=await db.query('SELECT * FROM country ORDER BY country_id');return rows;}
+export async function findOne(id){const [rows]=await db.query('SELECT * FROM country WHERE country_id=?',[id]);return rows[0] || null;}
+export async function create(data){const [result]=await db.query('INSERT INTO country SET ?',[data]);return findOne(result.insertId);}
+export async function update(id,data){await db.query('UPDATE country SET ? WHERE country_id=?',[data,id]);return findOne(id);}
+export async function remove(id){await db.query('DELETE FROM country WHERE country_id=?',[id]);}
+```
+
+## src/routes-$id/actor-route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/actor-service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+const router=express.Router();
+router.get('/',async(req,res)=>apiResponse(res,await service.getAllObjects()));
+router.get('/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+router.post('/',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+```
+
+## src/routes-$id/route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+const router=express.Router();
+router.get('/',async(req,res)=>apiResponse(res,await service.getAllObjects()));
+router.get('/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+router.post('/',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+```
+
+## src/services-$id/actor-service.js
+```js
+import * as repo from '../repositories-$id/actor-repository.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+const fields=["first_name", "last_name"];
+function validate(body){
+ if(!body || typeof body!=='object' || Array.isArray(body))throw new AppError('JSON object required',400,'VALIDATION_ERROR');
+ const result={};
+ for(const field of fields){
+  if(typeof body[field]!=='string' || !body[field].trim())throw new AppError(`Field '${field}' is required`,400,'VALIDATION_ERROR');
+  result[field]=body[field].trim();
+ }
+ return result;
+}
+export const getAllObjects=()=>repo.findAll();
+export async function getObject(id){const row=await repo.findOne(id);if(!row)throw new AppError('Actor not found',404,'NOT_FOUND');return row;}
+export async function createObject(body){return repo.create(validate(body));}
+export async function updateObject(id,body){await getObject(id);return repo.update(id,validate(body));}
+export async function removeObject(id){await getObject(id);await repo.remove(id);}
+```
+
+## src/services-$id/service.js
+```js
+import * as repo from '../repositories-$id/repository.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+const fields=["country"];
+function validate(body){
+ if(!body || typeof body!=='object' || Array.isArray(body))throw new AppError('JSON object required',400,'VALIDATION_ERROR');
+ const result={};
+ for(const field of fields){
+  if(typeof body[field]!=='string' || !body[field].trim())throw new AppError(`Field '${field}' is required`,400,'VALIDATION_ERROR');
+  result[field]=body[field].trim();
+ }
+ return result;
+}
+export const getAllObjects=()=>repo.findAll();
+export async function getObject(id){const row=await repo.findOne(id);if(!row)throw new AppError('Country not found',404,'NOT_FOUND');return row;}
+export async function createObject(body){return repo.create(validate(body));}
+export async function updateObject(id,body){await getObject(id);return repo.update(id,validate(body));}
+export async function removeObject(id){await getObject(id);await repo.remove(id);}
+```
+
+
+02-ANSWERS/classic/HOW-TO.md
+# ใช้ชุด classic บนเทมเพลตครู
+ฐานคือ midterm-exam-esm-template.zip เดิม โฟลเดอร์ -$id คงตาม ZIP อย่าเปลี่ยนเป็น -guide
+เปิดโปรเจกต์ 01-WORK/node-express-esm-template ไม่เปิดชุดสำเร็จแทนข้อสอบโดยไม่อ่านโจทย์
+
+## กรณีเริ่มจากเทมเพลตว่าง ยังไม่มีข้อที่ทำไว้
+1. ดูโจทย์ว่าตรงชุดนี้: งานWeek6ห้าข้อ classicmodels
+2. เปิด CODE.md คัดโค้ดตามชื่อไฟล์จากหัวข้อไปวางในไฟล์ชื่อเดียวกันใน01-WORK
+3. เรียงการวาง: config → error-handler → api-response → mapper → pagination(ถ้าใช้) → repository → service → route → app
+4. เฉพาะ db-config.js ให้ใส่ค่าของเครื่องเอง อย่าคัดทับค่าที่คุณตั้งใช้ได้แล้ว; คง decimalNumbers/dateStrings ตามชุด
+5. app.js ใส่รหัส/ชื่อของคุณตามสเปก อย่าใช้ YOUR_STUDENT_ID ส่งงาน; Sakila บทสอนใช้ /countries ไม่ใช้ prefixนักศึกษา
+6. รัน node src/app.js ไม่ใช่ npm start เพราะ packageครูไม่มีstart
+7. ส่ง Postman ตามตาราง 05-POSTMAN.md ในรากคู่มือ แล้วตรวจresponseตามโจทย์
+
+## กรณีทำข้อก่อนแล้ว
+ห้ามคัด app.js ทั้งไฟล์ ให้เพิ่ม import/mount ของข้อใหม่ เก็บ express.json/routerเดิม/error handlerท้ายสุด
+ถ้าเป็นตารางเดียวกัน เพิ่มเฉพาะฟังก์ชัน/route ที่ต้องใช้ อย่าแทน service/repository ทั้งไฟล์จนข้อเดิมหาย
+หากคนละตาราง ใช้การคัดไฟล์เพิ่มแบบactor: repository/service/routeของresourceใหม่ แล้วเปลี่ยนimportเฉพาะคู่นั้น
+ตัวอย่างครบการเพิ่มresourceโดยไม่ลบของเดิมอยู่ 04-ADD-RESOURCE.md
+
+## รายการต่างจากครู (ดู CHANGES.diff เพื่อเทียบบรรทัดก่อน/หลัง)
+- `src/app.js`
+- `src/configs-$id/db-config.js`
+- `src/mappers-$id/api-response.js`
+- `src/repositories-$id/repository.js`
+- `src/routes-$id/route.js`
+- `src/services-$id/service.js`
+
+เพิ่มไฟล์:
+- `src/middlewares-$id/error-handler.js`
+
+package.json และ package-lock.json คงไฟล์ครูทุกไบต์ ไม่มีdependencyเพิ่ม
+ไฟล์ src/test-service.js เก็บตามต้นฉบับเพื่อเทียบ แต่มีคำสั่งลบรหัส26และimportที่ไม่ตรง ห้ามกดRunไฟล์นี้
+
+
+02-ANSWERS/classic/CODE.md
+# โค้ดชุด classic — ใช้ชื่อไฟล์ครู
+อ่าน HOW-TO ก่อนคัด ใช้ node src/app.js
+
+## src/app.js
+```js
+// {student-id} - {student-name}
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+app.use(express.json());
+app.use('/api/' + studentId, productRouter);
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+app.use(errorHandler);
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+```
+
+## src/configs-$id/db-config.js
+```js
+// {student-id} - {student-name}
+import mysql from 'mysql2/promise';
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER || 'db-username',
+    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
+    database: process.env.DB_NAME || 'classicmodels',
+    decimalNumbers: true,
+    dateStrings: true,
+});
+export default db;
+```
+
+## src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'classic';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+## src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='classic';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+## src/repositories-$id/repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function office(id){const [r]=await db.query('SELECT * FROM offices WHERE officeCode=?',[id]);return r[0] || null;}
+export async function productline(id){const [r]=await db.query('SELECT * FROM productlines WHERE productLine=?',[id]);return r[0] || null;}
+export async function createLine(data){await db.query('INSERT INTO productlines SET ?',[data]);return productline(data.productLine);}
+export async function employee(id){const [r]=await db.query('SELECT * FROM employees WHERE employeeNumber=?',[id]);return r[0] || null;}
+export async function updateEmployee(id,data){await db.query('UPDATE employees SET ? WHERE employeeNumber=?',[data,id]);return employee(id);}
+export async function customer(id){const [r]=await db.query('SELECT * FROM customers WHERE customerNumber=?',[id]);return r[0] || null;}
+export async function removeCustomer(id){await db.query('DELETE FROM customers WHERE customerNumber=?',[id]);}
+export async function payment(customerNumber,checkNumber){const [r]=await db.query('SELECT * FROM payments WHERE customerNumber=? AND checkNumber=?',[customerNumber,checkNumber]);return r[0] || null;}
+export async function createPayment(data){await db.query('INSERT INTO payments SET ?',[data]);return payment(data.customerNumber,data.checkNumber);}
+```
+
+## src/routes-$id/route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+const router=express.Router();
+router.get('/offices/:officeCode',async(req,res)=>apiResponse(res,await service.getOffice(req.params.officeCode)));
+router.post('/productlines',async(req,res)=>apiResponse(res,await service.createLine(req.body),null,201));
+router.put('/employees/:employeeNumber',async(req,res)=>apiResponse(res,await service.updateEmployee(req.params.employeeNumber,req.body)));
+router.delete('/customers/:customerNumber',async(req,res)=>apiResponse(res,await service.removeCustomer(req.params.customerNumber)));
+router.post('/customers/:customerNumber/payments',async(req,res)=>apiResponse(res,await service.createPayment(req.params.customerNumber,req.body),null,201));
+export default router;
+```
+
+## src/services-$id/service.js
+```js
+import * as repo from '../repositories-$id/repository.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+function object(body){if(!body || typeof body!=='object' || Array.isArray(body))throw new AppError('JSON object required',400,'VALIDATION_ERROR');}
+function fail(message,code='VALIDATION_ERROR'){throw new AppError(message,400,code);}
+function dateOK(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const d=new Date(value+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===value;}
+export async function getOffice(id){const row=await repo.office(id);if(!row)throw new AppError(`Office with code '${id}' was not found`,404,'OFFICE_NOT_FOUND');return row;}
+export async function createLine(body){
+ object(body);
+ if(typeof body.productLine!=='string'||!body.productLine.trim())fail("Field 'productLine' is required and cannot be empty");
+ const data={productLine:body.productLine.trim()};
+ if(data.productLine.length>50)fail('productLine must be at most 50 characters');
+ if(Object.hasOwn(body,'textDescription')){if(body.textDescription!==null&&typeof body.textDescription!=='string')fail('Invalid textDescription');data.textDescription=body.textDescription;}
+ try{return await repo.createLine(data);}catch(err){if(err.code==='ER_DUP_ENTRY')err.publicMessage=`Product line '${data.productLine}' already exists`;throw err;}
+}
+export async function updateEmployee(id,body){
+ const old=await repo.employee(id);if(!old)throw new AppError(`Employee with ID '${id}' was not found`,404,'EMPLOYEE_NOT_FOUND');
+ object(body);const data={};
+ for(const key of ['firstName','lastName','email','officeCode','reportsTo','jobTitle'])if(Object.hasOwn(body,key))data[key]=body[key];
+ if(!Object.keys(data).length)fail('No writable fields');
+ if(Object.hasOwn(data,'email')&&(typeof data.email!=='string'||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)))fail('Invalid email address format','INVALID_EMAIL');
+ for(const key of ['firstName','lastName','officeCode','jobTitle'])if(Object.hasOwn(data,key)&&(typeof data[key]!=='string'||!data[key].trim()))fail(`Invalid ${key}`);
+ if(Object.hasOwn(data,'reportsTo')&&data.reportsTo!==null&&(!Number.isSafeInteger(data.reportsTo)||data.reportsTo<=0))fail('Invalid reportsTo');
+ try{return await repo.updateEmployee(id,data);}catch(err){if(err.code==='ER_NO_REFERENCED_ROW_2')err.publicMessage='Invalid office code or reporting manager ID';throw err;}
+}
+export async function removeCustomer(id){
+ if(!await repo.customer(id))throw new AppError(`Customer with ID '${id}' was not found`,404,'CUSTOMER_NOT_FOUND');
+ try{await repo.removeCustomer(id);}catch(err){if(err.code==='ER_ROW_IS_REFERENCED_2')err.publicMessage='Cannot delete customer because related orders or payment records exist';throw err;}
+ return {message:'Customer record successfully deleted'};
+}
+export async function createPayment(id,body){
+ if(!await repo.customer(id))throw new AppError(`Customer with ID '${id}' was not found`,404,'CUSTOMER_NOT_FOUND');
+ object(body);
+ if(typeof body.amount!=='number'||!Number.isFinite(body.amount)||body.amount<=0)fail('Payment amount must be greater than zero','INVALID_PAYMENT_DATA');
+ if(!dateOK(body.paymentDate))fail('Payment date must be YYYY-MM-DD','INVALID_PAYMENT_DATA');
+ if(typeof body.checkNumber!=='string'||!body.checkNumber.trim()||body.checkNumber.length>50)fail('Invalid check number','INVALID_PAYMENT_DATA');
+ const data={customerNumber:id,checkNumber:body.checkNumber,paymentDate:body.paymentDate,amount:body.amount};
+ try{return await repo.createPayment(data);}catch(err){if(err.code==='ER_DUP_ENTRY')err.publicMessage=`Check number '${data.checkNumber}' has already been registered for this customer`;throw err;}
+}
+```
+
+
+02-ANSWERS/mobile/HOW-TO.md
+# ใช้ชุด mobile บนเทมเพลตครู
+ฐานคือ midterm-exam-esm-template.zip เดิม โฟลเดอร์ -$id คงตาม ZIP อย่าเปลี่ยนเป็น -guide
+เปิดโปรเจกต์ 01-WORK/node-express-esm-template ไม่เปิดชุดสำเร็จแทนข้อสอบโดยไม่อ่านโจทย์
+
+## กรณีเริ่มจากเทมเพลตว่าง ยังไม่มีข้อที่ทำไว้
+1. ดูโจทย์ว่าตรงชุดนี้: brands/products ตามWeek8 PUTส่งบางช่องได้
+2. เปิด CODE.md คัดโค้ดตามชื่อไฟล์จากหัวข้อไปวางในไฟล์ชื่อเดียวกันใน01-WORK
+3. เรียงการวาง: config → error-handler → api-response → mapper → pagination(ถ้าใช้) → repository → service → route → app
+4. เฉพาะ db-config.js ให้ใส่ค่าของเครื่องเอง อย่าคัดทับค่าที่คุณตั้งใช้ได้แล้ว; คง decimalNumbers/dateStrings ตามชุด
+5. app.js ใส่รหัส/ชื่อของคุณตามสเปก อย่าใช้ YOUR_STUDENT_ID ส่งงาน; Sakila บทสอนใช้ /countries ไม่ใช้ prefixนักศึกษา
+6. รัน node src/app.js ไม่ใช่ npm start เพราะ packageครูไม่มีstart
+7. ส่ง Postman ตามตาราง 05-POSTMAN.md ในรากคู่มือ แล้วตรวจresponseตามโจทย์
+
+## กรณีทำข้อก่อนแล้ว
+ห้ามคัด app.js ทั้งไฟล์ ให้เพิ่ม import/mount ของข้อใหม่ เก็บ express.json/routerเดิม/error handlerท้ายสุด
+ถ้าเป็นตารางเดียวกัน เพิ่มเฉพาะฟังก์ชัน/route ที่ต้องใช้ อย่าแทน service/repository ทั้งไฟล์จนข้อเดิมหาย
+หากคนละตาราง ใช้การคัดไฟล์เพิ่มแบบactor: repository/service/routeของresourceใหม่ แล้วเปลี่ยนimportเฉพาะคู่นั้น
+ตัวอย่างครบการเพิ่มresourceโดยไม่ลบของเดิมอยู่ 04-ADD-RESOURCE.md
+
+## รายการต่างจากครู (ดู CHANGES.diff เพื่อเทียบบรรทัดก่อน/หลัง)
+- `src/app.js`
+- `src/configs-$id/db-config.js`
+- `src/mappers-$id/api-response.js`
+- `src/mappers-$id/entity-dto-mapper.js`
+- `src/middlewares-$id/pagination-middleware.js`
+- `src/repositories-$id/repository.js`
+- `src/routes-$id/route.js`
+- `src/services-$id/service.js`
+
+เพิ่มไฟล์:
+- `src/middlewares-$id/error-handler.js`
+
+package.json และ package-lock.json คงไฟล์ครูทุกไบต์ ไม่มีdependencyเพิ่ม
+ไฟล์ src/test-service.js เก็บตามต้นฉบับเพื่อเทียบ แต่มีคำสั่งลบรหัส26และimportที่ไม่ตรง ห้ามกดRunไฟล์นี้
+
+
+02-ANSWERS/mobile/CODE.md
+# โค้ดชุด mobile — ใช้ชื่อไฟล์ครู
+อ่าน HOW-TO ก่อนคัด ใช้ node src/app.js
+
+## src/app.js
+```js
+// {student-id} - {student-name}
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+app.use(express.json());
+app.get('/api/' + studentId + '/student-info', (req,res) => apiResponse(res,{studentId,name:'YOUR_NAME',secretKey:'YOUR_SECRET'}));
+app.use('/api/' + studentId, productRouter);
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+app.use(errorHandler);
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+```
+
+## src/configs-$id/db-config.js
+```js
+// {student-id} - {student-name}
+import mysql from 'mysql2/promise';
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER || 'db-username',
+    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
+    database: process.env.DB_NAME || 'mobile_distributor',
+    decimalNumbers: true,
+    dateStrings: true,
+});
+export default db;
+```
+
+## src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'mobile';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+## src/mappers-$id/entity-dto-mapper.js
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+## src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='mobile';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+## src/middlewares-$id/pagination-middleware.js
+```js
+import {AppError} from './error-handler.js';
+export const queryParser = () => (req,res,next) => {
+ function positive(value,fallback){if(value===undefined)return fallback;if(typeof value!=='string'||! /^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new AppError('Invalid pagination',400,'VALIDATION_ERROR');return Number(value);}
+ const page=positive(req.query.page,1),limit=Math.min(positive(req.query.limit,10),100),offset=(page-1)*limit;
+ if(!Number.isSafeInteger(offset))throw new AppError('Page too large',400,'VALIDATION_ERROR');
+ req.pagination={page,limit,offset};next();
+}
+```
+
+## src/repositories-$id/repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function brands(){const [r]=await db.query('SELECT * FROM brands ORDER BY id');return r;}
+export async function brand(id){const [r]=await db.query('SELECT * FROM brands WHERE id=?',[id]);return r[0] || null;}
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+export async function findAll({limit,offset}){
+ const [rows]=await db.query('SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?',[limit,offset]);
+ const [[{total}]]=await db.query('SELECT COUNT(*) AS total FROM products');rows.totalItems = Number(total);return rows;
+}
+export async function create(data){const [result]=await db.query('INSERT INTO products SET ?',[data]);return findOne(result.insertId);}
+export async function update(id,data){await db.query('UPDATE products SET ? WHERE id=?',[data,id]);return findOne(id);}
+export async function remove(id){await db.query('DELETE FROM products WHERE id=?',[id]);}
+```
+
+## src/routes-$id/route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+import {queryParser} from '../middlewares-$id/pagination-middleware.js';
+const router=express.Router();
+router.get('/brands',async(req,res)=>apiResponse(res,await service.getBrands()));
+router.get('/brands/:id',async(req,res)=>apiResponse(res,await service.getBrand(req.params.id)));
+router.get('/products',queryParser(),async(req,res)=>{
+ const objects = await service.getAllObjects(req.pagination);
+ await apiResponse(res, objects, req.pagination);
+});
+router.get('/products/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+router.post('/products',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/products/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/products/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+```
+
+## src/services-$id/service.js
+```js
+import * as repo from '../repositories-$id/repository.js';
+import mapper from '../mappers-$id/entity-dto-mapper.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+const writable=[...required,'stock_quantity','status','release_date'];
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+function validate(p){
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+export const getBrands=()=>repo.brands();
+export async function getBrand(id){const row=await repo.brand(id);if(!row)throw new AppError('Brand not found',404,'BRAND_NOT_FOUND');return row;}
+export async function getAllObjects(pagination){return mapper.maps(await repo.findAll(pagination),'summary');}
+export async function getObject(id){return mapper.toDetailDTO(await existing(id));}
+export async function createObject(body){const data=validate({stock_quantity:0,status:'AVAILABLE',release_date:null,...pick(body)});return mapper.toDetailDTO(await repo.create(data));}
+export async function updateObject(id,body){
+ const old=await existing(id),patch=pick(body);if(!Object.keys(patch).length)fail('No writable fields');
+ const data=validate({...pick(old),...patch});return mapper.toDetailDTO(await repo.update(id,data));
+}
+export async function removeObject(id){await existing(id);await repo.remove(id);}
+```
+
+
+02-ANSWERS/mobile-optional-view/HOW-TO.md
+# ใช้ชุด mobile-optional-view บนเทมเพลตครู
+ฐานคือ midterm-exam-esm-template.zip เดิม โฟลเดอร์ -$id คงตาม ZIP อย่าเปลี่ยนเป็น -guide
+เปิดโปรเจกต์ 01-WORK/node-express-esm-template ไม่เปิดชุดสำเร็จแทนข้อสอบโดยไม่อ่านโจทย์
+
+## กรณีเริ่มจากเทมเพลตว่าง ยังไม่มีข้อที่ทำไว้
+1. ดูโจทย์ว่าตรงชุดนี้: brands/products ตามWeek8 ไม่ส่งqueryคืนทั้งหมดและเลือกview
+2. เปิด CODE.md คัดโค้ดตามชื่อไฟล์จากหัวข้อไปวางในไฟล์ชื่อเดียวกันใน01-WORK
+3. เรียงการวาง: config → error-handler → api-response → mapper → pagination(ถ้าใช้) → repository → service → route → app
+4. เฉพาะ db-config.js ให้ใส่ค่าของเครื่องเอง อย่าคัดทับค่าที่คุณตั้งใช้ได้แล้ว; คง decimalNumbers/dateStrings ตามชุด
+5. app.js ใส่รหัส/ชื่อของคุณตามสเปก อย่าใช้ YOUR_STUDENT_ID ส่งงาน; Sakila บทสอนใช้ /countries ไม่ใช้ prefixนักศึกษา
+6. รัน node src/app.js ไม่ใช่ npm start เพราะ packageครูไม่มีstart
+7. ส่ง Postman ตามตาราง 05-POSTMAN.md ในรากคู่มือ แล้วตรวจresponseตามโจทย์
+
+## กรณีทำข้อก่อนแล้ว
+ห้ามคัด app.js ทั้งไฟล์ ให้เพิ่ม import/mount ของข้อใหม่ เก็บ express.json/routerเดิม/error handlerท้ายสุด
+ถ้าเป็นตารางเดียวกัน เพิ่มเฉพาะฟังก์ชัน/route ที่ต้องใช้ อย่าแทน service/repository ทั้งไฟล์จนข้อเดิมหาย
+หากคนละตาราง ใช้การคัดไฟล์เพิ่มแบบactor: repository/service/routeของresourceใหม่ แล้วเปลี่ยนimportเฉพาะคู่นั้น
+ตัวอย่างครบการเพิ่มresourceโดยไม่ลบของเดิมอยู่ 04-ADD-RESOURCE.md
+
+## รายการต่างจากครู (ดู CHANGES.diff เพื่อเทียบบรรทัดก่อน/หลัง)
+- `src/app.js`
+- `src/configs-$id/db-config.js`
+- `src/mappers-$id/api-response.js`
+- `src/mappers-$id/entity-dto-mapper.js`
+- `src/middlewares-$id/pagination-middleware.js`
+- `src/repositories-$id/repository.js`
+- `src/routes-$id/route.js`
+- `src/services-$id/service.js`
+
+เพิ่มไฟล์:
+- `src/middlewares-$id/error-handler.js`
+
+package.json และ package-lock.json คงไฟล์ครูทุกไบต์ ไม่มีdependencyเพิ่ม
+ไฟล์ src/test-service.js เก็บตามต้นฉบับเพื่อเทียบ แต่มีคำสั่งลบรหัส26และimportที่ไม่ตรง ห้ามกดRunไฟล์นี้
+
+
+02-ANSWERS/mobile-optional-view/CODE.md
+# โค้ดชุด mobile-optional-view — ใช้ชื่อไฟล์ครู
+อ่าน HOW-TO ก่อนคัด ใช้ node src/app.js
+
+## src/app.js
+```js
+// {student-id} - {student-name}
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+app.use(express.json());
+app.get('/api/' + studentId + '/student-info', (req,res) => apiResponse(res,{studentId,name:'YOUR_NAME',secretKey:'YOUR_SECRET'}));
+app.use('/api/' + studentId, productRouter);
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+app.use(errorHandler);
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+```
+
+## src/configs-$id/db-config.js
+```js
+// {student-id} - {student-name}
+import mysql from 'mysql2/promise';
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER || 'db-username',
+    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
+    database: process.env.DB_NAME || 'mobile_distributor',
+    decimalNumbers: true,
+    dateStrings: true,
+});
+export default db;
+```
+
+## src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'mobile';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+## src/mappers-$id/entity-dto-mapper.js
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+## src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='mobile';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+## src/middlewares-$id/pagination-middleware.js
+```js
+import {AppError} from './error-handler.js';
+export const queryParser = () => (req,res,next) => {
+ function positive(value,fallback){if(value===undefined)return fallback;if(typeof value!=='string'||! /^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new AppError('Invalid pagination',400,'VALIDATION_ERROR');return Number(value);}
+ const page=positive(req.query.page,1),limit=Math.min(positive(req.query.limit,10),100),offset=(page-1)*limit;
+ if(!Number.isSafeInteger(offset))throw new AppError('Page too large',400,'VALIDATION_ERROR');
+ req.pagination={page,limit,offset};next();
+}
+```
+
+## src/repositories-$id/repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function brands(){const [r]=await db.query('SELECT * FROM brands ORDER BY id');return r;}
+export async function brand(id){const [r]=await db.query('SELECT * FROM brands WHERE id=?',[id]);return r[0] || null;}
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+export async function findAll(pagination){
+ const sql='SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id ORDER BY p.id';
+ const [rows]=pagination ? await db.query(sql+' LIMIT ? OFFSET ?',[pagination.limit,pagination.offset]) : await db.query(sql);
+ const [[{total}]]=await db.query('SELECT COUNT(*) AS total FROM products');rows.totalItems = Number(total);return rows;
+}
+export async function create(data){const [result]=await db.query('INSERT INTO products SET ?',[data]);return findOne(result.insertId);}
+export async function update(id,data){await db.query('UPDATE products SET ? WHERE id=?',[data,id]);return findOne(id);}
+export async function remove(id){await db.query('DELETE FROM products WHERE id=?',[id]);}
+```
+
+## src/routes-$id/route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+import {queryParser} from '../middlewares-$id/pagination-middleware.js';
+const router=express.Router();
+router.get('/brands',async(req,res)=>apiResponse(res,await service.getBrands()));
+router.get('/brands/:id',async(req,res)=>apiResponse(res,await service.getBrand(req.params.id)));
+function optionalPagination(req,res,next){
+ if(req.query.page===undefined&&req.query.limit===undefined){req.pagination=null;return next();}
+ return queryParser()(req,res,next);
+}
+function viewOf(req,fallback){const view=req.query.view??fallback;if(view!=='summary'&&view!=='detail')throw new AppError('Invalid view',400,'VALIDATION_ERROR');return view;}
+router.get('/products',optionalPagination,async(req,res)=>{
+ const objects = await service.getAllObjects(req.pagination,viewOf(req,'summary'));
+ await apiResponse(res, objects, req.pagination);
+});
+router.get('/products/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id,viewOf(req,'detail'))));
+router.post('/products',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/products/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/products/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+```
+
+## src/services-$id/service.js
+```js
+import * as repo from '../repositories-$id/repository.js';
+import mapper from '../mappers-$id/entity-dto-mapper.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+const writable=[...required,'stock_quantity','status','release_date'];
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+function validate(p){
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+export const getBrands=()=>repo.brands();
+export async function getBrand(id){const row=await repo.brand(id);if(!row)throw new AppError('Brand not found',404,'BRAND_NOT_FOUND');return row;}
+export async function getAllObjects(pagination,view='summary'){return mapper.maps(await repo.findAll(pagination),view);}
+export async function getObject(id,view='detail'){const row=await existing(id);return view==='summary'?mapper.toSummaryDTO(row):mapper.toDetailDTO(row);}
+export async function createObject(body){const data=validate({stock_quantity:0,status:'AVAILABLE',release_date:null,...pick(body)});return mapper.toDetailDTO(await repo.create(data));}
+export async function updateObject(id,body){
+ const old=await existing(id),patch=pick(body);if(!Object.keys(patch).length)fail('No writable fields');
+ const data=validate({...pick(old),...patch});return mapper.toDetailDTO(await repo.update(id,data));
+}
+export async function removeObject(id){await existing(id);await repo.remove(id);}
+```
+
+
+02-ANSWERS/mobile-full-put/HOW-TO.md
+# ใช้ชุด mobile-full-put บนเทมเพลตครู
+ฐานคือ midterm-exam-esm-template.zip เดิม โฟลเดอร์ -$id คงตาม ZIP อย่าเปลี่ยนเป็น -guide
+เปิดโปรเจกต์ 01-WORK/node-express-esm-template ไม่เปิดชุดสำเร็จแทนข้อสอบโดยไม่อ่านโจทย์
+
+## กรณีเริ่มจากเทมเพลตว่าง ยังไม่มีข้อที่ทำไว้
+1. ดูโจทย์ว่าตรงชุดนี้: brands/products ตามWeek8 PUTต้องส่งrequiredครบ
+2. เปิด CODE.md คัดโค้ดตามชื่อไฟล์จากหัวข้อไปวางในไฟล์ชื่อเดียวกันใน01-WORK
+3. เรียงการวาง: config → error-handler → api-response → mapper → pagination(ถ้าใช้) → repository → service → route → app
+4. เฉพาะ db-config.js ให้ใส่ค่าของเครื่องเอง อย่าคัดทับค่าที่คุณตั้งใช้ได้แล้ว; คง decimalNumbers/dateStrings ตามชุด
+5. app.js ใส่รหัส/ชื่อของคุณตามสเปก อย่าใช้ YOUR_STUDENT_ID ส่งงาน; Sakila บทสอนใช้ /countries ไม่ใช้ prefixนักศึกษา
+6. รัน node src/app.js ไม่ใช่ npm start เพราะ packageครูไม่มีstart
+7. ส่ง Postman ตามตาราง 05-POSTMAN.md ในรากคู่มือ แล้วตรวจresponseตามโจทย์
+
+## กรณีทำข้อก่อนแล้ว
+ห้ามคัด app.js ทั้งไฟล์ ให้เพิ่ม import/mount ของข้อใหม่ เก็บ express.json/routerเดิม/error handlerท้ายสุด
+ถ้าเป็นตารางเดียวกัน เพิ่มเฉพาะฟังก์ชัน/route ที่ต้องใช้ อย่าแทน service/repository ทั้งไฟล์จนข้อเดิมหาย
+หากคนละตาราง ใช้การคัดไฟล์เพิ่มแบบactor: repository/service/routeของresourceใหม่ แล้วเปลี่ยนimportเฉพาะคู่นั้น
+ตัวอย่างครบการเพิ่มresourceโดยไม่ลบของเดิมอยู่ 04-ADD-RESOURCE.md
+
+## รายการต่างจากครู (ดู CHANGES.diff เพื่อเทียบบรรทัดก่อน/หลัง)
+- `src/app.js`
+- `src/configs-$id/db-config.js`
+- `src/mappers-$id/api-response.js`
+- `src/mappers-$id/entity-dto-mapper.js`
+- `src/middlewares-$id/pagination-middleware.js`
+- `src/repositories-$id/repository.js`
+- `src/routes-$id/route.js`
+- `src/services-$id/service.js`
+
+เพิ่มไฟล์:
+- `src/middlewares-$id/error-handler.js`
+
+package.json และ package-lock.json คงไฟล์ครูทุกไบต์ ไม่มีdependencyเพิ่ม
+ไฟล์ src/test-service.js เก็บตามต้นฉบับเพื่อเทียบ แต่มีคำสั่งลบรหัส26และimportที่ไม่ตรง ห้ามกดRunไฟล์นี้
+
+
+02-ANSWERS/mobile-full-put/CODE.md
+# โค้ดชุด mobile-full-put — ใช้ชื่อไฟล์ครู
+อ่าน HOW-TO ก่อนคัด ใช้ node src/app.js
+
+## src/app.js
+```js
+// {student-id} - {student-name}
+import express from 'express';
+import productRouter from './routes-$id/route.js';
+import {AppError,errorHandler} from './middlewares-$id/error-handler.js';
+import {apiResponse} from './mappers-$id/api-response.js';
+const app = express();
+const studentId = 'YOUR_STUDENT_ID'; // เปลี่ยนเป็นของตนตามสเปก; ไม่ใช่ :studentId
+app.use(express.json());
+app.get('/api/' + studentId + '/student-info', (req,res) => apiResponse(res,{studentId,name:'YOUR_NAME',secretKey:'YOUR_SECRET'}));
+app.use('/api/' + studentId, productRouter);
+app.use((req,res,next) => next(new AppError('Route not found',404,'ROUTE_NOT_FOUND')));
+app.use(errorHandler);
+app.listen(Number(process.env.PORT || 3000), () => {
+ console.log('Example app listening on port ' + (process.env.PORT || 3000));
+});
+```
+
+## src/configs-$id/db-config.js
+```js
+// {student-id} - {student-name}
+import mysql from 'mysql2/promise';
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'db-host', // แก้ db-host ให้ตรงเครื่อง
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER || 'db-username',
+    password: process.env.DB_PASSWORD ?? 'db-password', // รหัสของเครื่อง ไม่ใช่รหัสมหาวิทยาลัย
+    database: process.env.DB_NAME || 'mobile_distributor',
+    decimalNumbers: true,
+    dateStrings: true,
+});
+export default db;
+```
+
+## src/mappers-$id/api-response.js
+```js
+// {student-id} - {student-name}
+export async function apiResponse(res, data, pagination = null, status = 200) {
+    const mode = 'mobile';
+    if (mode === 'sakila') return res.status(status).json(status === 201 ? {result: data} : data);
+    if (mode === 'classic') return res.status(status).json({status: 'success', data});
+    const response = {success: true, data, timestamp: new Date().toISOString()};
+    if (pagination) {
+        const {page, limit} = pagination;
+        const total = data.totalItems;
+        response.pagination = {total, page, limit, totalPages: Math.ceil(total / limit), hasNextPage: page * limit < total, hasPrevPage: page > 1};
+    }
+    return res.status(status).json(response);
+}
+```
+
+## src/mappers-$id/entity-dto-mapper.js
+```js
+// {student-id} - {student-name}
+export default class EntityDtoMapper {
+ static toSummaryDTO(p){return {id:p.id,sku:p.sku,name:p.name,brandId:p.brand_id,category:p.category,price:p.price,status:p.status};}
+ static toDetailDTO(p){return {...this.toSummaryDTO(p),brandName:p.brand_name,ramGb:p.ram_gb,storageGb:p.storage_gb,color:p.color,stockQuantity:p.stock_quantity,releaseDate:p.release_date};}
+ static map(entity,viewType){return viewType==='summary'?this.toSummaryDTO(entity):this.toDetailDTO(entity);}
+ static maps(entities,viewType){
+  const data=entities.map(entity=>this.map(entity,viewType));
+  if(entities.totalItems!==undefined)data.totalItems=entities.totalItems;
+  return data;
+ }
+}
+```
+
+## src/middlewares-$id/error-handler.js
+```js
+export class AppError extends Error {
+ constructor(message,statusCode,errorCode){super(message);this.statusCode=statusCode;this.errorCode=errorCode;}
+}
+export function errorHandler(err,req,res,next){
+ if(res.headersSent)return next(err);
+ let status=err.statusCode || err.status || 500, code=err.errorCode || 'INTERNAL_SERVER_ERROR',message=err.message;
+ if(err.type==='entity.parse.failed'){status=400;code='INVALID_JSON';message='Invalid JSON body';}
+ if(err.code==='ER_DUP_ENTRY'){status=409;code='DUPLICATE_KEY';message=err.publicMessage || 'Resource already exists';}
+ if(err.code==='ER_NO_REFERENCED_ROW_2'){status=400;code='FOREIGN_KEY_NOT_FOUND';message=err.publicMessage || 'Referenced record does not exist';}
+ if(err.code==='ER_ROW_IS_REFERENCED_2'){status=409;code='RESOURCE_IN_USE';message=err.publicMessage || 'Resource is referenced by related records';}
+ if(status>=500){console.error(err);message='Internal server error';}
+ const mode='mobile';
+ if(mode==='classic')return res.status(status).json({status:'error',error:{code,message}});
+ if(mode==='sakila')return res.status(status).json({status,error:code,message,resource:req.originalUrl,timestamp:new Date().toLocaleString('en-US')});
+ return res.status(status).json({success:false,error:{code,message},timestamp:new Date().toISOString()});
+}
+```
+
+## src/middlewares-$id/pagination-middleware.js
+```js
+import {AppError} from './error-handler.js';
+export const queryParser = () => (req,res,next) => {
+ function positive(value,fallback){if(value===undefined)return fallback;if(typeof value!=='string'||! /^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new AppError('Invalid pagination',400,'VALIDATION_ERROR');return Number(value);}
+ const page=positive(req.query.page,1),limit=Math.min(positive(req.query.limit,10),100),offset=(page-1)*limit;
+ if(!Number.isSafeInteger(offset))throw new AppError('Page too large',400,'VALIDATION_ERROR');
+ req.pagination={page,limit,offset};next();
+}
+```
+
+## src/repositories-$id/repository.js
+```js
+import db from '../configs-$id/db-config.js';
+export async function brands(){const [r]=await db.query('SELECT * FROM brands ORDER BY id');return r;}
+export async function brand(id){const [r]=await db.query('SELECT * FROM brands WHERE id=?',[id]);return r[0] || null;}
+export async function findOne(id){const [r]=await db.query('SELECT p.*,b.name AS brand_name FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?',[id]);return r[0] || null;}
+export async function findAll({limit,offset}){
+ const [rows]=await db.query('SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?',[limit,offset]);
+ const [[{total}]]=await db.query('SELECT COUNT(*) AS total FROM products');rows.totalItems = Number(total);return rows;
+}
+export async function create(data){const [result]=await db.query('INSERT INTO products SET ?',[data]);return findOne(result.insertId);}
+export async function update(id,data){await db.query('UPDATE products SET ? WHERE id=?',[data,id]);return findOne(id);}
+export async function remove(id){await db.query('DELETE FROM products WHERE id=?',[id]);}
+```
+
+## src/routes-$id/route.js
+```js
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+import {queryParser} from '../middlewares-$id/pagination-middleware.js';
+const router=express.Router();
+router.get('/brands',async(req,res)=>apiResponse(res,await service.getBrands()));
+router.get('/brands/:id',async(req,res)=>apiResponse(res,await service.getBrand(req.params.id)));
+router.get('/products',queryParser(),async(req,res)=>{
+ const objects = await service.getAllObjects(req.pagination);
+ await apiResponse(res, objects, req.pagination);
+});
+router.get('/products/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+router.post('/products',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/products/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/products/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;
+```
+
+## src/services-$id/service.js
+```js
+import * as repo from '../repositories-$id/repository.js';
+import mapper from '../mappers-$id/entity-dto-mapper.js';
+import {AppError} from '../middlewares-$id/error-handler.js';
+const required=['sku','name','brand_id','category','price','ram_gb','storage_gb','color'];
+const writable=[...required,'stock_quantity','status','release_date'];
+function fail(message){throw new AppError(message,400,'VALIDATION_ERROR');}
+function object(body){if(!body||typeof body!=='object'||Array.isArray(body))fail('JSON object required');}
+function pick(body){object(body);const data={};for(const key of writable)if(Object.hasOwn(body,key))data[key]=body[key];return data;}
+function validate(p){
+ for(const key of required)if(p[key]===undefined||p[key]===null)fail(`Field '${key}' is required`);
+ for(const key of ['sku','name','category','color','status'])if(typeof p[key]!=='string'||!p[key].trim())fail(`Invalid ${key}`);
+ for(const key of ['brand_id','ram_gb','storage_gb'])if(!Number.isSafeInteger(p[key])||p[key]<=0)fail(`Invalid ${key}`);
+ if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)fail('Invalid price');
+ if(!Number.isSafeInteger(p.stock_quantity)||p.stock_quantity<0)fail('Invalid stock_quantity');
+ if(p.release_date!==null){const s=p.release_date,d=new Date(s+'T00:00:00Z');if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)fail('Invalid release_date');}
+ return p;
+}
+async function existing(id){const row=await repo.findOne(id);if(!row)throw new AppError(`Product '${id}' was not found`,404,'PRODUCT_NOT_FOUND');return row;}
+export const getBrands=()=>repo.brands();
+export async function getBrand(id){const row=await repo.brand(id);if(!row)throw new AppError('Brand not found',404,'BRAND_NOT_FOUND');return row;}
+export async function getAllObjects(pagination){return mapper.maps(await repo.findAll(pagination),'summary');}
+export async function getObject(id){return mapper.toDetailDTO(await existing(id));}
+export async function createObject(body){const data=validate({stock_quantity:0,status:'AVAILABLE',release_date:null,...pick(body)});return mapper.toDetailDTO(await repo.create(data));}
+export async function updateObject(id,body){
+ const old=await existing(id);object(body);for(const key of required)if(!Object.hasOwn(body,key))fail(`Field '${key}' is required`);const patch=pick(body);if(!Object.keys(patch).length)fail('No writable fields');
+ const data=validate({...pick(old),...patch});return mapper.toDetailDTO(await repo.update(id,data));
+}
+export async function removeObject(id){await existing(id);await repo.remove(id);}
+```

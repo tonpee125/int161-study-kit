@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>เปิดสรุปบทเรียน INT161</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:#17283d;font:18px/1.8 system-ui,sans-serif}main{max-width:880px;margin:55px auto;padding:40px;background:white;border:1px solid #dce3ec;border-radius:20px;box-shadow:0 12px 40px #1934520c}.tag{font-size:14px;font-weight:700;color:#42618a;letter-spacing:2px}h1{font-size:clamp(30px,5vw,44px);line-height:1.4;margin:12px 0}p{color:#526279}.primary{display:block;text-align:center;background:#145bda;color:white;text-decoration:none;font-size:25px;font-weight:700;padding:23px 20px;border-radius:12px;margin:30px 0 12px;box-shadow:0 7px 18px #145bda28}.primary:hover{background:#0d48b3}a:focus-visible{outline:4px solid #e7af36;outline-offset:4px}.hint{text-align:center;font-size:15px;margin:0 0 25px}.secondary{display:grid;grid-template-columns:1fr 1fr;gap:12px}.secondary a{color:#164d98;border:1px solid #cedaea;border-radius:9px;padding:15px;text-decoration:none;background:#f8faff}.help{margin-top:26px;padding-top:16px;border-top:1px solid #e2e8ef;font-size:15px}.help strong{color:#273f60}code{font-family:Consolas,monospace}footer{color:#738095;font-size:13px;margin-top:24px}@media(max-width:600px){main{margin:16px;padding:24px}.secondary{grid-template-columns:1fr}.primary{font-size:22px}}
+</style>
+<style id="kit-navigation-style">.kit-navigation{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:1220px;margin:0 auto;padding:12px 20px;font:15px/1.5 system-ui}.kit-navigation a,.kit-navigation button{display:inline-block;border:1px solid #b6c7d9;border-radius:6px;background:#fff;color:#164e85;padding:9px 13px;text-decoration:none;font:inherit;cursor:pointer;min-height:42px}.kit-navigation :focus-visible{outline:3px solid #d89c23;outline-offset:3px}@media print{.kit-navigation{display:none}}</style></head>
+<body><nav class="kit-navigation" aria-label="ทางไปหน้าต่าง ๆ"><a href="../../00-เปิดเลือกชุด.html">เลือก 3 ชุด</a><button type="button" onclick="if(history.length>1){history.back()}else{location.href='index.html'}">ย้อนกลับ</button><a href="index.html">หน้าหลัก</a><a href="STEP-BY-STEP.html">ทำทีละขั้น</a><a href="START-TREE.html#search">ค้นหาโจทย์</a><a href="WEEK8-ALL.html">ตัวอย่าง Week 8</a><a href="FRIENDS.html">ดูของเพื่อน</a></nav><main>
+<div class="tag">INT161 · เริ่มอ่านตรงนี้</div>
+<h1>สรุปบทเรียน<br>REST API ด้วย Express.js</h1>
+<p>ใช้เทมเพลตกลางภาคชุดเดียว ฝึกโจทย์ Week8, Week6 และ Sakila ด้วยขั้นตอนเพิ่มโค้ดทีละข้อ พร้อม DTO การแบ่งหน้า และการจัดการข้อผิดพลาด</p>
+<a class="primary" href="STEP-BY-STEP.html">เริ่มทำทีละขั้น →</a>
+<p class="hint">เลือกโจทย์ → ดูตัวอย่าง → กรอกค่า → รับโค้ด</p>
+<details><summary>ดาวน์โหลดโปรเจกต์พร้อมเปิดใน WebStorm</summary><p><a href="READY-STARTER.zip" download>ชุดเริ่มพร้อมใช้ · ฐานข้อมูลใดก็ได้</a></p><p><a href="READY-WEEK8.zip" download>ชุดตัวอย่าง Week 8 · API ครบทุกข้อ</a></p><p>แตก ZIP → เปิดโฟลเดอร์ใน WebStorm → เปิด 00-เปิดวิธีใช้.html มี config, error handling และ Postman ให้แล้ว ต้องตั้งฐานข้อมูลกับรหัสของคุณก่อนใช้</p></details><div class="secondary">
+<a href="STEP-BY-STEP.html" style="background:#e5efff;font-weight:700">เริ่มเปิด WebStorm → ทำทีละขั้น + สะสมโค้ด →</a>
+<a href="START-TREE.html#u-main">วางโจทย์ค้นหา หรือเลือกประเภทงานทั่วไป →</a>
+<a href="WEEK8-ALL.html" style="background:#e5efff;font-weight:700">Week 8: โจทย์ + เฉลยทุกข้อ ทำตามทีละขั้น →</a>
+<a href="START-TREE.html#prepare">เริ่มครั้งแรก: ตั้งค่าและเชื่อม MySQL →</a>
+<a href="START-TREE.html#help-spec">ตัวอย่างงาน Mobile / Week 8 →</a>
+<a href="START-TREE.html#first">ฝึกครั้งแรก: GET /countries →</a>
+</div>
+<div class="help"><strong>เพิ่งดาวน์โหลดจาก GitHub?</strong><br>แตกไฟล์ ZIP ก่อน แล้วเปิด <code>00-เปิดสรุปบทเรียน.html</code> หรือ <code>index.html</code> ด้วยเบราว์เซอร์ หากเปิดเป็นโค้ด ให้คลิกขวา → Open with → Brave / Chrome / Edge<br><br><strong>ใช้ Live Server อยู่?</strong><br>เปิดโฟลเดอร์ชุดนี้ที่มี <code>index.html</code> เป็นโฟลเดอร์หลัก แล้วเปิดหน้าหลัก จะพบปุ่มนี้โดยตรง</div>
+<footer>เอกสารสรุปพร้อมขั้นตอนและตัวอย่างโค้ด · ไฟล์โปรเจกต์ฝึกอยู่ใน 01-WORK</footer>
+</main></body></html>

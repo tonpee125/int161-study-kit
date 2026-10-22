@@ -1,0 +1,10 @@
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+const router=express.Router();
+router.get('/',async(req,res)=>apiResponse(res,await service.getAllObjects()));
+router.get('/:id',async(req,res)=>apiResponse(res,await service.getObject(req.params.id)));
+router.post('/',async(req,res)=>apiResponse(res,await service.createObject(req.body),null,201));
+router.put('/:id',async(req,res)=>apiResponse(res,await service.updateObject(req.params.id,req.body)));
+router.delete('/:id',async(req,res)=>{await service.removeObject(req.params.id);res.status(204).end();});
+export default router;

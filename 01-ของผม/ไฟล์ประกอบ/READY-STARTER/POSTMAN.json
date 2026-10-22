@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "READY-STARTER Postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "server",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "studentId",
+      "value": "YOUR_STUDENT_ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Server health",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/health"
+      }
+    }
+  ]
+}

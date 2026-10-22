@@ -1,0 +1,1602 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>เพื่อนชุด (2)</title><style>body{font:18px/1.8 system-ui;color:#203046;background:#f2f5fa;margin:0}main{max-width:1000px;margin:25px auto;padding:25px}details{padding:15px;border:1px solid #c6d5e6;background:white;border-radius:8px;margin:15px 0}summary{cursor:pointer;font-weight:600}pre{overflow:auto;background:#252b34;color:white;padding:18px}a{color:#195da5}img{max-width:100%}table{display:block;overflow:auto}p,li{overflow-wrap:anywhere}</style></head><body><nav id="bundle-navigation"><button onclick="if(history.length>1){history.back()}else{location.href='../00-เปิดเลือกชุด.html'}">ย้อนกลับ</button><a href="../00-เปิดเลือกชุด.html">เลือก 3 ชุด</a><a href="../01-ของผม/00-เปิดตรงนี้.html">01-ของผม</a><a href="../03-เพื่อนชุด (3)/00-เปิดตรงนี้.html">03-เพื่อนชุด (3)</a></nav><main><h1>เพื่อนชุด (2)</h1><p>เอกสารต้นฉบับของเพื่อน ใช้อ่านประกอบกับของเรา</p><section id="start"><h2 id="START-HERE.th">เริ่มใช้</h2><h1>เริ่มใช้ Template</h1>
+<h2>เตรียมก่อนตัดเน็ต</h2>
+<p>ต้องมี Node &gt;=22.9, MySQL เปิดอยู่ และดาวน์โหลดdependenciesเรียบร้อย repoเป็นpublic ดาวน์โหลดได้ผ่าน GitHub</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>git clone https://github.com/Phakinza007/int161-exam-kit.git
+cd int161-exam-kit
+npm ci
+cp .env.example .env
+</code></pre></div>
+<p>ถ้าดาวน์โหลดZIPให้แตกแล้วcdเข้าโฟลเดอร์ที่มีpackage.json จากนั้นnpm ciและcopy.env.exampleเหมือนกัน ZIPไม่รวมnode_modules ใช้เครื่องสอบจริงเตรียมไว้ก่อน</p>
+<h2>เปิดโครงด้วยฐานตัวอย่าง</h2>
+<p>ตั้ง <code>.env</code> ให้ตรงMySQLเครื่องตัวเอง เช่นDB_USER/DB_PASSWORD ส่วนDB_MODEให้เป็นpractice และDB_NAMEเป็นint161_practice_catalog</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>npm run db:init
+npm run doctor
+npm start
+</code></pre></div>
+<p>เปิด <code>http://127.0.0.1:3000/api/demo001/products?page=1&amp;limit=10</code> ได้APIจริงแล้ว ต่อไปปรับโค้ดจาก <a href="#GUIDE">GUIDE.md</a> ไม่ต้องทำโจทย์ฝึกเพิ่ม</p>
+<p><code>db:init</code> สร้างเฉพาะฐานprefix int161_practice_ ที่มีmarkerของชุดนี้ หากฐานชื่อเดียวกันมีอยู่แต่ไม่มีmarkerให้เลือกชื่อฝึกใหม่ที่ยังไม่มี ไม่เติมmarkerลงฐานที่ไม่รู้ที่มา</p>
+<h2>ใช้กับฐานที่อาจารย์กำหนด</h2>
+<p>หลังอ่านschemaและปรับโค้ดตามGUIDEแล้ว ตั้งค่าชัดเจนใน.env:</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>DB_MODE=exam
+DB_NAME=database_name_from_spec
+STUDENT_ID=your_actual_id
+STUDENT_NAME=Your Name
+STUDENT_KEY=key_from_spec
+</code></pre></div>
+<p>แก้host/port/user/passwordให้ถูก แล้ว <code>npm run doctor</code> และ <code>npm start</code> โหมดนี้ตรวจconnectivityอย่างเดียว ไม่สร้างตาราง/seed/reset/บังคับmarker ต้องนำเข้าSQLของอาจารย์เองตามคำสั่ง ห้ามใช้db:initหรือtestของชุดนี้กับฐานสอบ โหมดexamจะปฏิเสธหากDB_NAME/STUDENT_ID/STUDENT_NAME/STUDENT_KEYว่างหรือยังใช้ค่าตัวอย่าง ต้องเปลี่ยนYour Name/key_from_specในsnippetด้านบนเป็นค่าจริงก่อนรัน</p>
+<p>หากSQL/requiredfieldsยังเป็นproductsของตัวอย่าง ต้องแก้ให้ตรงก่อนยิงPOST/PUT/DELETE ไม่ถือว่าการเปลี่ยน.envอย่างเดียวทำให้รองรับทุกโจทย์</p>
+<h2>ระหว่างแก้งาน</h2>
+<p>เปิด <a href="#GUIDE">GUIDE.md</a> คู่กับsrc ค้นคอมเมนต์ <code>ADAPT</code> แก้ตามลำดับ แล้วส่งrequestจาก [catalog.http](requests/catalog.http) โดยแก้baseURL/bodyให้ตรงโครงของตัวเอง</p>
+<p>Ctrl+Cหยุดserver ไม่commit.env หลังเตรียมเอกสารและdependenciesในช่วงที่อนุญาต ระหว่างสอบห้ามใช้อินเทอร์เน็ต รับ/ส่งprojectตามLEB2และคำสั่งอาจารย์</p>
+<h2>เปิดคู่มือใน localhost</h2>
+<p>รัน <code>npm run study</code> แล้วเปิด http://127.0.0.1:8171 เพื่อค้นคู่มือและ source พร้อมสีโค้ด อีก Terminal ใช้ <code>npm start</code> เปิด API ที่ port3000 ดู <a href="#POSTMAN">Postman</a> สำหรับการส่ง request แบบละเอียด</p></section><details id="GUIDE"><summary>GUIDE.md</summary><h1>GUIDE — ใช้โครงนี้ทำข้อสอบทีละขั้น</h1>
+<p>คู่มือนี้สำหรับ **int161-exam-kit** ที่ใช้ products/brands และ folder <code>services-$id</code>, <code>repositories-$id</code> โค้ดใน <code>src/</code> ทำงานครบอยู่แล้ว ใช้เป็นโครงอ้างอิงแล้วปรับตามสเปกที่ได้รับ ไม่ใช่ไฟล์พร้อมส่งทุกข้อสอบ</p>
+<p>ถ้าคุณกำลังเปิด <code>project/</code> แบบ Students API ที่ดาวน์โหลดจากเว็บ ให้ใช้ GUIDE.md ภายในโฟลเดอร์นั้นแทน ชื่อไฟล์และรูปแบบ response ของสองชุดต่างกัน</p>
+<p>เปิดคู่มือนี้พร้อม source บน localhost ได้ด้วย <code>npm run study</code> → http://127.0.0.1:8171 ส่วนการเชื่อม API ดู <a href="#POSTMAN">POSTMAN.md</a></p>
+<h2>สารบัญ / เปิดตรงไหนเมื่อมีเวลาไม่มาก</h2>
+<p>| ต้องการ | อ่านส่วน |</p>
+<p>| --- | --- |</p>
+<p>| เพิ่งโหลดมา ยังรันไม่เป็น | 1–2 |</p>
+<p>| ไม่รู้ว่าไฟล์ไหนทำอะไร | 3–4 |</p>
+<p>| ได้โจทย์แล้ว ไม่รู้จะเริ่มตรงไหน | 5–6 |</p>
+<p>| ปรับ CRUD แต่ละข้อ | 7 |</p>
+<p>| DTO / Pagination / Exception | 8–10 |</p>
+<p>| ทดสอบ แก้ error และส่งงาน | 11–14 |</p>
+<p>อ่าน <a href="#QUESTIONS-AND-ANSWERS">คำถามพร้อมเฉลย วิธีคิดและวิธีทำ</a> คู่กันได้ ส่วนหน้านี้เน้นวิธีใช้และแก้ template ที่มีอยู่ ไม่เพิ่มโจทย์ใหม่</p>
+<h2>1. ก่อนเริ่ม: แยกของตัวอย่างกับของสอบ</h2>
+<p>ประกาศภาคปฏิบัติระบุ 6 ข้อ: 1 Create, 3 Read, 1 Update, 1 Delete เน้น CRUD, DTO, Pagination และ Exception Handling แต่ไม่ได้บอกว่า Read ทั้งสามต้องเป็น endpoint ใด</p>
+<p>โครงนี้เลือก brands list, products list และ product detail เป็น 3 Read หลัก **ไม่ได้หมายความว่าข้อสอบจริงจะใช้สามแบบนี้** routes ของ tags, string key และ composite key เป็นตัวอย่างเสริมสำหรับหยิบใช้เฉพาะเมื่อสเปกต้องการ</p>
+<p>สิ่งที่ต้องอ่านจากโจทย์ก่อนเขียนโค้ด:</p>
+<p>Method และ path ต้องตรง รวม prefix รหัสนักศึกษา</p>
+<p>ฐานข้อมูล ตาราง คอลัมน์ และชนิด key</p>
+<p>Body ที่รับ: ชื่อ ชนิด required/optional และยอมรับ null หรือไม่</p>
+<p>Response: key, ชนิดข้อมูล, DTO, envelope และ pagination metadata</p>
+<p>กรณีสำเร็จและผิดพลาด: HTTP status, error code และข้อความที่กำหนด</p>
+<p>ค่าตัวอย่างในคู่มือนี้ เช่น <code>/api/demo001</code>, products, limit 10 และ status ของแต่ละ endpoint ใช้ยืนยันพฤติกรรมของโครงนี้เท่านั้น ให้เปลี่ยนเมื่อสเปกสอบกำหนดต่างออกไป</p>
+<h2>2. เปิดโครงให้ได้ก่อนแก้</h2>
+<h3>2.1 เตรียมในช่วงที่ใช้อินเทอร์เน็ตได้</h3>
+<p>ต้องมี Node.js &gt;=22.9, npm, MySQL ที่เปิดใช้งาน และ editor/เครื่องมือส่ง HTTP request ในเครื่อง</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>git clone https://github.com/Phakinza007/int161-exam-kit.git
+cd int161-exam-kit
+npm ci
+cp .env.example .env
+</code></pre></div>
+<p>ถ้าใช้ ZIP ให้แตกแล้วเปิด Terminal ในโฟลเดอร์ที่มี <code>package.json</code> ไม่ใช่โฟลเดอร์ชั้นนอก <code>npm ci</code> ติดตั้งจาก <code>package-lock.json</code>; ZIP ไม่รวม <code>node_modules</code> ต้องทำขั้นนี้ก่อนตัดอินเทอร์เน็ต</p>
+<h3>2.2 แก้ .env ของเครื่องตัวเอง</h3>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>DB_MODE=practice
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=int161_practice_catalog
+TEST_DB_NAME=int161_practice_tests
+PORT=3000
+STUDENT_ID=demo001
+STUDENT_NAME=Demo Student
+STUDENT_KEY=fictional-key
+</code></pre></div>
+<p>DB_PASSWORD ต้องตรงกับ MySQL เครื่องคุณ ค่า PORT คือ port ของ API ส่วน DB_PORT คือ port ของ MySQL ซึ่งเป็นคนละอย่างกัน <code>.env</code> เป็นไฟล์ส่วนตัว ไม่ต้องใส่ลง Git</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>npm run db:init
+npm run doctor
+npm start
+</code></pre></div>
+<p><code>db:init</code>: สร้างตารางและข้อมูลตัวอย่างในฐานฝึกของชุดนี้</p>
+<p><code>doctor</code>: ตรวจ dependencies และเชื่อมต่อฐานด้วย SELECT แบบอ่านอย่างเดียว ไม่ตรวจว่า SQL ทุก endpoint ถูก</p>
+<p><code>start</code>: เปิด HTTP server; ต้องปล่อย Terminal นี้ทำงานอยู่ กด Ctrl+C เพื่อหยุด</p>
+<p>เปิด <code>http://127.0.0.1:3000/api/demo001/products?page=1&amp;limit=10</code> ควรได้ HTTP 200 มี <code>success</code>, <code>data</code> เป็น array, <code>pagination</code> และ <code>timestamp</code></p>
+<p>หากฐานชื่อเดียวกันมีอยู่แต่ไม่มี marker ของชุดนี้ <code>db:init</code> จะปฏิเสธ ให้ใช้ชื่อฐานฝึกใหม่ที่ขึ้นต้น <code>int161_practice_</code> ไม่เติม marker เองลงฐานที่ไม่รู้ที่มา รายละเอียดอยู่ใน <a href="#START-HERE.th">START-HERE</a></p>
+<h3>2.3 เมื่อต่อฐานตามโจทย์จริง</h3>
+<p>ตั้ง <code>DB_MODE=exam</code>, DB_NAME และ STUDENT_ID/STUDENT_NAME/STUDENT_KEY เป็นค่าจริงครบตามที่กำหนด โหมดนี้ไม่ยอมใช้ identity ตัวอย่าง ต้องนำเข้า SQL อาจารย์ตามคำสั่ง และปรับโค้ดให้ตรง schema ก่อนส่ง request เขียนข้อมูล</p>
+<p>ใช้ <code>npm run doctor</code> และ <code>npm start</code> ได้ แต่ **ไม่ใช้ db:init หรือ npm test ของโครงนี้กับฐานสอบ** เพราะชุดทดสอบจัดการ fixture ของฐานฝึก ไม่ใช่ runner ตรวจข้อสอบจริง</p>
+<h2>3. แผนที่ไฟล์: งานแบบไหนแก้ที่ไหน</h2>
+<p>| ไฟล์/ตำแหน่ง | ทำอะไร | เมื่อไรต้องแก้ |</p>
+<p>| --- | --- | --- |</p>
+<p>| [src/server.js](src/server.js) | โหลด config ต่อ DB และ listen | entrypoint หรือ port ตาม template |</p>
+<p>| [src/app.js](src/app.js) | ประกอบ layers, JSON parser, prefix, error handler | เปลี่ยน base path หรือ router |</p>
+<p>| [settings.js](src/configs-$id/settings.js) | อ่าน .env / mode / identity | config ของโจทย์ |</p>
+<p>| [db-config.js](src/configs-$id/db-config.js) | สร้าง MySQL pool | ตัวเลือกเชื่อมต่อ |</p>
+<p>| [catalog-route.js](src/routes-$id/catalog-route.js) | method/path → handler | endpoint, params, middleware |</p>
+<p>| [controllers](src/controllers-$id) | req → service → HTTP response | อ่าน input / status / response |</p>
+<p>| [catalog-service.js](src/services-$id/catalog-service.js) | validation, duplicate, not-found, DTO | body และ business rules |</p>
+<p>| [catalog-repository.js](src/repositories-$id/catalog-repository.js) | SQL และผลฐานข้อมูล | schema, JOIN, WHERE, key |</p>
+<p>| [product-mapper.js](src/mappers-$id/product-mapper.js) | Entity → summary/detail DTO | ชื่อและชนิด field ที่ส่งออก |</p>
+<p>| [api-response.js](src/mappers-$id/api-response.js) | success envelope และ metadata | โครง JSON ชั้นนอก |</p>
+<p>| [pagination.js](src/middlewares-$id/pagination.js) | ตรวจ query และคำนวณ offset | default, max, invalid policy |</p>
+<p>| [app-error.js](src/middlewares-$id/app-error.js) | custom error | constructor ที่ handler อ่าน |</p>
+<p>| [error-handler.js](src/middlewares-$id/error-handler.js) | error → status/JSON | error contract |</p>
+<p>ไม่จำเป็นต้องแก้ทุกไฟล์ในทุกข้อ เช่น ถ้าเปลี่ยนชื่อ field ใน response อย่างเดียว อาจแก้ mapper; ถ้า field นั้นต้องมาจากอีกตาราง ต้องแก้ repository JOIN/alias ด้วย</p>
+<h2>4. ไล่หนึ่ง Request ตั้งแต่เข้าไปจนตอบกลับ</h2>
+<p>ตัวอย่าง <code>GET /api/demo001/products/7</code>:</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>Client → express.json → /api/demo001 → GET /products/:id
+       → controller อ่าน req.params.id เป็น &quot;7&quot;
+       → numericId ตรวจและแปลงเป็น 7
+       → service.getProduct(7)
+       → repo.findProduct(7) → SQL + MySQL
+       ← entity หรือ null
+       → service ตรวจพบ/ไม่พบ → detail(entity)
+       ← DTO → controller → success(res, DTO) → HTTP 200 + JSON
+</code></pre></div>
+<p>ถ้า repository คืน null: service โยน AppError 404 → Express 5 ส่ง rejected Promise เข้า error handler → HTTP 404 + error envelope ไม่เรียก mapper ด้วย null</p>
+<p>จำหน้าที่จากโค้ด:</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// Controller: จัดการ HTTP
+const dto = await service.getProduct(numericId(req.params.id));
+return success(res, dto);
+
+// Repository: ดึงแถว; ไม่ใช้ res/req
+findProduct: id =&gt; one(PRODUCT_SELECT + &#x27; WHERE p.id=?&#x27;, [id])
+
+// Mapper: สร้างข้อมูลออก; ไม่ query DB
+price: Number(entity.price)
+</code></pre></div>
+<p><code>await</code> จำเป็นเพราะ service/repository คืน Promise ถ้าลืมอาจส่งข้อมูลที่ยังไม่เสร็จ แทนผล query</p>
+<h2>5. แปลงสเปกเป็นรายการแก้โค้ด</h2>
+<p>จดก่อนลงมือ ใช้ <a href="#guides/01-contract">Contract Sheet</a> ได้:</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>Method/path:
+Path params และชนิด:
+Query + default/max:
+Body: field / type / required / nullable / default
+Table / PK / FK / UNIQUE:
+Success: HTTP status / DTO / envelope
+Errors: condition → status / code / message
+</code></pre></div>
+<p>ตัวอย่างวิธีคิด: สเปกบอกว่า response ต้องมี <code>brandName</code></p>
+<p>1. หาว่าข้อมูลอยู่ตารางใด: ในโครงนี้คือ brands.name</p>
+<p>2. Repository JOIN brands แล้ว alias <code>brand_name</code></p>
+<p>3. Mapper อ่าน <code>entity.brand_name</code> แล้วส่ง key <code>brandName</code></p>
+<p>4. Controller ใช้ detail DTO ไม่ใช่ summary ซึ่งไม่มี field นี้</p>
+<p>5. ตรวจ JSON จริงว่ามีค่าและชนิดถูก อย่าตรวจแค่ HTTP 200</p>
+<p>หากสเปกเปลี่ยนจาก products เป็น resource อื่น ให้จด mapping ของทุกชื่อก่อน rename เพื่อไม่ให้ SQL เปลี่ยนแล้ว service/mapper ยังอ้างชื่อเดิม</p>
+<h2>6. ลำดับแก้ที่แนะนำ</h2>
+<p>1. ตั้ง DB/identity และเปิด schema อาจารย์</p>
+<p>2. แก้ repository ให้ SELECT ตาราง/คอลัมน์และ key ถูกก่อน</p>
+<p>3. แก้ validation และ business rules ใน service</p>
+<p>4. แก้ mapper และ response envelope</p>
+<p>5. แก้ controller/route ให้ method/path/input/status ตรง</p>
+<p>6. แก้ pagination และ error contract</p>
+<p>7. ทดสอบ happy path → negative cases → persistence</p>
+<p>ค้น <code>ADAPT</code> ใน editor เพื่อเห็นจุดปรับ แต่ไม่ใช้ search/replace เปลี่ยนทุกคำโดยไม่อ่าน เช่น field ของ DB อาจเป็น snake_case แต่ API ต้องเป็น camelCase</p>
+<h2>7. วิธีปรับ CRUD ทั้ง 6 รูปแบบ</h2>
+<h3>7.1 Create — เพิ่มข้อมูล</h3>
+<p>เปิด [controller Create](src/controllers-$id/01-create-product.js), <code>createProduct</code>/<code>productInput</code> ใน service และ <code>createProduct</code> ใน repository</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>req.body → ตรวจชนิด/required → allowlist
+         → เช็ก unique → INSERT → อ่านแถวใหม่ → detail DTO → 201
+</code></pre></div>
+<p>ในโครงนี้ body ขั้นต่ำคือ:</p>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{
+  <span class="json-key">&quot;sku&quot;</span>: <span class="json-string">&quot;MANUAL-001&quot;</span>, <span class="json-key">&quot;name&quot;</span>: <span class="json-string">&quot;Manual Phone&quot;</span>, <span class="json-key">&quot;brand_id&quot;</span>: <span class="json-number">1</span>,
+  <span class="json-key">&quot;category&quot;</span>: <span class="json-string">&quot;PHONE&quot;</span>, <span class="json-key">&quot;price&quot;</span>: <span class="json-number">1200.5</span>,
+  <span class="json-key">&quot;ram_gb&quot;</span>: <span class="json-number">8</span>, <span class="json-key">&quot;storage_gb&quot;</span>: <span class="json-number">128</span>, <span class="json-key">&quot;color&quot;</span>: <span class="json-string">&quot;Black&quot;</span>
+}
+</code></pre></div>
+<p><code>stock_quantity</code> ไม่ส่งจะใช้ 0, <code>status</code> ใช้ AVAILABLE, <code>release_date</code> ใช้ null ตามกฎของโครงนี้ ไม่ใช่ default ของทุกข้อสอบ</p>
+<p>แก้ productInput ให้คืน object เฉพาะ field ที่อนุญาต ไม่ส่ง req.body ทั้งก้อนลง SQL</p>
+<p><code>INSERT ... SET ?</code> ในชุดนี้ใช้ **mysql2.query** กับ object ที่ผ่าน allowlist แล้ว ถ้าเปลี่ยนเป็น execute ให้ใช้ <code>(columns) VALUES (?,...)</code> และ array ของค่าแทน</p>
+<p>auto increment ใช้ result.insertId; string PK อ่านกลับด้วย key ที่ส่งมา ไม่ใช้ SELECT MAX(id)</p>
+<p>precheck unique ช่วยให้ error ชัด แต่ยังต้องจับ ER_DUP_ENTRY เมื่อมี request ชนกัน</p>
+<h3>7.2 Read 1 — รายการที่ไม่แบ่งหน้า</h3>
+<p>เปิด [controller brands list](src/controllers-$id/02-read-brands.js) → service.listBrands → repo.listBrands</p>
+<p>โครงนี้ส่งแถว brands ที่ SELECT ไว้โดยตรง หากโจทย์กำหนด DTO ให้เพิ่ม mapper และ <code>rows.map(...)</code> ก่อนตอบ รายการว่างมักส่ง [] ตาม contract ไม่ใช่ return null โดยไม่ดูสเปก</p>
+<h3>7.3 Read 2 — รายการแบบ Pagination</h3>
+<p>เปิด [controller products list](src/controllers-$id/03-read-products.js) route ต้องเรียก queryParser ก่อน handler เพื่อให้มี req.pagination</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>?page=2&amp;limit=10 → {page:2,limit:10,offset:10}
+               → repo.listProducts + repo.countProducts
+               → items.map(summary) → metadata → HTTP 200
+</code></pre></div>
+<p>ถ้าโจทย์เพิ่ม filter ให้ส่ง filter ไปทั้ง list และ count ดูส่วน 9 อย่าคิดว่าโครงเดิมรองรับ search/filter แล้วโดยไม่แก้ SQL</p>
+<h3>7.4 Read 3 — รายตัว</h3>
+<p>เปิด [controller detail](src/controllers-$id/04-read-product-detail.js) → service.getProduct → repo.findProduct → detail</p>
+<p>อ่าน ID จาก req.params.id ไม่ใช่ req.query.id</p>
+<p>numeric ID ต้องตรวจเป็นจำนวนเต็มบวก; string key เช่น NA ห้าม Number()</p>
+<p>ไม่พบแถวให้ service โยน 404 ก่อน mapper</p>
+<p>SELECT ใช้ rows[0] หรือ null ไม่ส่งทั้ง array ถ้าสเปกต้องการ object</p>
+<h3>7.5 Update — แก้ไขข้อมูล</h3>
+<p>เปิด [controller Update](src/controllers-$id/05-update-product.js) → service.updateProduct → repo.updateProduct</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>ตรวจ existing → validate body → ตรวจ unique กับแถวอื่น
+             → UPDATE WHERE id=? → อ่านกลับ → detail DTO → 200
+</code></pre></div>
+<p>PUT ของโครงนี้รับ full body เหมือน POST หากส่งแค่ name จะไม่ผ่าน validation เมื่อสเปกต้องการ partial update ต้องปรับ validation/การรวมค่า/SQL ด้วย</p>
+<p>unique check ต้องอนุญาตค่าเดิมของแถวตัวเอง: <code>other &amp;&amp; other.id !== id</code> จึงถือว่าชนกับแถวอื่น ไม่ใช้ changedRows=0 ตัดสินว่าไม่พบ เพราะส่งค่าเดิมอาจยังสำเร็จ</p>
+<h3>7.6 Delete — ลบข้อมูล</h3>
+<p>เปิด [controller Delete](src/controllers-$id/06-delete-product.js) → service.removeProduct → repo.removeProduct</p>
+<p>ตรวจ existing/affectedRows ตามโครง ถ้าลบสำเร็จตอบ <code>res.status(204).end()</code> ไม่มี JSON; ถ้าโจทย์กำหนด 200 ให้แก้ตาม body ที่ระบุ ไม่ใช้ success helper กับ 204</p>
+<p>หากถูก FK อ้างอิง โครงตอบ 409 RESOURCE_IN_USE ไม่ลบตารางลูกหรือปิด FK เองโดยไม่มีข้อกำหนด Composite key ต้องมีทุกส่วนใน WHERE ไม่เช่นนั้นอาจลบหลายคู่พร้อมกัน</p>
+<p>คู่มือรายข้อเพิ่มเติมอยู่ใน [guides/operations](guides/operations)</p>
+<h2>8. DTO: แปลงทั้งชื่อ ชนิด และ field ที่เปิดเผย</h2>
+<p>โครงแยก summary สำหรับ list และ detail สำหรับรายตัว/Create/Update:</p>
+<p>| DB entity | Response | เหตุผล |</p>
+<p>| --- | --- | --- |</p>
+<p>| brand_id | brandId | เปลี่ยนชื่อ |</p>
+<p>| brand_name จาก JOIN | brandName เฉพาะ detail | ข้อมูลจากอีกตาราง |</p>
+<p>| price อาจเป็น &quot;1250.50&quot; | price: 1250.5 | Number ตาม contract |</p>
+<p>| release_date | releaseDate: &quot;YYYY-MM-DD&quot; หรือ null | คงวัน/ชนิดให้ตรง |</p>
+<p>| internal_cost | ไม่ส่ง | ไม่อยู่ใน allowlist |</p>
+<p>แก้ [product-mapper.js](src/mappers-$id/product-mapper.js) ทั้งสองฟังก์ชันตาม endpoint ที่ใช้ ไม่ return <code>{...entity}</code> เพราะคอลัมน์ภายในอาจหลุดออกมา ระวัง <code>Number(null)</code> กลายเป็น 0 ถ้า field นั้น nullable ให้แยก null ก่อนตามสเปก</p>
+<p>Envelope คือ JSON ชั้นนอก เช่น <code>{success, data, timestamp}</code> ต่างจาก DTO ใน data ถ้าเปลี่ยนเป็น <code>{status, data}</code> ต้องแก้ทั้ง success helper และ error handler ให้สอดคล้อง ดู [w6-response.js](recipes/w6-response.js)</p>
+<h2>9. Pagination: แก้อะไรบ้างเมื่อสเปกต่างจากโครง</h2>
+<p>โครงปัจจุบันใช้ page เริ่ม 1, limit เริ่ม 10, cap limit ที่ 100, invalid query → 400, หน้าที่เกินท้าย → 200 + [] และ total จริง</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const offset = (page - 1) * limit;
+const totalPages = Math.ceil(total / limit);
+</code></pre></div>
+<p>ตัวอย่าง total=23, page=3, limit=10: offset=20, data มีได้ไม่เกิน 3 รายการ, totalPages=3, hasNextPage=false หน้า 4 data=[] แต่ total ยังเป็น 23; ถ้า total=0 totalPages=0</p>
+<p>ต้องปรับพร้อมกันสามจุด:</p>
+<p>1. pagination middleware: ชื่อ query/default/max/reject หรือ cap</p>
+<p>2. repository: LIMIT/OFFSET และ ORDER BY ที่แน่นอน</p>
+<p>3. api-response.metadata: ชื่อ key/สูตร/boolean ตาม contract</p>
+<p>ถ้ามี <code>?name=...</code> ต้องเพิ่ม validation และ filter ใน service/repository **ทั้ง SELECT และ COUNT** โดย bind ค่าผ่าน ? เหมือนกัน COUNT ไม่ใช่ rows.length เพราะ rows คือเฉพาะหน้าปัจจุบัน หากมี JOIN แบบหนึ่งต่อหลายให้นับ resource ที่ต้องการจริง ไม่ปล่อยให้แถวที่ซ้ำจาก JOIN ทำให้ total เกิน</p>
+<p>ค่าจาก query เป็น string และ query ซ้ำอาจเป็น array โครงจึงตรวจชนิดก่อนแปลง ไม่ใช้ parseInt(&#x27;2abc&#x27;) ซึ่งกลายเป็น 2</p>
+<h2>10. Exception Handling: โยนตรงไหน จับตรงไหน</h2>
+<p>AppError ใน repo นี้ใช้ลำดับ **message, status, code**:</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>throw new AppError(&#x27;Product not found&#x27;, 404, &#x27;PRODUCT_NOT_FOUND&#x27;);
+</code></pre></div>
+<p>อย่าสลับกับ HttpError(status,message,code) ของ Students project เพราะจะได้ค่า status ผิด</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>input ผิด → service / middleware → AppError 400
+ไม่พบ → service → AppError 404
+unique ชน → precheck หรือ DB → 409
+DB error ไม่คาดหมาย → 500
+                       ↓
+             errorHandler หลัง routes → JSON error
+</code></pre></div>
+<p>| MySQL code | HTTP ของโครง | ความหมาย |</p>
+<p>| --- | --- | --- |</p>
+<p>| ER_DUP_ENTRY (1062) | 409 | PK/UNIQUE ซ้ำ |</p>
+<p>| ER_NO_REFERENCED_ROW_2 (1452) | 400 | FK ปลายทางไม่มี |</p>
+<p>| ER_ROW_IS_REFERENCED_2 (1451) | 409 | ยังถูกแถวอื่นอ้างอิง |</p>
+<p>Express 5 ส่ง Promise rejection จาก async handler ไป error middleware ได้ หากย้ายไป Express 4 ต้องมี async wrapper หรือ try/catch + next(err) และลงทะเบียน handler สี่พารามิเตอร์ <code>(err,req,res,next)</code> หลัง routes</p>
+<p>ไม่ catch แล้ว return undefined จน request ค้าง และไม่แปลง DB error ทุกชนิดเป็น 409 รายละเอียด SQL/stack/password ไม่ใช่ข้อความตอบ client</p>
+<h2>11. ทดสอบโครงแบบมีลำดับ</h2>
+<p>ใช้ [catalog.http](requests/catalog.http) ใน editor ที่รองรับ หรือ Postman/curl ที่ติดตั้งไว้ ไม่จำเป็นต้องลง extension ระหว่างสอบ</p>
+<p>1. GET /student-info: ตรวจ prefix และ identity ก่อน</p>
+<p>2. GET /brands: เลือก brand_id ที่มีจริง</p>
+<p>3. POST /products ด้วย body ในส่วน 7.1: ตรวจ 201 แล้วจด <code>data.id</code></p>
+<p>4. GET /products/{id ที่จด}: ตรวจ field/type/ค่าที่สร้าง</p>
+<p>5. GET /products?page=1&amp;limit=10: ตรวจ summary DTO และ metadata</p>
+<p>6. PUT /products/{id ที่จด}: ส่ง full body เปลี่ยน name แล้วอ่านกลับ</p>
+<p>7. PUT ค่าเดิมซ้ำ: โครงนี้ต้องยังได้ 200</p>
+<p>8. DELETE แถวที่สร้างเอง: 204 และ body ว่าง</p>
+<p>9. GET ID เดิม: 404</p>
+<p>ตัวอย่างตรวจ endpoint เริ่มต้นจาก Terminal (ใช้รหัส/port จริงของตัวเอง):</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>curl -i &#x27;http://127.0.0.1:3000/api/demo001/student-info&#x27;
+curl -i &#x27;http://127.0.0.1:3000/api/demo001/products?page=2&amp;limit=10&#x27;
+</code></pre></div>
+<p><code>-i</code> แสดง HTTP status และ headers อย่าดูแค่ field success ใน JSON เครื่องมือ <code>.http</code> ไม่แทน <code>{id}</code> ให้อัตโนมัติ ต้องใส่ค่าที่ได้รับหรือใช้ตัวแปรของเครื่องมือตามตัวอย่างไฟล์</p>
+<p>ตรวจ negative cases เพิ่ม: body ขาด required, number ส่งเป็น string, ID ผิดชนิด, ID ไม่มี, SKU ซ้ำ, FK ไม่มี, page=0, page=abc, limit=0 และ query ซ้ำ ตรวจผลตามสเปกของคุณ ไม่ยึดค่าตัวอย่างเมื่อโจทย์ต่างออกไป</p>
+<p>หลัง POST/PUT ตรวจแถวใน DB ด้วย key ของแถวที่สร้าง เพื่อยืนยันว่าไม่ใช่แค่ response ดูถูกต้อง ส่วน <code>npm test</code> ใช้กับ schema ฝึกเดิม ตรวจให้โครงเดิมผ่านได้ แต่ไม่ยืนยันว่าโค้ดที่เปลี่ยน schema แล้วตรงข้อสอบ</p>
+<h2>12. เปิดไม่ติด / ผลไม่ตรง เริ่มดูตรงไหน</h2>
+<p>| อาการ | ตรวจ / วิธีแก้ |</p>
+<p>| --- | --- |</p>
+<p>| npm หา package.json ไม่เจอ | cd เข้าโฟลเดอร์ที่มีไฟล์จริง |</p>
+<p>| ERR_MODULE_NOT_FOUND | npm ci ก่อนตัดเน็ต; ตรวจ import path และ .js |</p>
+<p>| ECONNREFUSED | เปิด MySQL, ตรวจ host/DB_PORT |</p>
+<p>| ACCESS_DENIED | ตรวจ DB_USER/DB_PASSWORD ใน .env |</p>
+<p>| EADDRINUSE | หยุด server เดิมด้วย Ctrl+C หรือเปลี่ยน PORT แล้วแก้ base URL |</p>
+<p>| 404 ทุก endpoint | ตรวจ method, prefix STUDENT_ID, resource path, port |</p>
+<p>| req.body undefined | Content-Type application/json และ express.json ก่อน router |</p>
+<p>| ER_BAD_FIELD_ERROR / NO_SUCH_TABLE | แก้ SQL ให้ตรง schema ที่เชื่อมต่ออยู่ |</p>
+<p>| ER_BAD_NULL_ERROR | required/default/allowlist ไม่ครบตาม NOT NULL |</p>
+<p>| DTO field หาย | SQL alias และ mapper ใช้ชื่อเดียวกันหรือไม่ |</p>
+<p>| totalPages ไม่ตรง | COUNT และ filter ตรงกันไหม ใช้ limit หลัง cap หรือยัง |</p>
+<p>| เปลี่ยนโค้ดแล้วเหมือนเดิม | หยุด npm start แล้วเริ่มใหม่ โครงไม่ได้เปิด watch mode |</p>
+<p>ใช้ stack trace ใน Terminal หาชื่อไฟล์และบรรทัดของเรา แล้วแก้ที่ layer นั้น ไม่แก้ status ให้ผ่านโดยไม่ตรวจว่าฐานข้อมูลทำงานถูก</p>
+<h2>13. นำไปใส่ template อาจารย์</h2>
+<p>อ่าน <a href="#guides/05-template">แผนที่ย้ายไฟล์</a> คง package/dependencies/ชื่อ folder/รูปแบบส่งตามคำสั่ง ไม่ทับ package.json ทั้งไฟล์เพียงเพื่อเพิ่ม scripts.start</p>
+<p>ย้าย repository/service/mapper ที่ใช้จริง และประกอบ route/controller</p>
+<p>ย้าย middleware/config ที่ source import ใช้ให้ครบ</p>
+<p>ถ้าเปลี่ยน <code>-$id</code> เป็นรหัสตัวเอง ต้องแก้ import ทุกแห่งด้วย</p>
+<p>คง entrypoint ที่ start command เรียกจริง</p>
+<p>เอกสาร/tests/scripts/SQL ตัวอย่างไม่จำเป็นต้องส่งทั้งหมด</p>
+<p>ใช้ runner ของอาจารย์และ assertion จากสเปกจริง ตรวจ method/status/body ให้ตรง</p>
+<p><code>verify:template</code> ในชุดนี้ตรวจการประกอบโครงตัวอย่างลงสำเนา ZIP ไม่ใช่คำสั่งแก้ข้อสอบให้อัตโนมัติ และไม่ยืนยัน schema ใหม่ทุกกรณี</p>
+<h2>14. ก่อนตัดเน็ตและก่อนส่ง</h2>
+<p>ตามประกาศ ใช้เอกสาร hard/soft copy ได้ในภาคปฏิบัติ เตรียมดาวน์โหลดตามช่วง 15 นาทีก่อนสอบที่อนุญาต ระหว่างสอบห้ามต่ออินเทอร์เน็ต และรับ/ส่งผ่าน LEB2</p>
+<p>เปิดเอกสารนี้และ source ได้จากไฟล์ในเครื่อง</p>
+<p>เตรียม Node/MySQL/dependencies และเครื่องมือ request ที่ใช้ได้แบบ offline</p>
+<p>ลองตัดเน็ตแล้ว npm start และเรียก endpoint ได้จริง</p>
+<p>ตรวจ identity, DB, method/path, required fields, DTO และ error contract</p>
+<p>หยุด server แล้วเริ่มใหม่หนึ่งครั้ง เพื่อจับ import/config ที่ยังผิด</p>
+<p>ตรวจไฟล์ส่งตามคำสั่งอาจารย์ และบัญชี LEB2 พร้อมใช้งาน</p>
+<p>ใช้ [สรุป 9 บท](INT161-MIDTERM) เมื่อต้องทบทวนแนวคิด และ <a href="#guides/06-offline">offline/debug guide</a> เมื่อต้องค้นอาการระหว่างปรับโครง</p></details><details id="INT161-MIDTERM/01-http-rest-status"><summary>INT161-MIDTERM/01-http-rest-status.md</summary><h1>01 — HTTP, REST และ Status Codes</h1>
+<p>คู่มือสรุปที่ผู้ช่วยเรียบเรียงเพิ่มสำหรับอ่านประกอบโจทย์ ไม่ใช่ใบงานหรือข้อสอบใหม่ของอาจารย์</p>
+<h2>อ่าน request ให้ได้ก่อนเขียน route</h2>
+<p>HTTP request มี method, URL/path/query, headers และ body เช่น:</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>POST /api/demo001/products
+Content-Type: application/json
+
+{&quot;sku&quot;:&quot;MY-001&quot;,&quot;name&quot;:&quot;Phone&quot;,&quot;brand_id&quot;:1,&quot;category&quot;:&quot;PHONE&quot;,&quot;price&quot;:100}
+</code></pre></div>
+<p>method บอกการทำงาน path ระบุ resource headers บอกชนิดข้อมูล และ body คือข้อมูลที่ส่งเข้า server Response มี status, headers และ body ตาม contract</p>
+<p>| Method | งานที่พบบ่อย | ตัวอย่าง |</p>
+<p>| --- | --- | --- |</p>
+<p>| GET | อ่านโดยไม่แก้ resource | /products, /products/1 |</p>
+<p>| POST | สร้าง resource | /products |</p>
+<p>| PUT | แทนค่าข้อมูล resource ตาม contract | /products/1 |</p>
+<p>| PATCH | แก้บางฟิลด์ เมื่อโจทย์กำหนดให้ใช้ | /products/1 |</p>
+<p>| DELETE | ลบ resource | /products/1 |</p>
+<p>PUT แบบ full body ในชุดฝึกเป็นนโยบายของตัวอย่าง อย่าเดาว่าทุกข้อสอบใช้เหมือนกัน GET ไม่ควรทำให้ข้อมูล resource เปลี่ยน PUT/DELETE โดยหลักควรมีผลสุดท้ายเหมือนเดิมเมื่อส่งซ้ำ แต่ status ของครั้งหลังอาจต่าง เช่น DELETEซ้ำ404</p>
+<h2>params, query และ body</h2>
+<p><code>/products/12</code> → <code>req.params.id</code> เป็น string <code>&#x27;12&#x27;</code></p>
+<p><code>/products?page=2&amp;limit=10</code> → <code>req.query</code> ใช้ควบคุมรายการ ต้อง validate ก่อนคำนวณ</p>
+<p>POST/PUT JSON → <code>req.body</code> หลังผ่าน express.json()</p>
+<p>base path ของนักศึกษาเป็นค่าคงที่ เช่น <code>/api/demo001</code> ไม่ใช้ <code>/api/:studentId</code> ส่วน product ID ใช้ route param ได้</p>
+<h2>Status ที่ต้องเลือกถูก</h2>
+<p>| Status | ความหมาย/ใช้ในโจทย์ |</p>
+<p>| --- | --- |</p>
+<p>| 200 | สำเร็จ มี JSONตามสเปก |</p>
+<p>| 201 | สร้างสำเร็จ |</p>
+<p>| 204 | สำเร็จและไม่มี response body |</p>
+<p>| 400 | request/validationไม่ถูกต้อง |</p>
+<p>| 404 | route หรือ resourceไม่พบ |</p>
+<p>| 409 | ข้อมูลชนกัน เช่น UNIQUE หรือ resourceยังถูกอ้างอิง |</p>
+<p>| 500 | server errorที่ไม่คาดคิด |</p>
+<p>statusในบรรทัด HTTP กับข้อความใน JSON เป็นคนละอย่าง <code>res.json({status:404})</code> อย่างเดียวไม่ได้ทำให้ HTTP เป็น404 ต้อง <code>res.status(404).json(...)</code></p>
+<p>W8 DELETE กำหนด204ว่าง แต่ W6 DELETE customer กำหนด200พร้อมJSON เลือกตามโจทย์ ไม่ตั้งกฎเดียวใช้ทุกชุด</p>
+<h2>ลองอธิบายก่อนสอบ</h2>
+<p>ทำไม GET detailไม่พบต้อง404แต่ GET listไม่มีรายการยัง200พร้อม[]? ทำไม POSTสำเร็จ201? ทำไม204ห้ามแนบJSON? ทำไม priceในbodyต้องตรวจชนิด แม้ clientเขียนมาว่าเป็นnumber?</p>
+<p>ดู <a href="#GUIDE">วิธีใช้โครงกับข้อสอบ</a> และเทียบstatusกับสเปกที่ได้รับจริง</p></details><details id="INT161-MIDTERM/02-express-esm"><summary>INT161-MIDTERM/02-express-esm.md</summary><h1>02 — Express และ JavaScript ESM</h1>
+<h2>โครงที่ต้องมี</h2>
+<p>package.json ใช้ <code>&quot;type&quot;:&quot;module&quot;</code> เพื่อให้ไฟล์ .js เป็น ESM ใช้ import/export ให้สอดคล้องกัน ไม่ผสม require/module.exports โดยไม่ตั้งใจ</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>import express from &#x27;express&#x27;;
+const app = express();
+app.use(express.json());
+app.get(&#x27;/api/demo001/ping&#x27;, (req, res) =&gt; {
+  res.status(200).json({success:true,data:{message:&#x27;pong&#x27;}});
+});
+app.listen(3000, &#x27;127.0.0.1&#x27;);
+</code></pre></div>
+<p>ตัวอย่าง ping นี้ผู้ช่วยเพิ่มเพื่ออธิบาย ไม่ใช่ endpointที่อาจารย์ระบุในใบงาน</p>
+<p>importไฟล์ของตัวเองต้องเขียน relative path และ <code>.js</code> เช่น <code>import {createApp} from &#x27;./app.js&#x27;</code> ส่วน packageใช้ชื่อเช่น <code>import mysql from &#x27;mysql2/promise&#x27;</code></p>
+<h2>Middleware และ Router</h2>
+<p>ลำดับมีผล: express.json → router → not-found middleware → error middleware ถ้า body parserอยู่หลัง route จะอ่านJSONไม่ได้ ถ้า error handlerอยู่ก่อนroute อาจไม่รับ errorจากrouteที่อยู่ถัดไป</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const router = express.Router();
+router.get(&#x27;/products/:id&#x27;, async (req, res) =&gt; {
+  const dto = await service.getProduct(req.params.id);
+  return res.json({success:true,data:dto});
+});
+app.use(&#x27;/api/demo001&#x27;, router);
+</code></pre></div>
+<p>snippetนี้แสดงการใช้ Router เท่านั้น ต้องมี service ที่ประกอบแล้วและตรวจidก่อนเรียกตามเฉลยจริง</p>
+<h2>async/await กับ DB</h2>
+<p>DB query คืน Promise ต้อง await ก่อนใช้ผลลัพธ์ mysql2/promise คืน <code>[rows, fields]</code> สำหรับSELECT และ <code>[result, fields]</code> สำหรับ INSERT/UPDATE/DELETE</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const [rows] = await db.query(&#x27;SELECT id,name FROM products WHERE id=?&#x27;, [id]);
+const entity = rows[0] ?? null;
+</code></pre></div>
+<p>Express5ที่ kitใช้ส่ง rejected Promiseจาก async handlerเข้าสู่ error middlewareได้ หากใช้ Express4 ต้องส่ง next(err) ผ่าน try/catchหรือwrapperตามโครงงาน</p>
+<h2>app กับ server ต่างกัน</h2>
+<p>[app.js](../src/app.js) ประกอบ routes และ export factory แต่ยังไม่เปิดport ส่วน [server.js](../src/server.js) อ่าน config สร้าง pool ตรวจฐานฝึกและ listen การ <code>node app.js</code> อย่างเดียวจึงไม่เปิดAPIของkit</p>
+<p>เริ่มด้วย <a href="#START-HERE.th">START-HERE</a> และดู <a href="#guides/05-template">การใส่ใน template</a></p></details><details id="INT161-MIDTERM/03-controller-service-repository"><summary>INT161-MIDTERM/03-controller-service-repository.md</summary><h1>03 — Controller, Service, Repository</h1>
+<h2>ใครรับผิดชอบอะไร</h2>
+<p>| ชั้น | รับผิดชอบ | ไฟล์จริง |</p>
+<p>| --- | --- | --- |</p>
+<p>| app/router | base path, method, middleware, ประกอบ dependencies | [catalog-route.js](../src/routes-$id/catalog-route.js) |</p>
+<p>| controller/handler | อ่าน req เรียกservice ส่ง HTTP status/body | [เฉลย6ข้อ](../src/controllers-$id) |</p>
+<p>| service | validation, business rule, not-found, เลือกDTO | [catalog-service.js](../src/services-$id/catalog-service.js) |</p>
+<p>| repository | querySQLและคืนข้อมูล/ผลกระทบจากDB | [catalog-repository.js](../src/repositories-$id/catalog-repository.js) |</p>
+<p>| mapper | เลือกฟิลด์/แปลงชื่อและชนิดข้อมูล | [product-mapper.js](../src/mappers-$id/product-mapper.js) |</p>
+<p>| error middleware | แปลงerrorเป็นHTTPและJSONที่ตรงcontract | [error-handler.js](../src/middlewares-$id/error-handler.js) |</p>
+<p>controllerไม่ได้จำเป็นต้องมีfolderชื่อcontroller ในโครงนี้ใช้ controllers-$id เพื่อให้หาจุดรับreq/ส่งresได้ง่าย นี่เป็นการจัดไฟล์ของผู้ช่วย ไม่ใช่ข้อบังคับชื่อfolderใหม่จากอาจารย์</p>
+<h2>ตามหนึ่ง request ให้ครบ</h2>
+<p>PUT /products/12 → routerเลือกhandler → numericIdตรวจ12 → serviceตรวจว่ามีแถว/validatebody/SKUซ้ำ → repository UPDATE WHERE id=? → SELECTกลับพร้อมJOIN → mapperสร้างdetailDTO → handlerตอบ200</p>
+<p>ถ้าไม่พบแถว service throw AppError404 ถ้าDBเจอ FKผิด errorhandlerแปลง400 ไม่มี layerใดส่งresซ้ำ</p>
+<h2>ทำไมส่ง db/service เป็นargument</h2>
+<p><code>createCatalogRepository(db)</code> รับpool, <code>createCatalogService(repo)</code> รับrepository และ handlerรับservice ทำให้เห็นการประกอบตรงๆ ทดสอบกับฐานฝึกได้และไม่ต้องเปิดpoolใหม่ทุกrequest ใช้ poolที่ประกอบตอนเริ่มapp</p>
+<h2>เปลี่ยนโจทย์แล้วแก้ที่ไหน</h2>
+<p>เปลี่ยนtable/column/keyที่repository เปลี่ยนbusinessvalidationที่service เปลี่ยนresponsefieldsที่mapper และเปลี่ยนpath/statusที่route/handler อย่า search-replaceคำว่าidเป็นcodeทั้งproject เพราะstring PK, insertId และ WHEREต้องเปลี่ยนวิธีคิดด้วย</p>
+<p>ก่อนย้ายไฟล์ดู <a href="#guides/05-template">แผนที่ teacher template</a> ต้องแก้ importทุกแห่งให้ตรงชื่อfolderจริง</p></details><details id="INT161-MIDTERM/04-crud-sql"><summary>INT161-MIDTERM/04-crud-sql.md</summary><h1>04 — CRUD และ SQL</h1>
+<p>ดูเฉลยทั้งระบบใน [repository](../src/repositories-$id/catalog-repository.js) และ [service](../src/services-$id/catalog-service.js)</p>
+<h2>1 Create</h2>
+<p>validate/allowlist → INSERT → insertId → SELECTกลับ → DTO →201</p>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>INSERT INTO products (sku,name,brand_id,category,price) VALUES (?,?,?,?,?);
+</code></pre></div>
+<p>snippetแสดงหลักINSERTเท่านั้น ถ้าschemaจริงมี NOT NULLอื่นต้องส่งให้ครบ ใช้ <code>result.insertId</code> เฉพาะauto-increment ไม่ใช้SELECT MAX(id) สำหรับstringPKอ่านกลับด้วยkeyที่clientส่ง</p>
+<h2>3 Read ในเส้นทางฝึก</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT id,name,country_of_origin,website,is_active,created_at
+FROM brands ORDER BY id;
+SELECT id,sku,name,brand_id,category,price,status
+FROM products ORDER BY id LIMIT ? OFFSET ?;
+SELECT p.id,p.name,b.name AS brand_name
+FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?;
+SELECT COUNT(*) AS total FROM products;
+</code></pre></div>
+<p>listคืนarray ถ้าไม่มีข้อมูลคืน[]; detailคืนแถวเดียว ถ้าไม่พบต้อง404ก่อนเข้าmapper อย่าใช้SELECT*แล้วส่งทุกfieldออกAPI</p>
+<h2>1 Update</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>UPDATE products SET name=?, price=? WHERE id=?;
+</code></pre></div>
+<p>ตรวจexistingก่อนและอ่านแถวกลับหลังUPDATE การส่งค่าเดิมสำเร็จได้แม้changedRowsเป็น0 อย่าแปลว่าไม่มีแถว</p>
+<h2>1 Delete</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>DELETE FROM products WHERE id=?;
+</code></pre></div>
+<p>ต้องมีWHEREและbindid ตรวจaffectedRows รับnot-foundและFKerror ตอบ204ว่างตามW8 หรือ200JSONตามW6</p>
+<h2>mysql2 binding</h2>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const [rows] = await db.query(&#x27;SELECT id,name FROM products WHERE id=?&#x27;, [id]);
+</code></pre></div>
+<p>parameterแทนค่าข้อมูล ไม่แทนชื่อตาราง/คอลัมน์ที่มาจากrequest สำหรับ <code>query(&#x27;INSERT INTO products SET ?&#x27;, [data])</code> ต้องผ่านallowlistก่อน และอย่าเปลี่ยนเป็นexecuteโดยส่งobjectแบบเดียวกัน</p>
+<h2>Key และ constraint</h2>
+<p>PRIMARY KEY: ระบุแถว; compositeต้องมีทุกส่วนในWHERE</p>
+<p>UNIQUE: กันซ้ำแม้มีprecheckแล้ว เช่นSKU</p>
+<p>FOREIGN KEY: ปลายทางต้องมี; ON DELETE RESTRICTกันลบแถวที่ยังถูกอ้างอิง</p>
+<p>VARCHAR keyเช่นNAต้องคงstring ไม่Number</p>
+<p>เช็กผลหลังPOST/PUTด้วยGETและSQLจริง หลังDELETEตรวจว่าแถวหาย ใช้เฉพาะข้อมูลฝึกของตนเอง ดู <a href="#README">guideรายข้อ</a></p></details><details id="INT161-MIDTERM/05-dto-mapper"><summary>INT161-MIDTERM/05-dto-mapper.md</summary><h1>05 — DTO และ Mapper</h1>
+<p>Entityคือข้อมูลจากDB ส่วนDTOคือรูปข้อมูลตามสัญญาAPI ไม่จำเป็นต้องชื่อfieldหรือจำนวนfieldเท่ากัน Mapperแปลงentityเป็นDTOโดยallowlist</p>
+<p>| DB/input | API DTO | ข้อควรตรวจ |</p>
+<p>| --- | --- | --- |</p>
+<p>| brand_id | brandId | numberตามcontract |</p>
+<p>| b.name AS brand_name | brandName | ต้องJOIN ไม่เดาชื่อ |</p>
+<p>| price DECIMAL | price | mysql2อาจคืนstring ต้องแปลงตามcontract |</p>
+<p>| ram_gb/storage_gb | ramGb/storageGb | number/nullตามschema |</p>
+<p>| stock_quantity | stockQuantity | ค่า0ต้องคงอยู่ |</p>
+<p>| release_date DATE | releaseDate | YYYY-MM-DDหรือnull |</p>
+<p>| internal_cost | ไม่ส่ง | ฟิลด์ภายใน |</p>
+<h2>Summary กับ Detail</h2>
+<p>summaryของWeek08: id,sku,name,brandId,category,price,status</p>
+<p>detail: id,sku,name,brandId,brandName,category,price,ramGb,storageGb,color,stockQuantity,status,releaseDate รวม13ฟิลด์</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ตัวอย่างแนวคิดย่อ ไม่ใช่summaryครบทุกฟิลด์
+const dto = {id:entity.id, brandId:entity.brand_id, price:Number(entity.price)};
+</code></pre></div>
+<p>โค้ดครบอยู่ [product-mapper.js](../src/mappers-$id/product-mapper.js) ใช้ <code>items.map(summary)</code> สำหรับรายการและ <code>detail(entity)</code> สำหรับแถวเดียว</p>
+<h2>จุดที่มักพลาด</h2>
+<p>อย่าreturn <code>{...entity}</code> แล้วค่อยลบfieldทีละตัว เพราะคอลัมน์ใหม่อาจหลุด ตรวจnullก่อนmapperเพื่อให้missingเป็น404 ใช้ <code>??</code> เมื่ออยากfallbackเฉพาะnull/undefined ไม่ใช้ <code>||</code> กับprice/stockที่0ถูกต้อง</p>
+<p>DBDATEเก็บวัน ไม่ใช่timestamp kitตั้งdateStringsเพื่อรักษาวันเดิม ส่วนtimestampในenvelopeใช้เวลาปัจจุบันISO UTC</p>
+<p>Brandsในใบงานใช้snake_case ไม่ได้หมายความว่าทุกresourceต้องเปลี่ยนเป็นcamelCase ดูresponseของแต่ละendpointเสมอ</p>
+<p>ลอง <a href="#guides/operations/03-read-products">Read list</a> และ <a href="#guides/operations/04-read-product-detail">Read detail</a></p></details><details id="INT161-MIDTERM/06-pagination"><summary>INT161-MIDTERM/06-pagination.md</summary><h1>06 — Pagination</h1>
+<h2>รับค่าและ normalize ก่อนคำนวณ</h2>
+<p>GET /products?page=2&amp;limit=10 ใช้pageเริ่ม1</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const offset = (page - 1) * limit;
+const totalPages = Math.ceil(total / limit);
+const hasNextPage = page &lt; totalPages;
+const hasPrevPage = page &gt; 1;
+</code></pre></div>
+<p>ตัวอย่างpage2/limit10 → offset10 → ข้าม10รายการแรก ต้องใช้limitที่ผ่านcapแล้วคำนวณoffset</p>
+<h2>SQL และ DTO</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT id,sku,name,brand_id,category,price,status
+FROM products ORDER BY id LIMIT ? OFFSET ?;
+SELECT COUNT(*) AS total FROM products;
+</code></pre></div>
+<p>queryรายการและCOUNTต้องใช้filterชุดเดียวกัน หากโจทย์เพิ่มsearchให้แก้ทั้งคู่ ไม่ใช้จำนวนrowsในหน้าปัจจุบันเป็นtotal ใช้ORDER BYแน่นอนก่อนแบ่งหน้า</p>
+<p>คืนdataเป็นsummary DTOและpaginationมีtotal/page/limit/totalPages/hasNextPage/hasPrevPage</p>
+<h2>นโยบายชุดฝึกที่ผู้ช่วยเพิ่ม</h2>
+<p>default page1/limit10, maxlimit100; queryต้องเป็นstringตัวเลขจำนวนเต็มบวก ถ้าว่าง/ลบ/ทศนิยม/ตัวอักษรปน/ซ้ำ/overflowตอบ400 นี่เป็นนโยบายฝึก ไม่ใช่ข้อยืนยันว่าข้อสอบจริงระบุmaxและinvalidpolicyเหมือนกัน</p>
+<p>page1,limit10,total23 →3หน้า มีหน้าถัดไป</p>
+<p>page3 →3รายการสุดท้าย ไม่มีหน้าถัดไป</p>
+<p>page999 →[]แต่totalยัง23</p>
+<p>total0 →[] totalPages0 ห้ามfallbacktotalไปค่าอื่นด้วย <code>||</code></p>
+<p>limit500 →normalize100 แล้วค่อยหาoffset</p>
+<p>โค้ดจริง: [parser](../src/middlewares-$id/pagination.js), [repository](../src/repositories-$id/catalog-repository.js), [metadata](../src/mappers-$id/api-response.js), [handler](../src/controllers-$id/03-read-products.js)</p>
+<p>ถ้าโจทย์กำหนดไม่มีqueryให้คืนทั้งหมด ต้องแก้ทั้งparser/SQL/response ไม่แก้แค่default ดู <a href="#recipes/README">optional recipe</a></p></details><details id="INT161-MIDTERM/07-exception-handling"><summary>INT161-MIDTERM/07-exception-handling.md</summary><h1>07 — Exception Handling</h1>
+<h2>Flow</h2>
+<p>validation/business error → throw AppError → Express5 async error forwarding → error middlewareท้ายapp →HTTPและJSON</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>throw new AppError(&#x27;Product not found&#x27;, 404, &#x27;PRODUCT_NOT_FOUND&#x27;);
+</code></pre></div>
+<p>AppErrorของkitใช้constructor(message,status,code) และproperty status/code ถ้าคัดลอกAppErrorจากโจทย์W6ที่ใช้statusCode/errorCode ต้องใช้handlerให้ตรงกัน อย่าผสมpropertyจากคนละชุด</p>
+<h2>Error middleware</h2>
+<p>ต้องมี4arguments <code>(err, req, res, next)</code> ติดหลังroutes และnot-found middleware ถ้าheadersถูกส่งแล้วให้next(err) ไม่ส่งresponseซ้ำ</p>
+<p>| Error | HTTPของkit | code |</p>
+<p>| --- | --- | --- |</p>
+<p>| validation | 400 | VALIDATION_ERROR |</p>
+<p>| JSONแตก | 400 | INVALID_JSON |</p>
+<p>| productไม่มี | 404 | PRODUCT_NOT_FOUND |</p>
+<p>| ER_DUP_ENTRY /1062 | 409 | DUPLICATE_KEY |</p>
+<p>| ER_NO_REFERENCED_ROW_2 /1452 | 400 | FOREIGN_KEY_NOT_FOUND |</p>
+<p>| ER_ROW_IS_REFERENCED_2 /1451 | 409 | RESOURCE_IN_USE |</p>
+<p>| errorที่ไม่คาดคิด | 500 | INTERNAL_SERVER_ERROR |</p>
+<p>ต้องไม่ส่งSQL,stack,password,err.sqlMessageไปclient ใช้ข้อความอังกฤษที่ตรงสเปกและไม่เปิดเผยข้อมูลระบบ</p>
+<h2>รูปJSONต่างกันตามโจทย์</h2>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{<span class="json-key">&quot;success&quot;</span>:<span class="json-literal">false</span>,<span class="json-key">&quot;error&quot;</span>:{<span class="json-key">&quot;code&quot;</span>:<span class="json-string">&quot;PRODUCT_NOT_FOUND&quot;</span>,<span class="json-key">&quot;message&quot;</span>:<span class="json-string">&quot;Product not found&quot;</span>},<span class="json-key">&quot;timestamp&quot;</span>:<span class="json-string">&quot;2026-10-21T00:00:00.000Z&quot;</span>}
+</code></pre></div>
+<p>ด้านบนเป็นตัวอย่างW8-likeของkit ส่วนW6ใช้ <code>{status:&#x27;error&#x27;,error:{code,message}}</code> และsuccessเป็น <code>{status:&#x27;success&#x27;,data:...}</code> เปลี่ยนhelperและhandlerทั้งคู่ ดู [W6 response JS](../recipes/w6-response.js)</p>
+<p>เวลาในตัวอย่างเป็นตัวอย่างเท่านั้น โค้ดต้องสร้างtimestampจริง ไม่hardcode</p>
+<h2>ลองให้ผิดเพื่อเช็ก</h2>
+<p>GET idไม่มี→404; POSTskuซ้ำ→409; brand_idไม่มี→400; ลบแถวถูกFKอ้างอิง→409; ส่งJSONแตก→400 ทุกกรณีต้องเป็นJSONและstatusถูก ไม่ใช่200ที่มีข้อความerror</p>
+<p>ดู [AppError](../src/middlewares-$id/app-error.js), [handler](../src/middlewares-$id/error-handler.js), <a href="#recipes/README">วิธีเลือกresponse</a></p></details><details id="INT161-MIDTERM/08-complete-code-example"><summary>INT161-MIDTERM/08-complete-code-example.md</summary><h1>08 — Complete Code Template</h1>
+<p>โค้ดในบทนี้คือโครงที่รันได้ในsrc ไม่ใช่โจทย์ให้ทำเพิ่ม อ่านคอมเมนต์ADAPTแล้วเปลี่ยนตามสเปก ดู <a href="#GUIDE">GUIDE</a> สำหรับลำดับแก้โครงและ <a href="#START-HERE.th">START-HERE</a> เพื่อเปิดserver</p>
+<p>ไฟล์.jsที่ลิงก์เป็นsourceรันจริง codeblocksเป็นสำเนาให้อ่านต่อเนื่อง ไม่คัดลอกทั้งบทมารวมเป็นไฟล์เดียว คงimportsและชื่อfolderให้ตรง</p>
+<p>ใช้DB_MODE=practiceเปิดโครงเดิม หรือDB_MODE=examพร้อมDB_NAME/STUDENT_ID/STUDENT_NAME/STUDENT_KEYเป็นค่าจริงครบเพื่อเชื่อมฐานโจทย์โดยไม่สร้าง/resettable ใช้[schemaตัวอย่าง](../sql/schema.sql)เฉพาะโหมดpractice โหมดexamปรับSQL/requiredfields/DTOตามโจทย์ก่อน</p>
+<h2>src/configs-$id/settings.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/configs-$id/settings.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>function port(value, fallback) {
+  if (value === undefined) return fallback;
+  if (!/^\d+$/.test(String(value)) || Number(value)&lt;1 || Number(value)&gt;65535) throw new Error(&#x27;Port must be an integer from 1 to 65535&#x27;);
+  return Number(value);
+}
+export function loadSettings(env = process.env) {
+  // ADAPT 1: .env ระบุ DB ของโจทย์, mode และ identity ของตัวเอง ห้าม commit password
+  const dbMode = env.DB_MODE || &#x27;practice&#x27;;
+  if (![&#x27;practice&#x27;,&#x27;exam&#x27;].includes(dbMode)) throw new Error(&#x27;DB_MODE must be practice or exam&#x27;);
+  if (dbMode === &#x27;exam&#x27;) {
+    // ห้ามใช้fallbackหรือprofileตัวอย่างไปส่งสอบ ข้อความerrorระบุชื่อfieldเท่านั้น
+    const placeholders = new Set([&#x27;demo001&#x27;,&#x27;your_actual_id&#x27;,&#x27;demo student&#x27;,&#x27;your name&#x27;,&#x27;fictional-key&#x27;,&#x27;key_from_spec&#x27;]);
+    for (const field of [&#x27;DB_NAME&#x27;,&#x27;STUDENT_ID&#x27;,&#x27;STUDENT_NAME&#x27;,&#x27;STUDENT_KEY&#x27;]) {
+      const value = env[field];
+      if (typeof value !== &#x27;string&#x27; || !value.trim() || placeholders.has(value.trim().toLowerCase())) {
+        throw new Error(`Exam mode requires an actual value for ${field}`);
+      }
+    }
+  }
+  const database = env.DB_NAME || &#x27;int161_practice_catalog&#x27;;
+  const testDatabase = env.TEST_DB_NAME || &#x27;int161_practice_tests&#x27;;
+  for (const name of [database,testDatabase]) if (!/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(name)) throw new Error(&#x27;Invalid database identifier&#x27;);
+  const studentId = env.STUDENT_ID || &#x27;demo001&#x27;;
+  if (!/^[A-Za-z0-9_-]{1,32}$/.test(studentId)) throw new Error(&#x27;STUDENT_ID must be a static identifier, not a route parameter or path&#x27;);
+  return {dbMode,host:env.DB_HOST || &#x27;127.0.0.1&#x27;,port:port(env.DB_PORT,3306),user:env.DB_USER || &#x27;root&#x27;,password:env.DB_PASSWORD || &#x27;&#x27;,database,testDatabase,
+    appPort:port(env.PORT,3000),studentId,name:env.STUDENT_NAME || &#x27;Demo Student&#x27;,key:env.STUDENT_KEY || &#x27;fictional-key&#x27;};
+}
+</code></pre></div>
+<h2>src/configs-$id/db-config.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/configs-$id/db-config.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>import mysql from &#x27;mysql2/promise&#x27;;
+export function createDb(config) {
+  return mysql.createPool({host:config.host,port:config.port,user:config.user,password:config.password,database:config.database,
+    connectionLimit:5,waitForConnections:true,timezone:&#x27;Z&#x27;,dateStrings:[&#x27;DATE&#x27;]});
+}
+</code></pre></div>
+<h2>src/configs-$id/database-mode.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/configs-$id/database-mode.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: DB_MODE=practice ใช้ฐานตัวอย่าง; DB_MODE=exam ใช้ DB_NAME ตามโจทย์โดยไม่สร้าง/resetฐาน
+export const MARKER=&#x27;int161-exam-kit-v1&#x27;;
+export function assertPracticeName(name) {
+  if(typeof name!==&#x27;string&#x27;||name.length&gt;64||!/^int161_practice_[A-Za-z0-9_]+$/.test(name)) throw new Error(&#x27;Refusing writes: use a dedicated int161_practice_ database&#x27;);
+}
+export async function assertPracticeDatabase(db) {
+  const [[{name}]]=await db.query(&#x27;SELECT DATABASE() AS name&#x27;);
+  assertPracticeName(name);
+  const [rows]=await db.query(&#x27;SELECT value FROM _int161_kit_marker WHERE id=1&#x27;);
+  if(rows[0]?.value!==MARKER) throw new Error(&#x27;Refusing writes: database marker does not match this kit&#x27;);
+}
+
+export async function assertAppDatabase(db, config) {
+  if (config.dbMode === &#x27;practice&#x27;) return assertPracticeDatabase(db);
+  if (config.dbMode !== &#x27;exam&#x27;) throw new Error(&#x27;DB_MODE must be practice or exam&#x27;);
+  // อ่านอย่างเดียว: การสร้าง/นำเข้า schema ข้อสอบทำตามไฟล์ SQL ของอาจารย์เอง
+  await db.query(&#x27;SELECT 1&#x27;);
+}
+</code></pre></div>
+<h2>src/app.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/app.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: base path คงที่ตามรหัสใน .env; เปลี่ยน resource/router เมื่อโจทย์ใช้ตารางอื่น
+import express from &#x27;express&#x27;;
+import {createCatalogRepository} from &#x27;./repositories-$id/catalog-repository.js&#x27;;
+import {createCatalogService} from &#x27;./services-$id/catalog-service.js&#x27;;
+import {createCatalogRouter} from &#x27;./routes-$id/catalog-route.js&#x27;;
+import {errorHandler} from &#x27;./middlewares-$id/error-handler.js&#x27;;
+import {AppError} from &#x27;./middlewares-$id/app-error.js&#x27;;
+export function createApp({db,studentId,name,key}) {
+ if(!/^[A-Za-z0-9_-]{1,32}$/.test(studentId))throw new Error(&#x27;Invalid static student ID&#x27;);
+ const app=express();app.disable(&#x27;x-powered-by&#x27;);app.use(express.json());
+ const repo=createCatalogRepository(db),service=createCatalogService(repo);
+ app.use(`/api/${studentId}`,createCatalogRouter(service,{studentId,name,key}));
+ app.use((req,res,next)=&gt;next(new AppError(&#x27;Endpoint not found&#x27;,404,&#x27;ENDPOINT_NOT_FOUND&#x27;)));
+ app.use(errorHandler);
+ return app;
+}
+</code></pre></div>
+<h2>src/server.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/server.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>import {loadSettings} from &#x27;./configs-$id/settings.js&#x27;;
+import {createDb} from &#x27;./configs-$id/db-config.js&#x27;;
+import {createApp} from &#x27;./app.js&#x27;;
+import {assertAppDatabase} from &#x27;./configs-$id/database-mode.js&#x27;;
+const config=loadSettings(),db=createDb(config);
+try {
+ await assertAppDatabase(db,config);
+ const server=createApp({db,...config}).listen(config.appPort,&#x27;127.0.0.1&#x27;,()=&gt;console.log(`Template API: http://127.0.0.1:${config.appPort}/api/${config.studentId}`));
+ server.on(&#x27;error&#x27;,async err=&gt;{console.error(&#x27;Start failed:&#x27;,err.code||&#x27;SERVER_ERROR&#x27;);await db.end();process.exitCode=1;});
+ for(const signal of [&#x27;SIGINT&#x27;,&#x27;SIGTERM&#x27;])process.once(signal,()=&gt;server.close(async()=&gt;{await db.end();process.exit();}));
+} catch(err){console.error(&#x27;Start failed:&#x27;,err.code||err.message);await db.end();process.exitCode=1;}
+</code></pre></div>
+<h2>src/routes-$id/catalog-route.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/routes-$id/catalog-route.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: เปลี่ยน method/path ให้ตรงข้อสอบ; controllers รับreq/res, serviceถือbusinesslogic
+import express from &#x27;express&#x27;;
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+import {queryParser} from &#x27;../middlewares-$id/pagination.js&#x27;;
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+import {createProductHandler} from &#x27;../controllers-$id/01-create-product.js&#x27;;
+import {readBrandsHandler} from &#x27;../controllers-$id/02-read-brands.js&#x27;;
+import {readProductsHandler} from &#x27;../controllers-$id/03-read-products.js&#x27;;
+import {readProductDetailHandler} from &#x27;../controllers-$id/04-read-product-detail.js&#x27;;
+import {updateProductHandler} from &#x27;../controllers-$id/05-update-product.js&#x27;;
+import {deleteProductHandler} from &#x27;../controllers-$id/06-delete-product.js&#x27;;
+// Express 5 ส่ง rejected Promise จาก async handler เข้า error middleware ได้
+export function createCatalogRouter(service,identity) {
+ const router=express.Router();
+ router.get(&#x27;/student-info&#x27;,(req,res)=&gt;success(res,{studentId:identity.studentId,name:identity.name,secretKey:identity.key}));
+ router.get(&#x27;/brands&#x27;,readBrandsHandler(service));
+ router.get(&#x27;/brands/:id&#x27;,async(req,res)=&gt;success(res,await service.getBrand(numericId(req.params.id))));
+ router.delete(&#x27;/brands/:id&#x27;,async(req,res)=&gt;{await service.removeBrand(numericId(req.params.id));res.status(204).end();});
+ router.get(&#x27;/products&#x27;,queryParser,readProductsHandler(service));
+ router.get(&#x27;/products/:id&#x27;,readProductDetailHandler(service));
+ router.post(&#x27;/products&#x27;,createProductHandler(service));
+ router.put(&#x27;/products/:id&#x27;,updateProductHandler(service));
+ router.delete(&#x27;/products/:id&#x27;,deleteProductHandler(service));
+ // ตัวอย่าง string key: ไม่ใช้ Number(req.params.code)
+ router.get(&#x27;/tags&#x27;,async(req,res)=&gt;success(res,await service.listTags()));
+ router.get(&#x27;/tags/:code&#x27;,async(req,res)=&gt;success(res,await service.getTag(req.params.code)));
+ router.post(&#x27;/tags&#x27;,async(req,res)=&gt;success(res,await service.createTag(req.body),201));
+ router.put(&#x27;/tags/:code&#x27;,async(req,res)=&gt;success(res,await service.updateTag(req.params.code,req.body)));
+ router.delete(&#x27;/tags/:code&#x27;,async(req,res)=&gt;{await service.removeTag(req.params.code);res.status(204).end();});
+ // Composite key = product_id + tag_code: ต้องส่งครบทั้งคู่
+ router.get(&#x27;/products/:id/tags&#x27;,async(req,res)=&gt;success(res,await service.listProductTags(numericId(req.params.id))));
+ router.post(&#x27;/products/:id/tags&#x27;,async(req,res)=&gt;success(res,await service.createProductTag(numericId(req.params.id),req.body),201));
+ router.delete(&#x27;/products/:id/tags/:code&#x27;,async(req,res)=&gt;{await service.removeProductTag(numericId(req.params.id),req.params.code);res.status(204).end();});
+ return router;
+}
+</code></pre></div>
+<h2>src/controllers-$id/01-create-product.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/01-create-product.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Create: validate/allowlist → INSERT → SELECT detail DTO → 201
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function createProductHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.createProduct(req.body), 201);
+  };
+}
+</code></pre></div>
+<h2>src/controllers-$id/02-read-brands.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/02-read-brands.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 1: SELECT brands ORDER BY id → 200 array
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function readBrandsHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.listBrands());
+  };
+}
+</code></pre></div>
+<h2>src/controllers-$id/03-read-products.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/03-read-products.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 2: queryParser must run first; list + COUNT → summary DTO + pagination
+import {success, metadata} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function readProductsHandler(service) {
+  return async function (req, res) {
+    const {items, total} = await service.listProducts(req.pagination);
+    return success(res, items, 200, metadata(total, req.pagination));
+  };
+}
+</code></pre></div>
+<h2>src/controllers-$id/04-read-product-detail.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/04-read-product-detail.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 3: validate id → SELECT JOIN → missing404 → detail DTO
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function readProductDetailHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.getProduct(numericId(req.params.id)));
+  };
+}
+</code></pre></div>
+<h2>src/controllers-$id/05-update-product.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/05-update-product.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Update: find first, full-body validation, UPDATE then read back; unchanged values200
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function updateProductHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.updateProduct(numericId(req.params.id), req.body));
+  };
+}
+</code></pre></div>
+<h2>src/controllers-$id/06-delete-product.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/controllers-$id/06-delete-product.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Delete: find404 or DELETE; 204 has NO JSON body
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function deleteProductHandler(service) {
+  return async function (req, res) {
+    await service.removeProduct(numericId(req.params.id));
+    return res.status(204).end();
+  };
+}
+</code></pre></div>
+<h2>src/services-$id/catalog-service.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/services-$id/catalog-service.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: แก้productInputให้ตรงbody/required/defaultsของโจทย์; ไม่ส่งreq.bodyตรงลงSQL
+// ต่อไปแก้unique rule/not-found/ชื่อerror และเลือกsummary/detailให้ตรงแต่ละendpoint
+import {AppError} from &#x27;../middlewares-$id/app-error.js&#x27;;
+import {summary,detail} from &#x27;../mappers-$id/product-mapper.js&#x27;;
+const fail=message=&gt;{throw new AppError(message);};
+function text(value,name,max) {
+  if(typeof value!==&#x27;string&#x27;||!value.trim()||value.trim().length&gt;max)fail(`${name} must be non-empty text (max ${max})`);
+  return value.trim();
+}
+export function numericId(value) {
+  if(typeof value!==&#x27;string&#x27;||!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value))||Number(value)&lt;1)fail(&#x27;id must be a positive integer&#x27;);
+  return Number(value);
+}
+function integer(value,name,{nullable=false}={}) {
+  if(nullable&amp;&amp;value==null)return null;
+  if(!Number.isSafeInteger(value)||value&lt;0||value&gt;2147483647)fail(`${name} must be a non-negative integer`);
+  return value;
+}
+function dateOnly(value) {
+  if(value==null)return null;
+  if(typeof value!==&#x27;string&#x27;||!/^\d{4}-\d{2}-\d{2}$/.test(value)||value&lt;&#x27;1000-01-01&#x27;||value&gt;&#x27;9999-12-31&#x27;)fail(&#x27;release_date must be YYYY-MM-DD&#x27;);
+  const date=new Date(value+&#x27;T00:00:00Z&#x27;);
+  if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==value)fail(&#x27;release_date must be a valid calendar date&#x27;);
+  return value;
+}
+// ADAPT BODY: เปลี่ยนfield/type/nullability/maxตามschemaจริง (PUTนี้ใช้full body)
+export function productInput(body) {
+  if(!body||typeof body!==&#x27;object&#x27;||Array.isArray(body))fail(&#x27;JSON body must be an object&#x27;);
+  const sku=text(body.sku,&#x27;sku&#x27;,50),name=text(body.name,&#x27;name&#x27;,150),category=text(body.category,&#x27;category&#x27;,50);
+  const brand_id=integer(body.brand_id,&#x27;brand_id&#x27;);if(brand_id&lt;1)fail(&#x27;brand_id must be positive&#x27;);
+  const price=body.price;
+  if(typeof price!==&#x27;number&#x27;||!Number.isFinite(price)||price&lt;0||price&gt;99999999.99||Number(price.toFixed(2))!==price)fail(&#x27;price must be a number &gt;= 0 with at most 2 decimal places&#x27;);
+  return {sku,name,brand_id,category,price,ram_gb:integer(body.ram_gb,&#x27;ram_gb&#x27;),storage_gb:integer(body.storage_gb,&#x27;storage_gb&#x27;),
+    color:text(body.color,&#x27;color&#x27;,50),stock_quantity:integer(body.stock_quantity ?? 0,&#x27;stock_quantity&#x27;),
+    status:body.status===undefined?&#x27;AVAILABLE&#x27;:text(body.status,&#x27;status&#x27;,30),release_date:dateOnly(body.release_date)};
+}
+function tagCode(value){const code=text(value,&#x27;code&#x27;,32);if(!/^[A-Za-z0-9_-]+$/.test(code))fail(&#x27;tag code accepts letters, digits, underscore and hyphen&#x27;);return code;}
+const required=(value,message,code)=&gt;{if(!value)throw new AppError(message,404,code);return value;};
+export function createCatalogService(repo) {
+  const getProduct=async id=&gt;required(await repo.findProduct(id),&#x27;Product not found&#x27;,&#x27;PRODUCT_NOT_FOUND&#x27;);
+  const getBrand=async id=&gt;required(await repo.findBrand(id),&#x27;Brand not found&#x27;,&#x27;BRAND_NOT_FOUND&#x27;);
+  const getTag=async code=&gt;required(await repo.findTag(code),&#x27;Tag not found&#x27;,&#x27;TAG_NOT_FOUND&#x27;);
+  return {
+    listBrands:()=&gt;repo.listBrands(),
+    getBrand,
+    async removeBrand(id){await getBrand(id);if(!await repo.removeBrand(id))throw new AppError(&#x27;Brand not found&#x27;,404,&#x27;BRAND_NOT_FOUND&#x27;);},
+    async listProducts(pagination) {
+      // ADAPT READ: เพิ่มfilterต้องส่งไปทั้งlistและcountด้วย
+      const [items, total] = await Promise.all([
+        repo.listProducts(pagination), repo.countProducts()
+      ]);
+      return {items: items.map(summary), total};
+    },
+    async getProduct(id){return detail(await getProduct(id));},
+    // CREATE: ใช้insertIdเฉพาะauto increment; string PKอ่านกลับด้วยkeyที่รับมา
+    async createProduct(body) {
+      const data = productInput(body);
+      if (await repo.findBySku(data.sku)) {
+        throw new AppError(&#x27;SKU already exists&#x27;, 409, &#x27;DUPLICATE_KEY&#x27;);
+      }
+      const id = await repo.createProduct(data);
+      return detail(await getProduct(id));
+    },
+    // UPDATE: ตรวจว่ามีแถวก่อน; ค่าเดิมยังสำเร็จ อย่าใช้changedRows0เป็น404
+    async updateProduct(id, body) {
+      await getProduct(id);
+      const data = productInput(body);
+      const other = await repo.findBySku(data.sku);
+      if (other &amp;&amp; other.id !== id) {
+        throw new AppError(&#x27;SKU already exists&#x27;, 409, &#x27;DUPLICATE_KEY&#x27;);
+      }
+      await repo.updateProduct(id, data);
+      return detail(await getProduct(id));
+    },
+    // DELETE: repoคืนaffectedRows; FKerrorให้middlewareกลางแปลง
+    async removeProduct(id) {
+      await getProduct(id);
+      if (!await repo.removeProduct(id)) {
+        throw new AppError(&#x27;Product not found&#x27;, 404, &#x27;PRODUCT_NOT_FOUND&#x27;);
+      }
+    },
+    listTags:()=&gt;repo.listTags(),
+    async getTag(code){return getTag(tagCode(code));},
+    async createTag(body){const data={code:tagCode(body?.code),label:text(body?.label,&#x27;label&#x27;,100)};await repo.createTag(data);return getTag(data.code);},
+    async updateTag(code,body){code=tagCode(code);await getTag(code);await repo.updateTag(code,text(body?.label,&#x27;label&#x27;,100));return getTag(code);},
+    async removeTag(code){code=tagCode(code);await getTag(code);if(!await repo.removeTag(code))throw new AppError(&#x27;Tag not found&#x27;,404,&#x27;TAG_NOT_FOUND&#x27;);},
+    async listProductTags(id){await getProduct(id);return repo.listProductTags(id);},
+    async createProductTag(id,body){await getProduct(id);const code=tagCode(body?.tagCode);await repo.createProductTag(id,code);return {productId:id,tagCode:code};},
+    async removeProductTag(id,code){await getProduct(id);code=tagCode(code);if(!await repo.removeProductTag(id,code))throw new AppError(&#x27;Product/tag pair not found&#x27;,404,&#x27;PRODUCT_TAG_NOT_FOUND&#x27;);},
+  };
+}
+</code></pre></div>
+<h2>src/repositories-$id/catalog-repository.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/repositories-$id/catalog-repository.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: เปลี่ยนtable/column/PK/FK/WHERE/JOINตรงschemaโจทย์; bindค่าด้วย? เสมอ
+// list และ COUNT ต้องใช้filterเดียวกัน; string/composite keyอยู่ด้านล่างสำหรับหยิบใช้เมื่อจำเป็น
+// ตาราง/คอลัมน์เป็น source code ที่แก้ตาม schema; ? ใช้กับค่าข้อมูล
+const PRODUCT_SELECT = `SELECT p.id,p.sku,p.name,p.brand_id,b.name AS brand_name,
+ p.category,p.price,p.ram_gb,p.storage_gb,p.color,p.stock_quantity,p.status,p.release_date
+ FROM products p JOIN brands b ON b.id=p.brand_id`;
+export function createCatalogRepository(db) {
+  async function one(sql, values) {const [rows]=await db.query(sql,values);return rows[0] || null;}
+  return {
+    async listBrands(){const [rows]=await db.query(&#x27;SELECT id,name,country_of_origin,website,is_active,created_at FROM brands ORDER BY id&#x27;);return rows;},
+    findBrand:id=&gt;one(&#x27;SELECT id,name,country_of_origin,website,is_active,created_at FROM brands WHERE id=?&#x27;,[id]),
+    async removeBrand(id){const [result]=await db.query(&#x27;DELETE FROM brands WHERE id=?&#x27;,[id]);return result.affectedRows;},
+    async listProducts({limit,offset}){const [rows]=await db.query(PRODUCT_SELECT+&#x27; ORDER BY p.id LIMIT ? OFFSET ?&#x27;,[limit,offset]);return rows;},
+    async countProducts(){const [[{total}]]=await db.query(&#x27;SELECT COUNT(*) AS total FROM products&#x27;);return Number(total);},
+    findProduct:id=&gt;one(PRODUCT_SELECT+&#x27; WHERE p.id=?&#x27;,[id]),
+    findBySku:sku=&gt;one(&#x27;SELECT id FROM products WHERE sku=?&#x27;,[sku]),
+    async createProduct(data){const [result]=await db.query(&#x27;INSERT INTO products SET ?&#x27;,[data]);return result.insertId;},
+    async updateProduct(id,data){await db.query(&#x27;UPDATE products SET ? WHERE id=?&#x27;,[data,id]);},
+    async removeProduct(id){const [result]=await db.query(&#x27;DELETE FROM products WHERE id=?&#x27;,[id]);return result.affectedRows;},
+    async listTags(){const [rows]=await db.query(&#x27;SELECT code,label FROM tags ORDER BY code&#x27;);return rows;},
+    findTag:code=&gt;one(&#x27;SELECT code,label FROM tags WHERE code=?&#x27;,[code]),
+    async createTag(data){await db.query(&#x27;INSERT INTO tags SET ?&#x27;,[data]);},
+    async updateTag(code,label){await db.query(&#x27;UPDATE tags SET label=? WHERE code=?&#x27;,[label,code]);},
+    async removeTag(code){const [result]=await db.query(&#x27;DELETE FROM tags WHERE code=?&#x27;,[code]);return result.affectedRows;},
+    async listProductTags(id){const [rows]=await db.query(&#x27;SELECT t.code,t.label FROM product_tags pt JOIN tags t ON t.code=pt.tag_code WHERE pt.product_id=? ORDER BY t.code&#x27;,[id]);return rows;},
+    async createProductTag(id,code){await db.query(&#x27;INSERT INTO product_tags(product_id,tag_code) VALUES(?,?)&#x27;,[id,code]);},
+    async removeProductTag(id,code){const [result]=await db.query(&#x27;DELETE FROM product_tags WHERE product_id=? AND tag_code=?&#x27;,[id,code]);return result.affectedRows;},
+  };
+}
+</code></pre></div>
+<h2>src/mappers-$id/product-mapper.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/mappers-$id/product-mapper.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: แก้allowlist/ชื่อfield/typeตามresponseโจทย์; summaryกับdetailอาจต่างกัน
+// brandNameมาจากJOINalias brand_name; ถ้าเปลี่ยนSQLต้องแก้mapperให้ตรงกัน
+// Allowlist: ห้าม return {...entity} เพราะคอลัมน์ภายในอาจหลุดออกไป
+export function summary(entity) {
+  return {id:entity.id, sku:entity.sku, name:entity.name, brandId:entity.brand_id,
+    category:entity.category, price:Number(entity.price), status:entity.status};
+}
+export function detail(entity) {
+  return {id:entity.id, sku:entity.sku, name:entity.name, brandId:entity.brand_id,
+    brandName:entity.brand_name, category:entity.category, price:Number(entity.price),
+    ramGb:entity.ram_gb, storageGb:entity.storage_gb, color:entity.color,
+    stockQuantity:entity.stock_quantity, status:entity.status,
+    releaseDate:entity.release_date == null ? null : entity.release_date instanceof Date
+      ? entity.release_date.toISOString().slice(0,10) : String(entity.release_date)};
+}
+</code></pre></div>
+<h2>src/mappers-$id/api-response.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/mappers-$id/api-response.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: เปลี่ยนenvelopeเฉพาะตามcontract: success/data/timestamp หรือ status/data
+// DELETE204ไม่ผ่านhelperนี้ ใช้end(); DELETE200จึงส่งJSONตามสเปก
+// ตัวอย่าง W8-like: ปรับชื่อ key/types/status ตามข้อสอบจริงเสมอ
+export function success(res, data, status = 200, pagination) {
+  return res.status(status).json({success:true, data,
+    ...(pagination ? {pagination} : {}), timestamp:new Date().toISOString()});
+}
+export function metadata(total, {page,limit}) {
+  return {total:Number(total),page,limit,totalPages:Math.ceil(total/limit),hasNextPage:page*limit&lt;total,hasPrevPage:page&gt;1};
+}
+</code></pre></div>
+<h2>src/middlewares-$id/app-error.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/middlewares-$id/app-error.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// Error ที่แอปตั้งใจให้ client เห็น: status และ code ต้องใช้ให้ตรงกับ handler
+export class AppError extends Error {
+  constructor(message, status = 400, code = &#x27;VALIDATION_ERROR&#x27;) {
+    super(message); this.status = status; this.code = code;
+  }
+}
+</code></pre></div>
+<h2>src/middlewares-$id/pagination.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/middlewares-$id/pagination.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: default page/limit, maxlimit และinvalid-query policyตามโจทย์ ไม่ยึดค่าตัวอย่างเสมอ
+import { AppError } from &#x27;./app-error.js&#x27;;
+function positiveInteger(value, fallback) {
+  if (value === undefined) return fallback;
+  if (typeof value !== &#x27;string&#x27; || !/^\d+$/.test(value)) throw new AppError(&#x27;page and limit must be positive integers&#x27;);
+  const n = Number(value);
+  if (!Number.isSafeInteger(n) || n &lt; 1) throw new AppError(&#x27;page and limit must be positive integers&#x27;);
+  return n;
+}
+export function parsePagination(query = {}) {
+  const page = positiveInteger(query.page, 1);
+  const limit = Math.min(positiveInteger(query.limit, 10), 100);
+  const offset = (page - 1) * limit;
+  if (!Number.isSafeInteger(offset)) throw new AppError(&#x27;Requested page is too large&#x27;);
+  return {page, limit, offset};
+}
+export function queryParser(req, res, next) {
+  try { req.pagination = parsePagination(req.query); next(); } catch (err) { next(err); }
+}
+</code></pre></div>
+<h2>src/middlewares-$id/error-handler.js</h2>
+<p>[เปิดJSและแก้ตรงไฟล์นี้](../src/middlewares-$id/error-handler.js)</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: จับคู่HTTPstatus/errorcode/message/envelopeกับโจทย์จริง รวมMySQL1062/1452/1451
+import { AppError } from &#x27;./app-error.js&#x27;;
+const MYSQL_ERRORS = {
+  ER_DUP_ENTRY: [409,&#x27;DUPLICATE_KEY&#x27;,&#x27;Resource already exists&#x27;],
+  ER_NO_REFERENCED_ROW_2: [400,&#x27;FOREIGN_KEY_NOT_FOUND&#x27;,&#x27;Referenced record does not exist&#x27;],
+  ER_ROW_IS_REFERENCED_2: [409,&#x27;RESOURCE_IN_USE&#x27;,&#x27;Resource is referenced by another record&#x27;],
+};
+export function normalizeError(err) {
+  const mysql = MYSQL_ERRORS[err?.code];
+  const [status, code, message] = mysql || (err instanceof AppError
+    ? [err.status, err.code, err.message]
+    : err?.type === &#x27;entity.parse.failed&#x27; ? [400,&#x27;INVALID_JSON&#x27;,&#x27;Request body must be valid JSON&#x27;]
+    : [500,&#x27;INTERNAL_SERVER_ERROR&#x27;,&#x27;Internal server error&#x27;]);
+  return {status,body:{success:false,error:{code,message},timestamp:new Date().toISOString()}};
+}
+export function errorHandler(err, req, res, next) {
+  if (res.headersSent) return next(err);
+  const result = normalizeError(err);
+  return res.status(result.status).json(result.body);
+}
+</code></pre></div></details><details id="INT161-MIDTERM/09-common-errors"><summary>INT161-MIDTERM/09-common-errors.md</summary><h1>09 — Common Errors</h1>
+<h2>เช็กจากอาการหนึ่งจุดก่อน</h2>
+<p>| อาการ | จุดแรกที่ตรวจ |</p>
+<p>| --- | --- |</p>
+<p>| Cannot use import outside a module | package.jsonมีtype:module |</p>
+<p>| require is not defined | ใช้import/exportให้ตรงESM |</p>
+<p>| ERR_MODULE_NOT_FOUND | relativepath/.js/ชื่อfolderและตัวพิมพ์ตรงไฟล์จริง |</p>
+<p>| เปิดnode app.jsแล้วserverไม่ขึ้น | appเป็นfactory ต้องเปิดserver.jsผ่านnpm start |</p>
+<p>| EADDRINUSE | serverเดิมใช้portอยู่ ปิดตัวเดิมหรือเปลี่ยนPORT |</p>
+<p>| ECONNREFUSED | MySQLเปิดอยู่และhost/portถูก |</p>
+<p>| ER_ACCESS_DENIED_ERROR | user/passwordใน.envถูก |</p>
+<p>| Unknown database | ตั้งฐานฝึกแล้วรันdb:init ไม่ชี้ฐานสอบ |</p>
+<p>| marker missing | หยุดใช้ฐานนั้น เลือกฐานฝึกใหม่ที่ยังไม่มี |</p>
+<p>| 404ทุกendpoint | basepathรหัสคงที่/method/portตรงกัน |</p>
+<p>| req.body undefined | Content-Type JSON และexpress.jsonอยู่ก่อนrouter |</p>
+<p>| ได้Promiseแทนข้อมูล | awaitDB/serviceก่อนใช้ผล |</p>
+<p>| SELECTได้arrayซ้อน/undefined | mysql2คืน[rows,fields] ต้องdestructure |</p>
+<p>| summaryหลุดfieldอื่น | mapperใช้allowlist ไม่spreadentity |</p>
+<p>| priceเป็นstring | แปลงตามcontractในmapper |</p>
+<p>| stock0กลายเป็นdefault | ใช้??เมื่อ0ถูกต้อง |</p>
+<p>| brandNameไม่มี | SQLJOINและalias brand_nameตรงmapper |</p>
+<p>| วันที่เลื่อนวัน | ตรวจdateStrings/timezoneและDATEเทียบtimestamp |</p>
+<p>| page2ยังได้ข้อมูลเดิม | offset=(page-1)*normalizedlimit |</p>
+<p>| totalเท่าจำนวนในหน้า | ใช้COUNTของข้อมูลทั้งหมดตามfilter |</p>
+<p>| PUTค่าเดิมได้404 | อย่าใช้changedRows0ตัดสินmissing |</p>
+<p>| แก้/ลบหลายแถว | WHEREและparamsครบ โดยเฉพาะcompositekey |</p>
+<p>| NAกลายเป็นNaN | stringPKห้ามNumber/parseInt |</p>
+<p>| duplicateหลุด500 | handlerต้องmapER_DUP_ENTRY409 |</p>
+<p>| errorกลับเป็นHTML | handler4argumentsอยู่ท้ายapp และส่งต่อerrorถูก |</p>
+<p>| HTTP200แต่bodyบอก404 | ตั้งres.statusจริง |</p>
+<p>| DELETE204แต่แนบJSON | ใช้res.status(204).end() |</p>
+<p>| responseตรงแต่runnerไม่ผ่าน | เทียบfield/type/status/basepathกับสเปกเฉพาะตัว |</p>
+<h2>ลำดับตรวจข้อสอบ</h2>
+<p>1. อ่านmethod/path/body/status/DTOจากโจทย์ ไม่เริ่มแก้หลายlayerพร้อมกัน</p>
+<p>2. ส่งrequestที่เล็กที่สุดจากlocalhost ดูstatus/rawbody</p>
+<p>3. ดูlogในเครื่องและจุดthrow/error code โดยไม่เผยpassword</p>
+<p>4. SELECTแถวในฐานที่ตั้งไว้ ตรวจpersistenceและFK/UNIQUE</p>
+<p>5. แก้ที่ชั้นต้นเหตุ แล้วส่งrequestเดิมและกรณีข้างเคียงอีกครั้ง</p>
+<p>ก่อนสอบเตรียมเอกสาร .md/.js และdependenciesในเครื่อง เปิดMySQL ลองตัดอินเทอร์เน็ตจริง ใช้<a href="#guides/06-offline">checklistก่อนส่ง</a></p>
+<p>ตัวช่วย <code>npm run doctor</code> อ่านข้อมูลอย่างเดียว ส่วน <code>npm run db:init</code> และ <code>npm test</code> เขียนฐานฝึก ห้ามนำไปรันกับฐานสอบจริง</p></details><details id="POSTMAN"><summary>POSTMAN.md</summary><h1>Postman — เชื่อม localhost และตรวจ API ทีละขั้น</h1>
+<p>ใช้คู่มือนี้กับ **int161-exam-kit แบบ products/brands** หน้าเอกสารที่ port 8171 กับ API ที่ port 3000 เป็นคนละ server: Postman ต้องส่งไป **3000** ตาม PORT ใน .env ไม่ใช่ port เอกสาร</p>
+<h2>1. เปิดทั้งคู่ก่อน</h2>
+<p>Terminal แรก เปิดหน้าเอกสาร:</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>npm run study
+</code></pre></div>
+<p>เปิด http://127.0.0.1:8171 ใน browser ส่วน Terminal ที่สองเปิด API จาก folder เดียวกัน:</p>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>npm start
+</code></pre></div>
+<p>ก่อนเปิด API ต้องตั้ง .env และเตรียม MySQL ตาม <a href="#START-HERE.th">START-HERE</a> ถ้าใช้ฐานตัวอย่างครั้งแรกให้ใช้ DB_MODE=practice แล้ว npm run db:init ไว้ก่อน ส่วนฐานสอบใช้ SQL อาจารย์ ไม่ใช้ db:init</p>
+<p>เมื่อ npm start แสดง Template API ให้เปิด Postman **desktop app** ที่ติดตั้งไว้ในเครื่อง การส่ง HTTP ไป localhost ไม่ต้องใช้อินเทอร์เน็ต แต่ต้องให้ Node server และ MySQL ยังทำงานอยู่</p>
+<h2>2. เตรียมใช้งาน offline ให้ตรงโหมด</h2>
+<p>Postman มี lightweight API Client สำหรับส่ง request แบบออฟไลน์โดยไม่ลงชื่อเข้าใช้ และ workspace สำหรับ collections/variables ความสามารถสองโหมดต่างกัน ให้ทดลองบนเครื่องสอบก่อนตัดเน็ต อย่าสมมติว่า collection/variables ใช้ได้ในทุกโหมด</p>
+<p>[เอกสาร Postman: Lightweight API Client](https://learning.postman.com/latest-v-12/docs/getting-started/basics/using-api-client)</p>
+<p>วิธีด้านล่างแยกสองทาง: ถ้ามี Import/Collections ใช้ส่วน 3; ถ้าใช้ lightweight หรือไม่มี variables ให้ใช้ URL เต็มและสร้าง request ตามส่วน 4 ไม่ต้องลงชื่อเข้าใช้เพื่อทำตามวิธี URL เต็ม</p>
+<h2>3. Import collection ที่เตรียมให้</h2>
+<p>ทำขั้นนี้ในช่วงเตรียมเครื่องและตรวจว่าเปิดใช้งานแบบ offline ได้จริง:</p>
+<p>1. เลือก Import ใน Postman แล้วเลือกไฟล์ [requests/postman.json](requests/postman.json) จากเครื่อง ไม่ต้อง import ผ่านลิงก์ออนไลน์</p>
+<p>2. เปิด collection “INT161 local practice — run in order”</p>
+<p>3. เปิด Variables ของ collection ตั้ง baseUrl เป็น <code>http://127.0.0.1:3000/api/demo001</code></p>
+<p>4. ถ้าเปลี่ยน STUDENT_ID/PORT ใน .env ให้แก้ baseUrl ตามจริง อย่าเติม /products ที่ท้าย baseUrl เพราะแต่ละ request มี resource ต่อไว้อยู่แล้ว</p>
+<p>5. ตรวจว่าไม่มี environment variable ชื่อ baseUrl มาทับค่าของ collection</p>
+<p>6. ส่งตามลำดับ 1 Identity → 2 List → 3 Create → 4 Detail → 5 Update → 6 Delete → 7 Confirm gone</p>
+<p>Create script บันทึก productId และ createdSku จาก response ให้ request ถัดไปใช้ แถวที่ลบคือ ID ที่สร้างเอง หาก productId ยังเป็น CREATE_FIRST ให้รัน Create ให้ผ่าน 201 ก่อน</p>
+<p>กรณีที่เปลี่ยน schema/envelope แล้ว ต้องแก้ body, URL และ script อ่าน <code>pm.response.json().data</code> ให้ตรงสเปกใหม่ด้วย collection ตัวอย่างไม่ได้ปรับตามโค้ดที่คุณแก้ให้อัตโนมัติ</p>
+<p>[เอกสาร Postman: Import data](https://learning.postman.com/v11/docs/getting-started/importing-and-exporting/importing-data)</p>
+<h2>4. สร้าง request เองด้วย URL เต็ม</h2>
+<p>วิธีนี้ไม่ต้องพึ่ง collection variables ใช้ได้เมื่อสร้าง HTTP request ใน desktop client ได้แล้ว ปุ่ม/ตำแหน่งเมนูอาจต่างตามรุ่น เลือก New → HTTP request หรือเปิดแท็บ request ใหม่</p>
+<h3>4.1 ตรวจการเชื่อมต่อก่อน — GET Identity</h3>
+<p>Method: GET</p>
+<p>URL: <code>http://127.0.0.1:3000/api/demo001/student-info</code></p>
+<p>ไม่ใส่ Body</p>
+<p>กด Send</p>
+<p>คาดหวัง 200 และ data.studentId เป็น demo001 ตาม config ถ้า 404 ให้ตรวจ prefix/รหัสนักศึกษา ถ้า connection refused ให้ตรวจ npm start ก่อน ไม่ใช่ไปแก้ SQL</p>
+<p>Postman เชื่อมกับ HTTP server ของ Node ไม่ใช่ต่อ MySQL ตรง ๆ จึงไม่ใส่ DB_PORT=3306 หรือ password MySQL ใน URL/request นี้</p>
+<h3>4.2 R1 — GET Brands list</h3>
+<p>URL: <code>http://127.0.0.1:3000/api/demo001/brands</code>, Method GET</p>
+<p>คาดหวัง 200, data เป็น array ดู id ของ brand ที่มีจริงเพื่อใช้ใน POST (ข้อมูลตัวอย่างมี brand id 1)</p>
+<h3>4.3 C1 — POST Create</h3>
+<p>Method POST, URL <code>http://127.0.0.1:3000/api/demo001/products</code></p>
+<p>เลือก **Body → raw → JSON** แล้ววาง:</p>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{
+  <span class="json-key">&quot;sku&quot;</span>: <span class="json-string">&quot;POSTMAN-MANUAL-001&quot;</span>,
+  <span class="json-key">&quot;name&quot;</span>: <span class="json-string">&quot;My Phone&quot;</span>,
+  <span class="json-key">&quot;brand_id&quot;</span>: <span class="json-number">1</span>,
+  <span class="json-key">&quot;category&quot;</span>: <span class="json-string">&quot;PHONE&quot;</span>,
+  <span class="json-key">&quot;price&quot;</span>: <span class="json-number">1200.5</span>,
+  <span class="json-key">&quot;ram_gb&quot;</span>: <span class="json-number">8</span>,
+  <span class="json-key">&quot;storage_gb&quot;</span>: <span class="json-number">128</span>,
+  <span class="json-key">&quot;color&quot;</span>: <span class="json-string">&quot;Black&quot;</span>
+}
+</code></pre></div>
+<p>ตรวจ Headers ว่ามี Content-Type: application/json กด Send → คาดหวัง **201** จด data.id ที่ได้จริง เช่น 24 ห้ามสมมติว่าเป็น 1 หากส่ง SKU เดิมซ้ำได้ 409 ให้เปลี่ยน SKU สำหรับแถวใหม่</p>
+<p>Body นี้เป็น field ขั้นต่ำของตัวอย่าง ข้อสอบจริงอาจกำหนด field ต่างกัน ดู <a href="#GUIDE">GUIDE</a> ก่อนปรับ</p>
+<h3>4.4 R2 — GET Products + Pagination</h3>
+<p>Method GET, URL <code>http://127.0.0.1:3000/api/demo001/products</code></p>
+<p>ใน Params เพิ่ม:</p>
+<p>| Key | Value |</p>
+<p>| --- | --- |</p>
+<p>| page | 1 |</p>
+<p>| limit | 10 |</p>
+<p>หรือวาง <code>http://127.0.0.1:3000/api/demo001/products?page=1&amp;limit=10</code> โดยตรง ใช้แบบใดแบบหนึ่ง ไม่เพิ่ม key ซ้ำสองรอบ คาดหวัง 200, data เป็น summary DTO array และ pagination.total เป็นจำนวนทั้งหมด</p>
+<h3>4.5 R3 — GET Detail</h3>
+<p>Method GET, URL ตัวอย่างถ้า Create ได้ id 24:</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>http://127.0.0.1:3000/api/demo001/products/24
+</code></pre></div>
+<p>แทน 24 ด้วย ID ของคุณ คาดหวัง 200 และ detail DTO มี brandName, price เป็น number พร้อม field ตาม mapper ไม่มี internal_cost</p>
+<h3>4.6 U1 — PUT Update</h3>
+<p>Method PUT, URL เดิมที่ลงท้ายด้วย ID ของคุณ เลือก Body → raw → JSON แล้วส่ง full body:</p>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{
+  <span class="json-key">&quot;sku&quot;</span>: <span class="json-string">&quot;POSTMAN-MANUAL-001&quot;</span>,
+  <span class="json-key">&quot;name&quot;</span>: <span class="json-string">&quot;My Phone Updated&quot;</span>,
+  <span class="json-key">&quot;brand_id&quot;</span>: <span class="json-number">1</span>,
+  <span class="json-key">&quot;category&quot;</span>: <span class="json-string">&quot;PHONE&quot;</span>,
+  <span class="json-key">&quot;price&quot;</span>: <span class="json-number">0</span>,
+  <span class="json-key">&quot;ram_gb&quot;</span>: <span class="json-number">8</span>,
+  <span class="json-key">&quot;storage_gb&quot;</span>: <span class="json-number">128</span>,
+  <span class="json-key">&quot;color&quot;</span>: <span class="json-string">&quot;Blue&quot;</span>
+}
+</code></pre></div>
+<p>ใช้ SKU ของแถวเดิม คาดหวัง 200 GET ID เดิมอีกครั้งต้องเห็นค่าที่แก้ ส่งค่าเดิมซ้ำยังได้ 200 โครงนี้ไม่รับ PUT แค่ name เพราะ validation ต้องการ full body</p>
+<h3>4.7 D1 — DELETE และตรวจหลังลบ</h3>
+<p>Method DELETE, URL ลงท้าย ID ที่คุณสร้าง คาดหวัง **204 และ Body ว่าง** หลังจากนั้นเปลี่ยนเป็น GET URL เดิมแล้ว Send ควรได้ 404</p>
+<p>ไม่เลือก brand id หรือ product id อื่นที่ไม่ได้ตั้งใจลบ ถ้าแถวยังมี FK อ้างอิงอาจได้ 409 ตาม contract</p>
+<h2>5. อ่านผลให้ครบ ไม่ดูแค่สีเขียว</h2>
+<p>Status คือ HTTP status จริงจาก Postman ไม่ใช่เลขที่เขียนไว้ใน JSON</p>
+<p>Body: ตรวจชื่อ key/ชนิด/array vs object/DTO/pagination</p>
+<p>Headers: JSON ควรมี Content-Type ที่ตรง</p>
+<p>เปลี่ยนข้อมูลแล้ว GET อีกครั้ง และตรวจแถวใน DB ด้วย key เพื่อยืนยัน persistence</p>
+<p>Response 204 ต้องไม่มี Body; response 404/409 ต้องตรง error envelope ที่โจทย์กำหนด</p>
+<p>ลองส่ง page=0, ID ที่ไม่มี, ขาด required field และ SKU ซ้ำ เพื่อยืนยัน 400/404/409 ของโครงนี้ ก่อนแก้ตามสเปกจริง</p>
+<h2>6. ปัญหาที่พบบ่อย</h2>
+<p>| อาการ | วิธีตรวจ |</p>
+<p>| --- | --- |</p>
+<p>| Could not send / ECONNREFUSED | npm start ยังทำงานอยู่ไหม, PORT ถูกไหม |</p>
+<p>| ได้หน้าเอกสารแทน API | ใช้ 3000 ไม่ใช่ 8171 |</p>
+<p>| 404 ทุก request | prefix /api/STUDENT_ID และ resource ถูกไหม |</p>
+<p>| URL ยังมี {{baseUrl}} สีเตือน | variable ไม่ถูก resolve; ตั้งใน collection หรือใช้ URL เต็ม |</p>
+<p>| productId=CREATE_FIRST | Create ต้องผ่านก่อน หรือใส่ ID เอง |</p>
+<p>| 400 INVALID_JSON | raw body มี comma/quote ผิด หรือใช้ JS object แทน JSON |</p>
+<p>| 400 required fields | PUT ต้อง full body; field/type ตรง schema หรือไม่ |</p>
+<p>| 409 DUPLICATE_KEY | SKU ชนแถวอื่น ใช้ SKU ใหม่หรือตรวจ ID ที่แก้ |</p>
+<p>| 500 | ดู Terminal Node และ config/SQL ไม่แก้ status หลอกให้ผ่าน |</p>
+<h2>7. ก่อนสอบ</h2>
+<p>เตรียม desktop app, Node, dependencies, MySQL และไฟล์ request/คู่มือให้พร้อมในช่วงที่อนุญาต ลองตัดอินเทอร์เน็ตแล้วเปิด localhost และส่ง request จริง หาก collection ใช้ไม่ได้ในโหมดที่เลือก ให้ใช้วิธี URL เต็มด้านบน พร้อม body ที่คัดลอกจากคู่มือ ไม่ต้องโหลดอะไรเพิ่มระหว่างสอบ</p></details><details id="QUESTIONS-AND-ANSWERS"><summary>QUESTIONS-AND-ANSWERS.md</summary><h1>คำถาม พร้อมเฉลย วิธีคิด และวิธีทำ</h1>
+<p>ใช้เปิดเทียบระหว่างทำข้อสอบ: คำถามมาจากงานWeek08ที่โค้ดโครงนี้ตอบไว้แล้ว แต่ละข้อมีคำถาม → วิธีคิด → วิธีทำ → เฉลยJS/SQL → วิธีตรวจ → จุดปรับtemplate ไม่เพิ่มแบบฝึกหัดใหม่</p>
+<p>| ส่วน | คำถามและคำตอบครบในหน้าเดียว |</p>
+<p>| --- | --- |</p>
+<p>| 1 | <a href="#guides/operations/01-create-product">เพิ่มสินค้า</a> |</p>
+<p>| 2 | <a href="#guides/operations/02-read-brands">อ่านรายการแบรนด์</a> |</p>
+<p>| 3 | <a href="#guides/operations/03-read-products">อ่านรายการสินค้าแบบแบ่งหน้าและ Summary DTO</a> |</p>
+<p>| 4 | <a href="#guides/operations/04-read-product-detail">อ่านรายละเอียดสินค้าตาม ID</a> |</p>
+<p>| 5 | <a href="#guides/operations/05-update-product">แก้ไขสินค้าตาม ID</a> |</p>
+<p>| 6 | <a href="#guides/operations/06-delete-product">ลบสินค้าตาม ID</a> |</p>
+<p>เฉลยทั้งหมดใช้[โค้ดsrcที่รันได้](src)ร่วมกัน เริ่มเปิดตาม<a href="#START-HERE.th">START-HERE</a> และใช้<a href="#GUIDE">GUIDE</a>เมื่อต้องเปลี่ยนschema/body/DTO/path/statusตามข้อสอบจริง ส่วนสรุปพื้นฐานอยู่ใน[9บท](INT161-MIDTERM)</p>
+<p>ชื่อresource,การจัดลำดับและนโยบายที่templateเพิ่มไม่ได้ยืนยันว่าจะเป็นข้อสอบจริง ตรวจcontractที่ได้รับก่อนคัดลอกเสมอ</p></details><details id="README"><summary>README.md</summary><h1>INT161 Exam Template</h1>
+<p>ดาวน์โหลดแล้วใช้เป็นโครงช่วยทำข้อสอบ: มีโค้ด CRUD, DTO, Pagination และ Exception Handling ที่ประกอบและรันได้แล้ว พร้อมคอมเมนต์ <code>ADAPT</code> บอกจุดที่ต้องเปลี่ยนตามโจทย์</p>
+<p>เริ่มที่ <a href="#START-HERE.th">START-HERE.th.md</a> เพื่อเปิดโครง แล้วใช้ <a href="#GUIDE">GUIDE.md</a> ระหว่างแก้ข้อสอบ</p>
+<div class="code-box"><div class="code-caption">Terminal</div><pre><code>src/
+  app.js / server.js       ประกอบ API และเปิด port
+  configs-$id/             DB, mode, identity
+  routes-$id/              method/path/middleware
+  controllers-$id/         req/res แยกตาม CRUD + 3 Read
+  services-$id/            validation และ business rules
+  repositories-$id/        SQL, PK/FK, JOIN, COUNT
+  mappers-$id/             DTO และ response envelope
+  middlewares-$id/         pagination/error handling
+sql/                       schema ของฐานตัวอย่าง
+requests/                  request สำหรับตรวจ API
+GUIDE.md                   วิธีปรับโครงให้ตรงโจทย์ที่ได้รับ
+INT161-MIDTERM/             สรุปอ่านประกอบ 9 บท
+</code></pre></div>
+<h2>Localhost สำหรับเปิดคู่มือขณะเขียนโค้ด</h2>
+<p>รัน <code>npm run study</code> แล้วเปิด http://127.0.0.1:8171 แบ่ง 6 หมวด: เริ่มใช้งาน, งานปฏิบัติ, เนื้อหาอ้างอิง, Postman, Debug และ source ตาม Layer มีสารบัญในเอกสารและลิงก์คู่มือไปยังโค้ดที่เกี่ยวข้อง พร้อมค้นหาและคัดลอกโค้ด ใช้ได้ offline ไม่ต้องต่อฐานข้อมูลสำหรับหน้าเอกสาร ส่วน API ให้เปิดอีก Terminal ด้วย <code>npm start</code> ที่ port 3000</p>
+<p>อ่าน <a href="#POSTMAN">วิธีเชื่อม Postman แบบละเอียด</a> มีทั้ง Import collection และสร้าง request ด้วย URL เต็มสำหรับโหมด offline</p>
+<h2>คำถาม เฉลย วิธีคิด และวิธีทำ</h2>
+<p>เปิด <a href="#QUESTIONS-AND-ANSWERS">QUESTIONS-AND-ANSWERS.md</a> แล้วเลือกส่วนที่ต้องการ แต่ละหน้าจับคู่คำถามเดิมกับJS/SQLที่โครงใช้อยู่และอธิบายเหตุผลทีละขั้น</p>
+<h2>เลือกส่วนที่จะใช้</h2>
+<p>| งาน | โค้ดเริ่มต้น | วิธีปรับ |</p>
+<p>| --- | --- | --- |</p>
+<p>| Create | [01-create-product.js](src/controllers-$id/01-create-product.js) | <a href="#guides/operations/01-create-product">Create guide</a> |</p>
+<p>| Read list แบรนด์ | [02-read-brands.js](src/controllers-$id/02-read-brands.js) | <a href="#guides/operations/02-read-brands">List guide</a> |</p>
+<p>| Read list + Pagination/DTO | [03-read-products.js](src/controllers-$id/03-read-products.js) | <a href="#guides/operations/03-read-products">Pagination guide</a> |</p>
+<p>| Read detail + JOIN/DTO | [04-read-product-detail.js](src/controllers-$id/04-read-product-detail.js) | <a href="#guides/operations/04-read-product-detail">Detail guide</a> |</p>
+<p>| Update | [05-update-product.js](src/controllers-$id/05-update-product.js) | <a href="#guides/operations/05-update-product">Update guide</a> |</p>
+<p>| Delete | [06-delete-product.js](src/controllers-$id/06-delete-product.js) | <a href="#guides/operations/06-delete-product">Delete guide</a> |</p>
+<p>controllerเรียก service/repository/mapper ที่มีครบในsrc ไม่ต้องประกอบจากโจทย์ฝึกใหม่ products/brands เป็นโครงที่ดัดแปลงจากงานที่เฉลยแล้ว เปลี่ยนชื่อtable/field/keyและcontractตามข้อสอบจริง ส่วนtags/composite key และrecipesเป็นโค้ดทางเลือกที่หยิบใช้หรือลบออกเมื่อไม่เกี่ยวข้อง</p>
+<h2>สองโหมด</h2>
+<p><code>DB_MODE=practice</code>: เปิดโครงกับฐานตัวอย่างที่แยกไว้ ใช้ <code>npm run db:init</code> ได้</p>
+<p><code>DB_MODE=exam</code>: เชื่อม <code>DB_NAME</code> ที่ระบุเอง และบังคับ <code>STUDENT_ID</code>/<code>STUDENT_NAME</code>/<code>STUDENT_KEY</code> ให้ครบเป็นค่าจริง ไม่สร้าง/resetฐาน ต้องปรับSQL/schema/contractตามโจทย์และใช้SQLอาจารย์ตามคำสั่ง</p>
+<p>เตรียม Node/MySQL และ <code>npm ci</code> ก่อนตัดอินเทอร์เน็ต เอกสาร.mdและโค้ด.jsเปิดอ่านออฟไลน์ได้ หรือเปิดหน้าlocalhostด้วยnpm run study ไม่มีโฟลเดอร์โจทย์ให้ทำเพิ่ม</p>
+<p>[อ่านสรุป9บท](INT161-MIDTERM) · <a href="#guides/05-template">ใส่ลงteacher template</a> · <a href="#guides/06-offline">แก้error/ก่อนส่ง</a> · <a href="#docs/VALIDATION">ผลตรวจ</a></p></details><details id="docs/VALIDATION"><summary>docs/VALIDATION.md</summary><h1>ผลตรวจ Template</h1>
+<p>รุ่น2.1.0 ตรวจบนmacOS, Node26.5.1 และMySQL9.7.1ในเครื่อง</p>
+<p>npm test: 25/25 รวมguardโหมดexamและการปฏิเสธdb:initในโหมดexam</p>
+<p>สำเนาteacher template: shared API contractsผ่าน9/9 และเปิดnpm startจริงในสำเนาได้HTTP200ทั้งstudent-info/products</p>
+<p>เปิดsrc/server.jsจริงทั้งpractice/examได้HTTP200 โดยใช้ฐานตัวอย่างเดียวกันเพื่อตรวจstartup (ยังไม่ใช่การตรวจschemaข้อสอบอื่น)</p>
+<p>QUESTIONS-AND-ANSWERS.mdรวม6หน้าคำถาม/วิธีคิด/วิธีทำ/เฉลยJSและSQL ใช้sourceเดียวกับtemplate ไม่เพิ่มโจทย์ฝึกใหม่</p>
+<p>srcเป็นโครงAPIที่เปิดได้ด้วยnpm start; controllers/service/repository/mapperแยกชัดเจน</p>
+<p>Regression: POST/PUTจาก.httpและPostmanผ่านตารางชั่วคราวที่บังคับram_gb/storage_gb/color NOT NULL; missing/nullได้400แทน500; request curlส่งfieldsครบ</p>
+<p>Regression: verify-templateปฏิเสธserver.jsที่พัง แม้app factoryผ่าน</p>
+<p>testsตรวจCRUD persistence, DTO/types/JOIN/date, pagination, exception, unchangedupdate, string/compositekey และrequestsกับMySQLจริง</p>
+<p>DB_MODE=practiceตรวจprefix+markerก่อนเปิดAPI; DB_MODE=examต้องระบุDB_NAME/STUDENT_ID/STUDENT_NAME/STUDENT_KEYเป็นค่าจริงครบ ตรวจconnectivityอย่างเดียว ไม่สร้าง/resetฐาน</p>
+<p>db:initและtestsอัตโนมัติปฏิเสธDB_MODE=exam; ชุดtestเป็นของschemaตัวอย่าง ไม่ใช่runnerตัดสินข้อสอบที่แก้schemaแล้ว</p>
+<p>ตรวจสำเนาteacherZIPในdirectoryชั่วคราวและตรวจsourceZIPที่แตกใหม่โดยบล็อกnetworkภายนอกแต่อนุญาตlocalhost</p>
+<p>เอกสาร.md; โค้ด.jsปกติ; ไม่มีHTML/โฟลเดอร์questions/แบบฝึกหัดเพิ่มเติม</p>
+<p>ต้องเตรียมdependenciesไว้ก่อนใช้ออฟไลน์ ยังไม่ได้รับรองWindowsหรือMySQLทุกรุ่น Postmancollectionตรวจโครงสร้าง แต่ไม่ได้เปิดGUIทดสอบ การทำงานกับschemaและcontractข้อสอบต้องปรับและตรวจตามโจทย์จริง</p></details><details id="guides/01-contract"><summary>guides/01-contract.md</summary><h1>อ่านโจทย์แล้วทำ Contract Sheet</h1>
+<p>ก่อนเขียนโค้ด แปลงแต่ละข้อเป็นตารางนี้ ใส่ค่าจากโจทย์จริง อย่ายึดค่า demo เมื่อสเปกต่างกัน</p>
+<p>| รายการ | ตัวอย่างใน kit | ต้องเช็กในข้อสอบ |</p>
+<p>| --- | --- | --- |</p>
+<p>| Base path | /api/demo001 | ID ต้องเป็นค่าคงที่ ไม่ใช่ :studentId |</p>
+<p>| List | GET /products | filter, sort, page/limit และ DTO รายการ |</p>
+<p>| Detail | GET /products/:id | ชนิด key, JOIN, 404 |</p>
+<p>| Create | POST /products | ฟิลด์บังคับ, UNIQUE, 201 |</p>
+<p>| Update | PUT /products/:id | full body หรือ partial, 200, 404, duplicate |</p>
+<p>| Delete | DELETE /products/:id | 204 ว่าง หรือ 200 JSON |</p>
+<p>| Error | success:false,error:{code,message},timestamp | ชื่อ envelope และ code ต้องตรง |</p>
+<h2>Response ตัวอย่าง W8-like</h2>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{<span class="json-key">&quot;success&quot;</span>:<span class="json-literal">true</span>,<span class="json-key">&quot;data&quot;</span>:[],<span class="json-key">&quot;pagination&quot;</span>:{<span class="json-key">&quot;total&quot;</span>:<span class="json-number">0</span>,<span class="json-key">&quot;page&quot;</span>:<span class="json-number">1</span>,<span class="json-key">&quot;limit&quot;</span>:<span class="json-number">10</span>,<span class="json-key">&quot;totalPages&quot;</span>:<span class="json-number">0</span>,<span class="json-key">&quot;hasNextPage&quot;</span>:<span class="json-literal">false</span>,<span class="json-key">&quot;hasPrevPage&quot;</span>:<span class="json-literal">false</span>},<span class="json-key">&quot;timestamp&quot;</span>:<span class="json-string">&quot;2026-10-21T00:00:00.000Z&quot;</span>}
+</code></pre></div>
+<p>นี่เป็น contract ของ kit ที่อิงแนว Week08 ต้องเทียบไฟล์สเปกของตัวเองอีกครั้ง ตัวอย่าง W6 ใช้ <code>status:&#x27;success&#x27;</code> / <code>status:&#x27;error&#x27;</code> ดู <code>recipes/w6-response.js</code>; เปลี่ยน success helper และ error handler ให้ตรงกันทั้งคู่</p>
+<h2>นโยบาย input ของ kit</h2>
+<p>POST/PUT products รับ snake_case: <code>sku,name,brand_id,category,price,ram_gb,storage_gb,color</code> บังคับตามschemaตัวอย่าง; <code>stock_quantity,status,release_date</code> เป็นตัวเลือก PUT ใช้ full body เช่น POST ฟิลด์ที่ไม่รู้จักถูกละทิ้ง ไม่อนุญาตเขียน <code>id</code> หรือ <code>internal_cost</code> ผ่าน API</p>
+<p>price ต้องเป็น JSON number &gt;=0 สูงสุด 99999999.99 ทศนิยมไม่เกินสองตำแหน่ง; brand_id เป็นจำนวนเต็มบวก; stock เป็นจำนวนเต็มไม่ติดลบ; release_date เป็นวันที่จริง YYYY-MM-DD หรือ null นโยบายนี้เป็นของชุดฝึก หากโจทย์อนุญาตค่าต่างกันต้องแก้ validation</p>
+<p>ชื่อ product/sku/category ห้ามว่างหลัง trim สถานะเริ่ม AVAILABLE stock เริ่ม 0 release_dateที่nullableเริ่มnull ส่วนram_gb/storage_gb/colorห้ามnull แยกกรณี missing/null/0 อย่าใช้ <code>value || default</code> เมื่อ 0 เป็นค่าที่ถูก</p>
+<h2>เช็กให้เข้มกว่าตัว runner</h2>
+<p>เขียน assertion ของตัวเองตามสเปก ถ้ารันเนอร์รับ DELETE ได้ทั้ง 200/204 หรือ duplicate ได้ทั้ง 400/409 การผ่าน runner ไม่พิสูจน์ว่าตรงข้อความโจทย์ ตรวจ status/body/ชนิดข้อมูล/ชื่อ key ด้วยตาและ request เพิ่มเติม</p></details><details id="guides/02-crud"><summary>guides/02-crud.md</summary><h1>CRUD ทีละชั้น</h1>
+<p>เปิดไฟล์ตามเส้นทางนี้: <code>src/app.js</code> → <code>routes-$id/catalog-route.js</code> → <code>services-$id/catalog-service.js</code> → <code>repositories-$id/catalog-repository.js</code> → <code>mappers-$id/product-mapper.js</code></p>
+<h2>Route และ async</h2>
+<p><code>app.js</code> รับ db pool แล้วประกอบ service/repository ติด router ที่ <code>/api/${studentId}</code> โดย studentId เป็นค่าจาก config ตอนเริ่มโปรแกรม <code>express.json()</code> ต้องอยู่ก่อน router และ error handler อยู่ท้ายสุด</p>
+<p>Express 5 ส่ง rejected Promise ของ async handler ไป error middleware ได้ Express 4 ต้องใช้ try/catch + next(err) หรือ wrapper; ตรวจเวอร์ชันก่อนคัดลอก</p>
+<h2>1C: Create</h2>
+<p>route รับ req.body → service ตรวจ/allowlist input → ตรวจ SKU ซ้ำ → repository INSERT → ใช้ result.insertId เฉพาะ auto increment numeric key → SELECT ใหม่ด้วย JOIN → detail DTO → 201</p>
+<p>DB UNIQUE ยังจำเป็นแม้เช็กก่อน INSERT เพราะ request พร้อมกันอาจผ่าน precheck ทั้งคู่ ห้ามใช้ <code>SELECT MAX(id)</code> หาว่าตนสร้างแถวไหน</p>
+<h2>3R: Read</h2>
+<p>รายการ brands: SELECT list ตามลำดับแน่นอน</p>
+<p>รายการ products: query parser → LIMIT/OFFSET และ COUNT → summary DTO + metadata</p>
+<p>รายละเอียด: find by key พร้อม JOIN → ถ้าไม่พบ throw 404 ก่อนเข้า mapper</p>
+<p>โจทย์จริงอาจจัด 3R ต่างกัน ให้ดู endpoint ของข้อสอบ ไม่มีหลักประกันว่าจะใช้ชื่อ resource เหมือน kit</p>
+<h2>1U: Update</h2>
+<p>ตรวจว่ามีแถวก่อน → validate full body → ถ้า SKU ของอีก id ซ้ำตอบ 409 → UPDATE ด้วย WHERE id=? → อ่านแถวกลับ ตอบ 200</p>
+<p>การส่งค่าเดิมทุกฟิลด์เป็น update ที่ถูกต้อง อย่าใช้ <code>changedRows===0</code> ตัดสินว่าไม่มีแถว เพราะอาจมีแถวแต่ค่าไม่เปลี่ยน</p>
+<h2>1D: Delete</h2>
+<p>ตรวจแถว → DELETE WHERE id=? → ตรวจ affectedRows → 204 <code>.end()</code> โดยไม่ส่ง JSON ถ้าสเปกเป็น W6 ให้ส่ง 200 พร้อม envelope ตามโจทย์ หาก FK อ้างอิงอยู่ให้ปล่อย error เข้าตัวแปลงกลาง</p>
+<h2>SQL ที่ต้องเขียนเองได้</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT id, sku, name FROM products ORDER BY id LIMIT ? OFFSET ?;
+SELECT COUNT(*) AS total FROM products;
+SELECT p.id, p.name, b.name AS brand_name
+FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?;
+INSERT INTO products (sku,name,brand_id,category,price) VALUES (?,?,?,?,?);
+UPDATE products SET name=?, price=? WHERE id=?;
+DELETE FROM products WHERE id=?;
+</code></pre></div>
+<p>ส่ง values ผ่าน parameter binding ไม่ต่อ string จาก request ลง SQL ตัวอย่าง repo ใช้ <code>query(&#x27;INSERT ... SET ?&#x27;, [data])</code> กับ object ที่ service เลือกฟิลด์ไว้แล้ว ซึ่ง mysql2 <code>.query</code> รองรับ อย่าสลับเป็น <code>.execute</code> แล้วส่ง object แบบเดียวกัน</p>
+<p>ทดสอบด้วยข้อมูลของตัวเอง ดู SQL persistence หลัง POST/PUT และ GET หลัง DELETE ไม่ถือว่า response อย่างเดียวพิสูจน์การบันทึกแล้ว</p></details><details id="guides/03-pagination-dto"><summary>guides/03-pagination-dto.md</summary><h1>Pagination, DTO และ JOIN</h1>
+<h2>Pagination</h2>
+<p>kit กำหนด page เริ่ม 1, limit เริ่ม 10 สูงสุด 100 รับ string ตัวเลขจำนวนเต็มบวกเท่านั้น หากส่งผิดหรือส่งซ้ำตอบ 400 ตัวอย่าง page=1.5, page=0, page=abc, limit=0, page=1&amp;page=2</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>const limit = Math.min(requestedLimit, 100);
+const offset = (page - 1) * limit;
+const totalPages = Math.ceil(total / limit);
+</code></pre></div>
+<p>ต้องคำนวณ offset หลัง cap limit ใช้ ORDER BY ที่แน่นอน และ COUNT ใช้ filter เดียวกับรายการ กรณีไม่มีข้อมูล total=0, data=[], totalPages=0 ห้าม fallback เป็นจำนวนอื่นด้วย <code>||</code> หน้าเกินสุดท้ายยัง 200 พร้อม [] และ total จริง</p>
+<p>kit ไม่มี search/filter; ถ้าโจทย์เพิ่ม ต้องแก้ทั้ง list และ count ให้ตรงกัน นโยบายไม่ส่ง page/limit คือยังแบ่งหน้าด้วย default หากโจทย์ต้องคืนทั้งหมดเมื่อไม่มี query ใช้ <code>recipes/optional-pagination.js</code> แล้วแยก SQL แบบไม่มี LIMIT ให้ครบ ไม่ใช่แก้แค่ parser</p>
+<h2>DTO allowlist</h2>
+<p>summary มี 7 ฟิลด์: id, sku, name, brandId, category, price, status</p>
+<p>detail มี 13 ฟิลด์: id, sku, name, brandId, brandName, category, price, ramGb, storageGb, color, stockQuantity, status, releaseDate</p>
+<p>อย่าใช้ <code>{...entity}</code> เพราะอาจหลุด internal_cost และชื่อคอลัมน์ DB ไม่ตรง API DTO แปลง snake_case → camelCase ด้วย mapping ชัดเจน เช็ก null ก่อน mapper เพื่อให้ missing เป็น 404</p>
+<p>mysql2 มักคืน DECIMAL เป็น string จึงใช้ <code>Number(entity.price)</code> ใน DTO ตาม contract นี้ DATE ใช้ dateStrings เพื่อรักษาวันเดิม releaseDate เป็น YYYY-MM-DD หรือ null; timestamp ของ envelope เป็น ISO UTC ไม่ใช่ DATE</p>
+<h2>JOIN</h2>
+<p>products มี brand_id แต่ detail ต้อง brandName จึงต้อง JOIN brands แล้ว alias <code>b.name AS brand_name</code> ห้ามเดาหรือ hardcode ชื่อ brand</p>
+<p>ถ้าใช้ LEFT JOIN ต้องกำหนดว่าค่าไม่มี brand เป็น null หรือ error ตามโจทย์ ใน kit FK บังคับ brand และใช้ INNER JOIN</p></details><details id="guides/04-errors-keys"><summary>guides/04-errors-keys.md</summary><h1>Exception Handling และคีย์</h1>
+<h2>เส้นทาง error</h2>
+<p>service throw AppError → Express 5 → errorHandler(err,req,res,next) → HTTP status และ JSON ที่ตรงสเปก อย่าส่ง res จาก repository</p>
+<p>| เหตุการณ์ | kit status | code |</p>
+<p>| --- | --- | --- |</p>
+<p>| input ผิด / ID ผิด | 400 | VALIDATION_ERROR |</p>
+<p>| JSON แตก | 400 | INVALID_JSON |</p>
+<p>| ไม่พบ product | 404 | PRODUCT_NOT_FOUND |</p>
+<p>| UNIQUE ซ้ำ | 409 | DUPLICATE_KEY |</p>
+<p>| FK ปลายทางไม่มี | 400 | FOREIGN_KEY_NOT_FOUND |</p>
+<p>| ลบแถวที่ถูกอ้างอิง | 409 | RESOURCE_IN_USE |</p>
+<p>| ไม่คาดคิด | 500 | INTERNAL_SERVER_ERROR |</p>
+<p>อย่าส่ง stack, SQL, DB credentials หรือ err.sqlMessage กลับ client error handler ต้องเป็นฟังก์ชัน 4 arguments แม้ไม่ใช้ next</p>
+<h2>Numeric key</h2>
+<p>products.id เป็น auto increment ต้องตรวจ positive safe integer ก่อน Number ไม่ใช้ parseInt ที่ยอมรับ 12abc การสร้างอ่าน insertId</p>
+<h2>String key</h2>
+<p>tags.code เป็น VARCHAR เช่น NA, CS_01 ต้องคง string ไม่ Number/parseInt และการสร้างอ่านกลับด้วย code ที่ส่งเข้า ไม่ใช้ insertId ตัวอย่างจริงใน routes/service/repo และสูตรสั้น <code>recipes/string-composite-repository.js</code></p>
+<h2>Composite key</h2>
+<p>product_tags มี PRIMARY KEY(product_id, tag_code) จึงต้อง bind ทั้งคู่ใน WHERE และ route เช่น DELETE /products/7/tags/DEMO อย่าลบด้วย product_id อย่างเดียวเพราะจะลบหลายความสัมพันธ์</p>
+<h2>เทียบกับ Week6</h2>
+<p>W6 envelope ต่างจาก kit ใช้ <code>recipes/w6-response.js</code> แทน success/error ทั้งคู่ DELETE200 ต้องมี JSON ส่วน DELETE204 ต้องว่าง เลือกตาม Contract Sheet ไม่ทำให้ runnerผ่านอย่างเดียว</p></details><details id="guides/05-template"><summary>guides/05-template.md</summary><h1>เอาโครงนี้ใส่ template อาจารย์</h1>
+<p>โค้ดที่ใช้จริงอยู่srcแล้ว นำไปประกอบในprojectที่อาจารย์กำหนดโดยเทียบทีละไฟล์ ไม่จำเป็นต้องเอาเอกสาร/tests/scripts/SQLตัวอย่างทั้งหมดไปส่ง</p>
+<p>| จากชุดนี้ | วางในteacher project | แก้ก่อนใช้ |</p>
+<p>| --- | --- | --- |</p>
+<p>| src/configs-$id/ | src/configs-$id/ | .env/DB/identity/mode |</p>
+<p>| src/routes-$id/ | src/routes-$id/ | method/path/middleware |</p>
+<p>| src/controllers-$id/ | src/controllers-$id/หรือcontrollerเดิม | params/body/status |</p>
+<p>| src/services-$id/ | src/services-$id/ | validation/business rule |</p>
+<p>| src/repositories-$id/ | src/repositories-$id/ | table/columns/key/JOIN/SQL |</p>
+<p>| src/mappers-$id/ | src/mappers-$id/ | DTO/envelope/types |</p>
+<p>| src/middlewares-$id/ | src/middlewares-$id/ | pagination/error contract |</p>
+<p>| src/app.js, src/server.js | src/ | ประกอบimportsและentrypoint |</p>
+<p>ถ้าอาจารย์ให้renamefolderเป็นรหัสตนเอง ให้เปลี่ยนชื่อและimportทุกแห่ง ชื่อcontrollers-$idเป็นการแยกhandlerของโครงนี้ จะยุบไปไว้routeเดิมได้แต่ต้องแก้importsให้ครบ</p>
+<h2>Entryและpackage</h2>
+<p>server.jsของรุ่นนี้พึ่งเฉพาะsrcและpackages ไม่importscriptนอกsrc เปิดได้ด้วยstartcommand:</p>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{<span class="json-key">&quot;type&quot;</span>:<span class="json-string">&quot;module&quot;</span>,<span class="json-key">&quot;scripts&quot;</span>:{<span class="json-key">&quot;start&quot;</span>:<span class="json-string">&quot;node --env-file-if-exists=.env src/server.js&quot;</span>}}
+</code></pre></div>
+<p>อย่าทับpackage.jsonทั้งไฟล์ถ้าอาจารย์มีscripts/dependenciesอื่น ให้รวมเฉพาะส่วนที่ต้องใช้ คงexpress/mysql2/http-statusและlockfileที่เตรียมแล้ว</p>
+<h2>ต่อฐานโจทย์</h2>
+<p>ตั้งDB_MODE=exam, DB_NAME/STUDENT_ID/STUDENT_NAME/STUDENT_KEYเป็นค่าจริงครบ โหมดนี้SELECT1ตรวจการเชื่อมต่อ ไม่ต้องมีmarkerและไม่สร้าง/seed/resettable ตรวจSQL/NOTNULL/FK/DTOและinputให้ตรงก่อนยิงrequestเขียนข้อมูล</p>
+<p>ใช้SQLอาจารย์ตามคำสั่ง ไม่ใช้sql/schema.sqlของตัวอย่างแทนโดยอัตโนมัติ ไม่ใช้db:initหรือtestของโครงกับฐานสอบ</p>
+<h2>ตรวจว่าใส่โครงในtemplateได้</h2>
+<div class="code-box"><div class="code-caption">ตัวอย่างโค้ด</div><pre><code>npm run verify:template -- --template /absolute/path/midterm-exam-esm-template.zip
+</code></pre></div>
+<p>คำสั่งนี้ใช้เฉพาะตอนตรวจโครงตัวอย่าง: แตกZIPเป็นสำเนาชั่วคราว คัดลอกsrc/app/server/configs/routes/controllers/services/repositories/mappers/middlewares เพิ่มscripts.startเฉพาะในสำเนาโดยคงscripts/dependenciesอื่น แล้วตรวจAPIcontractsและรันnpm startจริงเพื่อGETstudent-info/productsกับฐานฝึก ไม่ทับprojectต้นฉบับ ไม่ตรวจว่าschema/สเปกที่แก้ใหม่ถูกทุกกรณี</p></details><details id="guides/06-offline"><summary>guides/06-offline.md</summary><h1>แก้ปัญหา เตรียมออฟไลน์ และส่งงาน</h1>
+<h2>เมื่อรันไม่ได้ ให้เริ่มจากอาการ</h2>
+<p>| อาการ | ขั้นแรก |</p>
+<p>| --- | --- |</p>
+<p>| ECONNREFUSED | เช็กว่า MySQL เปิดและ DB_PORT ถูก |</p>
+<p>| ER_ACCESS_DENIED_ERROR | แก้ user/password ใน .env ไม่โพสต์รหัสลงแชต |</p>
+<p>| Unknown database | reference ใช้ npm run db:init หลังเลือกชื่อฝึกใหม่ |</p>
+<p>| marker missing / UNSAFE_DATABASE | หยุดใช้ฐานนั้น เลือกฐานฝึกใหม่ที่ยังไม่มี |</p>
+<p>| EADDRINUSE | ปิด process เดิมหรือเปลี่ยน PORT |</p>
+<p>| Cannot find package | npm ci ขณะยังมีเน็ตในโฟลเดอร์ที่มี package.json |</p>
+<p>| ERR_MODULE_NOT_FOUND | ตรวจ path, ชื่อ folder -$id, ตัวพิมพ์ใหญ่และ .js |</p>
+<p>| 404 ทุก route | ดู /api/ค่ารหัสจริง ไม่ใช่ /api/:studentId และ entry ที่เปิด port |</p>
+<p>| req.body undefined | Content-Type application/json และ express.json ก่อน router |</p>
+<p>| price กลายเป็น string | เช็ก mapper Number และ assertion ชนิดข้อมูล |</p>
+<p>| PUT ค่าเดิมได้404 | อย่าตัดสิน missing จาก changedRows |</p>
+<p><code>npm run doctor</code> อ่าน config ตรวจ Node/dependency/SELECT1 เท่านั้น ไม่พิมพ์ password หากบัญชีไม่มีสิทธิ์สร้างฐาน ให้จัดเตรียมบัญชีฝึกที่มีสิทธิ์หรือให้ผู้ดูแลสร้างฐานพร้อมขั้นตอน marker ของ kit อย่างรู้ที่มา วิธีง่ายสุดคือใช้ local MySQL ของตัวเองกับชื่อฝึกใหม่ที่ยังไม่มี</p>
+<h2>ก่อนช่วงตัดอินเทอร์เน็ต</h2>
+<p>ดาวน์โหลด repo/ZIP และเอกสารที่อนุญาต เตรียม template ตามประกาศ</p>
+<p>ติดตั้ง Node/MySQL/Postman หรือ extension ที่ใช้แล้ว <code>npm ci</code> ให้สำเร็จใน project ที่จะรัน</p>
+<p>ทดสอบ <code>npm start</code>, POST/GET/PUT/DELETE, เปิดไฟล์ .md ใน editor และเปิดไฟล์ request ในเครื่อง</p>
+<p>ตัดการเชื่อมต่ออินเทอร์เน็ตด้วยตัวเองแล้วลองอีกครั้ง เอกสารอยู่ local แต่ npm ci ที่ไม่มี cache ยังต้องใช้เน็ต</p>
+<p>การย้าย node_modules ข้าม OS/CPU/Node version ไม่รับประกัน ใช้เครื่องสอบจริงเตรียมและทดสอบ</p>
+<p>นำ .env ส่วนตัวไว้ในเครื่อง ไม่ใส่ลง Git/ZIP ที่แชร์</p>
+<h2>ก่อนส่ง LEB2</h2>
+<p>อ่านข้อกำหนดชื่อ project/ZIP และไฟล์ที่ต้องส่งของอาจารย์ ตรวจว่า start command เปิด server ได้ ใช้ static ID ของตัวเอง ตรวจทุก endpoint/status/body/type แล้วรัน test runner ที่แจกอีกครั้ง ตรวจ ZIP หลังแตกในโฟลเดอร์ใหม่ว่ามี package.json, lockfile, src และ SQL ที่โจทย์ต้องการ หากต้องส่ง config ให้ทำตามข้อสอบโดยไม่แนบรหัสของระบบอื่น</p>
+<p><code>npm run package:kit</code> สร้าง ZIP ของชุดฝึกที่ artifacts/ ไม่ใช่ ZIP ส่งข้อสอบ อัตโนมัติจะไม่รวม .env, node_modules, .git และเอกสารต้นฉบับอาจารย์</p>
+<h2>ข้อจำกัดการตรวจ</h2>
+<p>ผลตรวจเทคนิคของ kit ดู docs/VALIDATION.md การผ่าน automated tests ไม่เท่ากับคุณทำโจทย์เองได้ ตรวจendpointของโครงที่แก้ตามสเปกด้วยrequestและrunnerที่อาจารย์ให้ก่อนส่ง</p></details><details id="guides/operations/01-create-product"><summary>guides/operations/01-create-product.md</summary><h1>เพิ่มสินค้า — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>POST /products</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API เพิ่มสินค้า รับ JSON ที่มี sku, name, brand_id, category, price, ram_gb, storage_gb, color และฟิลด์อื่นตาม schema บันทึกลง MySQL สำเร็จตอบ201 หาก SKU ซ้ำตอบ409 ส่งข้อมูลกลับตาม response contract</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>ต้องบันทึกจริง จึงต้องมีINSERT ไม่ใช่ส่งbodyเดิมกลับอย่างเดียว</p>
+<p>brand_idอ้างอิงbrands; ถ้าปลายทางไม่มีต้องจัดการFKerror</p>
+<p>skuห้ามซ้ำ ใช้precheckเพื่อข้อความอ่านง่ายและDB UNIQUEเพื่อกันการชนพร้อมกัน</p>
+<p>ไม่ให้clientกำหนดidหรือinternal_cost จึงเลือกฟิลด์ก่อนส่งSQL</p>
+<p>สร้างแล้วต้องอ่านกลับด้วยinsertId จึงได้ค่าที่DBกำหนดและbrandNameจากJOINสำหรับdetailDTO</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. อ่านbodyที่controller แล้วส่งให้service.createProduct</p>
+<p>2. productInputตรวจ8ฟิลด์บังคับ ชนิดnumber/stringและNOT NULL ให้ตรงschema</p>
+<p>3. findBySkuตรวจซ้ำ แล้วcreateProductในrepository INSERT objectที่ผ่านallowlistแล้ว</p>
+<p>4. ใช้insertIdอ่านfindProductพร้อมJOIN แปลงdetailDTO</p>
+<p>5. controllerตอบ201; duplicateหรือFKerrorส่งเข้าmiddlewareกลาง</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Create: validate/allowlist → INSERT → SELECT detail DTO → 201
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function createProductHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.createProduct(req.body), 201);
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ลองใช้bodyในหัวข้อด้านล่าง เก็บdata.idที่POSTคืน แล้วGETตามidนั้น ต้องพบข้อมูลจริง ส่งSKUเดิมซ้ำต้อง409 และตัดram_gbออกต้อง400 ไม่ใช่500</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/01-create-product.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>createProduct</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>createProduct / findBySku / findProduct</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): detail</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. รับ body เป็น snake_case จากโจทย์ เช่น sku/name/brand_id/category/price รวมรายละเอียดสเปกโทรศัพท์</p>
+<p>2. service.productInput ตรวจชนิดและเลือกฟิลด์ที่อนุญาต ไม่ส่ง req.body ทั้งก้อนลงฐาน</p>
+<p>3. เช็ก SKU ซ้ำ จากนั้น INSERT ด้วย parameter binding และอ่าน result.insertId</p>
+<p>4. SELECT ใหม่พร้อม JOIN brands เพื่อคืน detail DTO แล้วตอบ201</p>
+<p>5. UNIQUE ใน DB ยังต้องมี เพราะการเช็กก่อน INSERT อย่างเดียวกัน request พร้อมกันไม่ได้</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>INSERT INTO products SET ?;
+-- mysql2.query รับ [data] โดย data ผ่าน allowlist แล้ว
+</code></pre></div>
+<h2>Body สำหรับลอง</h2>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{<span class="json-key">&quot;sku&quot;</span>:<span class="json-string">&quot;PRACTICE-NEW-001&quot;</span>,<span class="json-key">&quot;name&quot;</span>:<span class="json-string">&quot;Practice Phone&quot;</span>,<span class="json-key">&quot;brand_id&quot;</span>:<span class="json-number">1</span>,<span class="json-key">&quot;category&quot;</span>:<span class="json-string">&quot;FLAGSHIP&quot;</span>,<span class="json-key">&quot;price&quot;</span>:<span class="json-number">29900</span>,<span class="json-key">&quot;ram_gb&quot;</span>:<span class="json-number">8</span>,<span class="json-key">&quot;storage_gb&quot;</span>:<span class="json-number">256</span>,<span class="json-key">&quot;color&quot;</span>:<span class="json-string">&quot;Black&quot;</span>,<span class="json-key">&quot;stock_quantity&quot;</span>:<span class="json-number">10</span>,<span class="json-key">&quot;status&quot;</span>:<span class="json-string">&quot;AVAILABLE&quot;</span>,<span class="json-key">&quot;release_date&quot;</span>:<span class="json-string">&quot;2026-01-01&quot;</span>}
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>ส่ง body เดิมซ้ำต้อง409 ไม่ใช่500 เก็บ data.id ที่ได้ไว้ใช้กับข้อ detail/update/delete</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="guides/operations/02-read-brands"><summary>guides/operations/02-read-brands.md</summary><h1>อ่านรายการแบรนด์ — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>GET /brands</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API อ่านแบรนด์ทั้งหมดจากตาราง brands ตอบ200 โดย dataเป็นarray มี id, name, country_of_origin, website, is_active, created_at และenvelopeตามสเปก</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>เป็นรายการ จึงคืนarray ไม่เลือกrows[0]</p>
+<p>ไม่มีข้อมูลไม่ใช่resourceหาย ตอบ200พร้อม[]ได้</p>
+<p>DTOของbrandsในใบงานใช้snake_case จึงไม่เปลี่ยนชื่อเป็นcamelCaseโดยอัตโนมัติ</p>
+<p>ORDER BY idช่วยให้ลำดับแน่นอนและตรวจผลซ้ำได้</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. routerเลือกreadBrandsHandler ไม่ต้องอ่านbodyหรือpaginationของproducts</p>
+<p>2. handlerเรียกservice.listBrands</p>
+<p>3. repository SELECTเฉพาะฟิลด์brandsและORDER BY id</p>
+<p>4. serviceคืนarrayให้success helperครอบdata/timestamp แล้วตอบ200</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 1: SELECT brands ORDER BY id → 200 array
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function readBrandsHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.listBrands());
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ส่งGETโดยไม่ต้องมีbody ตรวจdataเป็นarrayและชื่อฟิลด์ตรงกับcontract อย่าใช้จำนวนแบรนด์จากใบงานเป็นค่าคงที่ เพราะฐานที่ต่ออาจมีข้อมูลต่างกัน</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/02-read-brands.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>listBrands</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>listBrands</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): ไม่ใช้ product mapper คืนฟิลด์ brands ตามใบงาน</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. route เรียก service.listBrands โดยไม่รับ body</p>
+<p>2. repository SELECT ฟิลด์ brands ตาม response ใบงาน: id/name/country_of_origin/website/is_active/created_at</p>
+<p>3. ORDER BY id ให้ลำดับแน่นอน</p>
+<p>4. ส่ง array ใน success/data พร้อม timestamp ปัจจุบัน</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT id,name,country_of_origin,website,is_active,created_at
+FROM brands ORDER BY id;
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>เทียบชื่อฟิลด์ brands กับต้นฉบับ อย่าเปลี่ยนเป็น camelCase ทุก resource โดยอัตโนมัติ</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="guides/operations/03-read-products"><summary>guides/operations/03-read-products.md</summary><h1>อ่านรายการสินค้าแบบแบ่งหน้าและ Summary DTO — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>GET /products?page=2&amp;limit=10</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API อ่านรายการสินค้าพร้อม page/limit ส่งเฉพาะsummary fields: id, sku, name, brandId, category, price, status พร้อมpagination: total, page, limit, totalPages, hasNextPage, hasPrevPage และtimestamp</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>pageบอกหน้าที่ต้องการ แต่SQLใช้จำนวนแถวที่ต้องข้าม จึงหาoffset=(page-1)*limit</p>
+<p>page2/limit10ต้องข้าม10แถว ไม่ใช่20แถว</p>
+<p>ข้อมูลในหน้านี้อาจมี10แถว แต่totalอาจมี23 ต้องqueryCOUNTแยก</p>
+<p>summaryต้องไม่หลุดram/color/internal fields จึงmapallowlist</p>
+<p>limitที่ถูกcapต้องใช้ตัวเดียวกันทั้งoffset,SQLและmetadata ไม่คำนวณoffsetจากค่าเก่า</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. ใส่queryParserก่อนhandlerเพื่อvalidateและnormalizepage/limit</p>
+<p>2. ส่งreq.paginationไปserviceและrepository</p>
+<p>3. SELECTรายการ ORDER BY id LIMIT ? OFFSET ? และCOUNT(*)ด้วยfilterเดียวกัน</p>
+<p>4. items.map(summary) แปลงpriceเป็นnumberและชื่อbrandId</p>
+<p>5. metadataคำนวณtotalPagesและflags แล้วส่ง200พร้อมdata/pagination</p>
+<p>6. หน้าเกินคืน[]แต่เก็บtotalจริง; total0ต้องไม่fallbackไปค่าอื่น</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 2: queryParser must run first; list + COUNT → summary DTO + pagination
+import {success, metadata} from &#x27;../mappers-$id/api-response.js&#x27;;
+
+export function readProductsHandler(service) {
+  return async function (req, res) {
+    const {items, total} = await service.listProducts(req.pagination);
+    return success(res, items, 200, metadata(total, req.pagination));
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ตัวอย่างtotal23/limit10มี3หน้า page2ได้10รายการ page3ได้3รายการ page999ได้[] โดยtotalยัง23 default1/10,max100และinvalidquery400เป็นนโยบายของโครงที่ต้องปรับหากข้อสอบระบุต่างกัน</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/03-read-products.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>listProducts</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>listProducts / countProducts</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): summary</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. queryParser ตรวจ page/limit ก่อน handler แล้วเก็บ {page,limit,offset} ใน req.pagination</p>
+<p>2. normalize limit ก่อนหา offset=(page-1)*limit ไม่ใช้ parseInt กับค่าที่มีตัวอักษรปน</p>
+<p>3. repository SELECT รายการ ORDER BY p.id LIMIT ? OFFSET ? และ COUNT(*) ทั้งหมด</p>
+<p>4. service map เฉพาะ summary: id,sku,name,brandId,category,price,status</p>
+<p>5. metadata ใช้ total จริง, totalPages=Math.ceil(total/limit), hasNextPage/hasPrevPage</p>
+<p>6. ส่ง data/pagination/timestamp; ถ้าหน้าเกินให้ [] และ total เดิม ถ้าไม่มีข้อมูล total=0 ต้องไม่ถูก fallback</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT p.id,p.sku,p.name,p.brand_id,p.category,p.price,p.status
+FROM products p ORDER BY p.id LIMIT ? OFFSET ?;
+SELECT COUNT(*) AS total FROM products;
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>ลอง page1/page2/หน้าเกิน, total0, limit500 และ page0; default limit10/max100/reject queryผิดเป็นนโยบายที่ผู้ช่วยเพิ่มเพื่อฝึก ต้องปรับตามโจทย์จริง</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="guides/operations/04-read-product-detail"><summary>guides/operations/04-read-product-detail.md</summary><h1>อ่านรายละเอียดสินค้าตาม ID — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>GET /products/:id</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API อ่านรายละเอียดสินค้าตามid ถ้าพบตอบ200พร้อมdetailDTOที่มีbrandNameและข้อมูลสเปกสินค้า ถ้าไม่พบตอบ404</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>requestชี้สินค้าหนึ่งชิ้น จึงอ่านแถวเดียวและตรวจnot-foundก่อนmapper</p>
+<p>productsมีbrand_id แต่responseต้องbrandName จึงJOINbrandsและaliasเป็นbrand_name</p>
+<p>detailมีข้อมูลมากกว่ารายการ ต้องใช้detail mapperไม่ใช้summary</p>
+<p>DECIMALจากdriverอาจเป็นstring ส่วนDATEต้องรักษาวันเดิม จึงแปลงตามcontract</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. numericIdตรวจreq.params.id แล้วส่งidให้getProduct</p>
+<p>2. repositoryfindProduct SELECT JOIN brands WHERE p.id=?</p>
+<p>3. ถ้าไม่มีแถว throw PRODUCT_NOT_FOUND404ก่อนเรียกdetail</p>
+<p>4. detailคืน13ฟิลด์ที่ระบุ แปลงpriceเป็นnumberและreleaseDateเป็นYYYY-MM-DD/null</p>
+<p>5. handlerส่ง200พร้อมenvelopeและtimestamp</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Read 3: validate id → SELECT JOIN → missing404 → detail DTO
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function readProductDetailHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.getProduct(numericId(req.params.id)));
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ใช้idที่POSTสร้างไว้ ตรวจbrandNameมาจากbrandจริง และpriceเป็นnumber จากนั้นส่งidที่ไม่มีต้อง404JSON ไม่ใช่200/nullหรือ500จากmapper</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/04-read-product-detail.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>getProduct</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>findProduct</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): detail</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. numericId ตรวจ id เป็นจำนวนเต็มบวกก่อนส่งลง service</p>
+<p>2. findProduct SELECT พร้อม JOIN brands ให้ได้ brand_name ไม่เดาชื่อจาก brand_id</p>
+<p>3. ตรวจแถวไม่พบก่อนเข้า mapper แล้ว throw PRODUCT_NOT_FOUND404</p>
+<p>4. detail mapper คืน13ฟิลด์ตามใบงาน แปลง price เป็น number และ releaseDate เป็น YYYY-MM-DD หรือ null</p>
+<p>5. ตอบ success/data/timestamp ไม่ส่ง internal_cost หรือคอลัมน์ที่ไม่ได้กำหนด</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>SELECT p.id,p.sku,p.name,p.brand_id,b.name AS brand_name,
+ p.category,p.price,p.ram_gb,p.storage_gb,p.color,
+ p.stock_quantity,p.status,p.release_date
+FROM products p JOIN brands b ON b.id=p.brand_id WHERE p.id=?;
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>GET id ที่สร้างเองแล้วตรวจ brandName/price/releaseDate จากนั้น GET id ที่ไม่มีต้อง404 JSON</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="guides/operations/05-update-product"><summary>guides/operations/05-update-product.md</summary><h1>แก้ไขสินค้าตาม ID — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>PUT /products/:id</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API แก้ไขสินค้าตามid บันทึกสำเร็จตอบ200 หากไม่พบidตอบ404 โครงนี้ใช้full bodyเหมือนPOST และตรวจSKUชนกับอีกแถวเป็น409</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>UPDATEอาจเปลี่ยน0แถวเพราะส่งค่าเดิม จึงไม่ใช้changedRows0แปลว่าไม่มีresource</p>
+<p>ต้องแยกSKUเดิมของตัวเองออกจากSKUที่เป็นของอีกid</p>
+<p>priceและstockที่0เป็นค่าถูกต้อง อย่าใช้||จนกลายเป็นdefault</p>
+<p>อ่านแถวกลับหลังUPDATEเพื่อให้DTOตรงค่าที่DBเก็บ</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. getProductตรวจว่ามีidก่อน หากไม่มีthrow404</p>
+<p>2. productInputตรวจfull bodyและallowlist</p>
+<p>3. findBySkuแล้วเทียบother.idกับidที่กำลังแก้ ถ้าเป็นอีกแถวthrow409</p>
+<p>4. UPDATE SET ? WHERE id=?</p>
+<p>5. SELECTกลับพร้อมJOINและdetailDTO แล้วตอบ200 แม้ข้อมูลเหมือนเดิมทุกฟิลด์</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Update: find first, full-body validation, UPDATE then read back; unchanged values200
+import {success} from &#x27;../mappers-$id/api-response.js&#x27;;
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function updateProductHandler(service) {
+  return async function (req, res) {
+    return success(res, await service.updateProduct(numericId(req.params.id), req.body));
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ส่งPUTสองครั้งด้วยbodyเดิมต้อง200ทั้งคู่ เปลี่ยนpriceเป็น0แล้วGETต้องได้0 เปลี่ยนSKUไปชนอีกสินค้าต้อง409 และidไม่มีต้อง404 Full-body/duplicatevalidationเป็นนโยบายของโครงในส่วนที่ใบงานไม่ได้แจกแจง</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/05-update-product.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>updateProduct</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>findProduct / findBySku / updateProduct</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): detail</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. ตรวจว่ามี id ก่อน ถ้าไม่พบ throw404</p>
+<p>2. ชุดฝึกใช้ full body เหมือน POST: ผ่าน productInput และ allowlist</p>
+<p>3. ถ้า SKU ถูกใช้โดยอีก id ตอบ409 แต่ SKUเดิมของตัวเองใช้ได้</p>
+<p>4. UPDATE WHERE id=? ด้วย data ที่ตรวจแล้ว</p>
+<p>5. SELECT กลับแล้วส่ง detail DTO200 ห้ามใช้ changedRows===0 แปลว่าไม่มีแถว เพราะการส่งค่าเดิมเป็น update ที่สำเร็จได้</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>UPDATE products SET ? WHERE id=?;
+-- parameters: [data, id]
+</code></pre></div>
+<h2>Body สำหรับลอง</h2>
+<div class="code-box"><div class="code-caption">JSON</div><pre><code>{<span class="json-key">&quot;sku&quot;</span>:<span class="json-string">&quot;PRACTICE-NEW-001&quot;</span>,<span class="json-key">&quot;name&quot;</span>:<span class="json-string">&quot;Practice Phone Updated&quot;</span>,<span class="json-key">&quot;brand_id&quot;</span>:<span class="json-number">1</span>,<span class="json-key">&quot;category&quot;</span>:<span class="json-string">&quot;FLAGSHIP&quot;</span>,<span class="json-key">&quot;price&quot;</span>:<span class="json-number">0</span>,<span class="json-key">&quot;ram_gb&quot;</span>:<span class="json-number">8</span>,<span class="json-key">&quot;storage_gb&quot;</span>:<span class="json-number">256</span>,<span class="json-key">&quot;color&quot;</span>:<span class="json-string">&quot;Black&quot;</span>,<span class="json-key">&quot;stock_quantity&quot;</span>:<span class="json-number">10</span>,<span class="json-key">&quot;status&quot;</span>:<span class="json-string">&quot;AVAILABLE&quot;</span>,<span class="json-key">&quot;release_date&quot;</span>:<span class="json-string">&quot;2026-01-01&quot;</span>}
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>ส่งค่าเดิมซ้ำยัง200, price0คง0, GETซ้ำเห็นชื่อใหม่; full-body PUT และ validation ละเอียดเป็นนโยบายผู้ช่วยเพิ่ม ใบงานจริงระบุ status200/404 แต่ไม่ได้แจกแจงทุกเงื่อนไข</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="guides/operations/06-delete-product"><summary>guides/operations/06-delete-product.md</summary><h1>ลบสินค้าตาม ID — คำถาม เฉลย และวิธีทำ</h1>
+<p>คำถามย่อจากงานWeek08ที่templateทำไว้แล้ว ส่วนเฉลยเป็นโค้ดของโครงนี้ ไม่ใช่โจทย์ใหม่ให้ทำเพิ่ม ลำดับ6ส่วนจัดเพื่อค้นหาโค้ด ไม่ใช่การยืนยันข้อสอบกลางภาค</p>
+<h2>คำถาม</h2>
+<p><code>DELETE /products/:id</code> ภายใต้basepathคงที่ <code>/api/รหัสของตัวเอง</code></p>
+<p>พัฒนา API ลบสินค้าตามid ลบสำเร็จตอบ204 No Contentโดยไม่มีresponse body หากไม่พบidตอบ404</p>
+<h2>วิธีคิดก่อนเขียน</h2>
+<p>ลบผิดWHEREอาจกระทบหลายแถว จึงvalidateidและbindWHEREให้ครบ</p>
+<p>ต้องแยกแถวไม่มีออกจากการลบสำเร็จ ตรวจexistingและaffectedRows</p>
+<p>204หมายถึงไม่มีbody ห้ามส่งJSONแม้เป็นข้อความsuccess</p>
+<p>ถ้าข้อมูลยังถูกFKอ้างอิงให้จัดการconstraint error ไม่ลบข้อมูลสัมพันธ์อื่นโดยพลการ</p>
+<h2>วิธีทำทีละขั้น</h2>
+<p>1. controllerแปลงreq.params.idด้วยnumericId</p>
+<p>2. servicegetProductตรวจexistingก่อน</p>
+<p>3. repositoryDELETE WHERE id=?และคืนaffectedRows</p>
+<p>4. ถ้าแถวหายก่อนลบให้throw404; FKerrorปล่อยไปmiddlewareกลาง</p>
+<p>5. ลบสำเร็จres.status(204).end()</p>
+<h2>เฉลย JavaScript: จุดรับ request และตอบ response</h2>
+<p>โค้ดนี้ใช้จริงในtemplate โดยservice/repository/mapperที่ต้องใช้ร่วมกันอยู่ครบตามลิงก์ถัดไป ไม่ใช่handlerเดี่ยวที่รันได้โดยไม่มีlayerอื่น</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// ADAPT: controller ที่ใช้ได้แล้ว เปลี่ยนparams/body/statusตามโจทย์ และแก้service/repo/mapperที่เกี่ยวข้อง
+// Delete: find404 or DELETE; 204 has NO JSON body
+import {numericId} from &#x27;../services-$id/catalog-service.js&#x27;;
+
+export function deleteProductHandler(service) {
+  return async function (req, res) {
+    await service.removeProduct(numericId(req.params.id));
+    return res.status(204).end();
+  };
+}
+</code></pre></div>
+<h2>เช็กว่าคำตอบถูกอย่างไร</h2>
+<p>ลบเฉพาะidที่ตนสร้าง ตรวจstatus204และrawbodyว่าง จากนั้นGETidเดิมและDELETEซ้ำต้อง404 ถ้าโจทย์จริงกำหนด200พร้อมJSONให้เปลี่ยนcontrollerตามสเปกนั้น</p>
+<h2>ไฟล์ที่ใช้ร่วมกัน</h2>
+<p>[handler ข้อนี้](../../src/controllers-$id/06-delete-product.js): ส่วน req/res ที่ route ใช้จริง</p>
+<p>[route](../../src/routes-$id/catalog-route.js): จุด mount handler และ middleware</p>
+<p>[service](../../src/services-$id/catalog-service.js): ฟังก์ชัน <code>removeProduct</code> และ validation</p>
+<p>[repository](../../src/repositories-$id/catalog-repository.js): ฟังก์ชัน <code>findProduct / removeProduct</code> และ SQL</p>
+<p>[mapper](../../src/mappers-$id/product-mapper.js): ไม่ส่ง DTO เมื่อ204</p>
+<p>[error handler](../../src/middlewares-$id/error-handler.js): แปลง error เป็น status/code/message</p>
+<p>ไฟล์ handler ไม่ใช่คำตอบทั้งหมดเพียงไฟล์เดียว ต้องอ่าน service/repository/mapper ที่ลิงก์ไว้ด้วย ทุกไฟล์เป็น .js ปกติ แยกชั้นเหมือน teacher template ไม่มีตัวสร้างโค้ดหรือ framework เพิ่ม</p>
+<h2>จุดปรับเมื่อนำไปใช้กับข้อสอบ</h2>
+<p>1. ตรวจ id และเช็กว่ามีแถว ถ้าไม่มีตอบ PRODUCT_NOT_FOUND404</p>
+<p>2. DELETE WHERE id=? ตรวจ affectedRows เพื่อรับกรณีแถวหายก่อนลบ</p>
+<p>3. ตอบ res.status(204).end() ไม่ json() และไม่ส่งข้อความ</p>
+<p>4. ถ้า DB ส่ง FK constraint error ให้ error middleware จัดการ ไม่ปล่อยเป็น HTML</p>
+<p>5. GETหลังลบและDELETEซ้ำต้อง404 ถ้าโจทย์อื่นกำหนด200+JSONต้องเปลี่ยนตามสเปกนั้น</p>
+<h2>เฉลยส่วน SQL</h2>
+<div class="code-box"><div class="code-caption">SQL</div><pre><code>DELETE FROM products WHERE id=?;
+</code></pre></div>
+<h2>วิธีลองและเช็ก</h2>
+<p>เตรียมเครื่องตาม <a href="#START-HERE.th">START-HERE</a>, เปิด <code>npm start</code> แล้วใช้ [request ตัวอย่าง](../../requests/catalog.http) เปลี่ยน productId เป็นค่าที่ POST คืนมา</p>
+<p>ลบเฉพาะ product ที่ตนสร้าง เก็บ response text ต้องว่าง และตรวจใน DB/GETว่าแถวหาย</p>
+<p>รัน <code>npm test</code> เพื่อตรวจทั้งระบบกับ MySQL ฐานฝึก ห้ามรันชุดเขียน/ลบของ kit ชี้ไปฐานสอบจริง ก่อนส่งตรวจ base path/body/status/DTO อีกครั้งตามโจทย์ที่ได้รับในวันสอบ</p></details><details id="recipes/README"><summary>recipes/README.md</summary><h1>เลือก recipe ตาม Contract Sheet</h1>
+<p>Prerequisite ทุกชิ้น: ESM, Express5, mysql2/promise pool, schema ที่อ่านแล้ว และ database ฝึกก่อนใช้กับงานจริง อย่าคัดลอก import ที่ชี้กลับ src โดยไม่ปรับตำแหน่งไฟล์</p>
+<h2>Response W6</h2>
+<p>ใช้เมื่อ envelope ในโจทย์เป็น status/data หรือ status/error และ DELETE200 ตรวจช่อง response/status ใน Contract Sheet ก่อนแก้</p>
+<p>1. วาง w6Success ใน mappers-$id/api-response.js และ w6ErrorHandler ใน middlewares-$id/error-handler.js</p>
+<p>2. ย้าย normalizeError ไปไฟล์กลาง หรือคงไว้เป็น export ใน error-handler เดิมแล้วปรับ import โดยหลีกเลี่ยง import ตัวเอง</p>
+<p>3. เปลี่ยน route ให้เรียก helper ใหม่ ติด error handler ใหม่หลัง router; ปรับapp/routerและhelperในsrcให้เข้าคู่ ไม่มีprojectโจทย์ใหม่ที่ต้องทำเพิ่ม</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>// route context: service.removeTag ต้องคืนค่าหลังลบสำเร็จหรือ throw
+router.delete(&#x27;/tags/:code&#x27;,async(req,res)=&gt;{
+ await service.removeTag(req.params.code);
+ return w6Success(res,{code:req.params.code,deleted:true},200);
+});
+</code></pre></div>
+<p>Request DELETE /tags/คีย์ที่สร้างเอง คาด 200 <code>{status:&#x27;success&#x27;,data:{code:...,deleted:true}}</code> จากนั้น GET เดิม404 หากยัง204 แปลว่า route ยังเรียก end() แบบเก่า วิธีตรวจหนึ่งขั้น: ดู raw response status/body ก่อนแก้ mapper</p>
+<h2>Optional pagination</h2>
+<p>ใช้เฉพาะเมื่อโจทย์กำหนดว่าไม่มี page/limit ให้คืนทั้งหมด ตรวจช่อง pagination policy และ response metadata ก่อนแก้ parser → service → repository → route ให้ครบ</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>import {parseOptionalPagination} from &#x27;./optional-pagination.js&#x27;;
+// ใน route: parser คืน null เมื่อไม่มีทั้งสอง query เท่านั้น
+const page=parseOptionalPagination(req.query);
+// ใน repository: table/columns/order เป็น source code ไม่ใช่ request
+const [rows]=page
+ ? await db.query(&#x27;SELECT id,name FROM products ORDER BY id LIMIT ? OFFSET ?&#x27;,[page.limit,page.offset])
+ : await db.query(&#x27;SELECT id,name FROM products ORDER BY id&#x27;);
+// ส่ง DTO และ metadata เฉพาะตาม contract ที่โจทย์กำหนด
+</code></pre></div>
+<p>GET /products ไม่มี query ควรครบทุกแถว; ?page=2 ใช้ default limit10; ?page=0 ต้อง400 หากไม่มี query ได้10แถว แปลว่า repo ยังใช้ LIMIT เสมอ วิธีตรวจ: เทียบจำนวนกับ COUNT บนฐานที่มีมากกว่า10แถว</p>
+<h2>String/composite repository</h2>
+<p>ใช้เมื่อ PK เป็น VARCHAR หรือมีหลายคอลัมน์ ตรวจช่อง schema/key/404 ใน Contract Sheet เปลี่ยน repository ก่อน แล้วแก้ service validator และ route params ตามชนิดคีย์</p>
+<div class="code-box"><div class="code-caption">JavaScript</div><pre><code>import {findTag,findProductTag} from &#x27;./string-composite-repository.js&#x27;;
+const tag=await findTag(db,&#x27;NA&#x27;);
+if(!tag)throw new AppError(&#x27;Tag not found&#x27;,404,&#x27;TAG_NOT_FOUND&#x27;);
+const link=await findProductTag(db,1,&#x27;DEMO&#x27;);
+// ต้องตรวจ null ก่อน mapper และ validate ทั้ง productId/tagCode ก่อนเรียก
+</code></pre></div>
+<p>GET /tags/NA ควรได้ data.code=&#x27;NA&#x27;; คู่(1,DEMO) พบแต่(1,NA)ไม่พบ ถ้าเกิดNaNให้เลิกแปลง string keyเป็นNumber ถ้าคู่ผิดยังพบให้เช็ก WHERE ว่ามีทั้งสองคอลัมน์ วิธีตรวจหนึ่งขั้น: ส่งอีก tagCode กับ productId เดิมแล้วต้องไม่พบ</p>
+<p>ทดสอบ recipe จริงด้วย <code>node --env-file-if-exists=.env --test tests/recipes.test.js</code> ใช้ฐานฝึกที่มี marker รวมทั้ง query บน MySQL จริง</p></details></main><script>function revealDoc(){const el=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(el){for(let p=el;p;p=p.parentElement){if(p.tagName==="DETAILS")p.open=true;}}}addEventListener("hashchange",revealDoc);revealDoc();</script></body></html>

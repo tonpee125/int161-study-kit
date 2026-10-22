@@ -1,0 +1,111 @@
+{
+  "info": {
+    "name": "READY-WEEK8 Postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "server",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "studentId",
+      "value": "YOUR_STUDENT_ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Server health",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/health"
+      }
+    },
+    {
+      "name": "ข้อมูลประจำตัว — GET student-info",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/api/{{studentId}}/student-info"
+      }
+    },
+    {
+      "name": "อ่านแบรนด์ทั้งหมด",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/api/{{studentId}}/brands"
+      }
+    },
+    {
+      "name": "อ่านแบรนด์รายตัว",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/api/{{studentId}}/brands/:id"
+      }
+    },
+    {
+      "name": "สินค้ารายการแบ่งหน้า Summary DTO",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/api/{{studentId}}/products"
+      }
+    },
+    {
+      "name": "รายละเอียดสินค้า JOIN Detail DTO",
+      "request": {
+        "method": "GET",
+        "url": "{{server}}/api/{{studentId}}/products/:id"
+      }
+    },
+    {
+      "name": "เพิ่มสินค้า autoID UNIQUE FK",
+      "request": {
+        "method": "POST",
+        "url": "{{server}}/api/{{studentId}}/products",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sku\": \"GUIDE-001\",\n  \"name\": \"Guide\",\n  \"brand_id\": 1,\n  \"category\": \"STANDARD\",\n  \"price\": 100,\n  \"ram_gb\": 8,\n  \"storage_gb\": 128,\n  \"color\": \"Black\",\n  \"stock_quantity\": 0,\n  \"status\": \"AVAILABLE\",\n  \"release_date\": \"2026-01-01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "แก้สินค้าแบบส่งบางช่อง",
+      "request": {
+        "method": "PUT",
+        "url": "{{server}}/api/{{studentId}}/products/:id",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Changed\",\n  \"price\": 100,\n  \"stock_quantity\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "ลบสินค้า204",
+      "request": {
+        "method": "DELETE",
+        "url": "{{server}}/api/{{studentId}}/products/:id"
+      }
+    }
+  ]
+}

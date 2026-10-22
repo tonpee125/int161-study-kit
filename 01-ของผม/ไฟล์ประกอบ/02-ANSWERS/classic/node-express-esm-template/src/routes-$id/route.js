@@ -1,0 +1,10 @@
+import express from 'express';
+import * as service from '../services-$id/service.js';
+import {apiResponse} from '../mappers-$id/api-response.js';
+const router=express.Router();
+router.get('/offices/:officeCode',async(req,res)=>apiResponse(res,await service.getOffice(req.params.officeCode)));
+router.post('/productlines',async(req,res)=>apiResponse(res,await service.createLine(req.body),null,201));
+router.put('/employees/:employeeNumber',async(req,res)=>apiResponse(res,await service.updateEmployee(req.params.employeeNumber,req.body)));
+router.delete('/customers/:customerNumber',async(req,res)=>apiResponse(res,await service.removeCustomer(req.params.customerNumber)));
+router.post('/customers/:customerNumber/payments',async(req,res)=>apiResponse(res,await service.createPayment(req.params.customerNumber,req.body),null,201));
+export default router;

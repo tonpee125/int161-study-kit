@@ -1,0 +1,13 @@
+1. เปิดโฟลเดอร์นี้ใน WebStorm (เห็น package.json และ src)
+2. Terminal: npm ci (เตรียมก่อนออฟไลน์)
+3. นำเข้า SQL ของโจทย์เอง ชุดนี้ไม่สร้างหรือล้างฐานข้อมูล
+4. แก้ src/configs-$id/db-config.js: database/user/password/port
+5. Terminal: node src/check-db.js ต้องได้ MySQL connected
+6. แก้ Base path ใน src/app.js เป็น /api/รหัสของคุณ
+7. Terminal: node src/app.js
+8. Postman GET http://localhost:3000/health ควรได้ 200
+9. Import POSTMAN.json แล้วแก้ studentId และรหัส :id ก่อนส่ง
+Week8: เปลี่ยน studentId/name/secretKey ใน route ให้ตรงสเปกของคุณ ตรวจทุกฟิลด์และ response กับใบงาน
+โฟลเดอร์ -$id ใช้ชื่อตามเดิม ไม่ต้องเปลี่ยนเป็นรหัสนักศึกษา
+ไม่มี node_modules หรือ SQL ในชุดนี้
+เก็บงานแก้เองก่อนคัด src ชุดใหม่ทับ /health และ check-db เป็นเครื่องมือฝึก ตรวจข้อกำหนดส่งงานก่อนส่ง

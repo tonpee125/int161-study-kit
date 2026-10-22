@@ -1,0 +1,14 @@
+<nav class="kit-navigation" aria-label="ทางไปหน้าต่าง ๆ"><button type="button" onclick="if(history.length>1){history.back()}else{location.href='00-เปิดวิธีใช้.html'}">ย้อนกลับ</button><a href="00-เปิดวิธีใช้.html">หน้าหลัก</a></nav><style id="kit-navigation-style">.kit-navigation{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:1220px;margin:0 auto;padding:12px 20px;font:15px/1.5 system-ui}.kit-navigation a,.kit-navigation button{display:inline-block;border:1px solid #b6c7d9;border-radius:6px;background:#fff;color:#164e85;padding:9px 13px;text-decoration:none;font:inherit;cursor:pointer;min-height:42px}.kit-navigation :focus-visible{outline:3px solid #d89c23;outline-offset:3px}@media print{.kit-navigation{display:none}}</style><!doctype html><meta charset="utf-8"><title>READY-WEEK8</title><style>body{font:19px/1.8 system-ui;max-width:900px;margin:40px auto;padding:20px}pre{white-space:pre-wrap;background:#eef4fa;padding:20px;border-radius:10px}</style><h1>READY-WEEK8 · เริ่มใช้</h1><pre>1. เปิดโฟลเดอร์นี้ใน WebStorm (เห็น package.json และ src)
+2. Terminal: npm ci (เตรียมก่อนออฟไลน์)
+3. นำเข้า SQL ของโจทย์เอง ชุดนี้ไม่สร้างหรือล้างฐานข้อมูล
+4. แก้ src/configs-$id/db-config.js: database/user/password/port
+5. Terminal: node src/check-db.js ต้องได้ MySQL connected
+6. แก้ Base path ใน src/app.js เป็น /api/รหัสของคุณ
+7. Terminal: node src/app.js
+8. Postman GET http://localhost:3000/health ควรได้ 200
+9. Import POSTMAN.json แล้วแก้ studentId และรหัส :id ก่อนส่ง
+Week8: เปลี่ยน studentId/name/secretKey ใน route ให้ตรงสเปกของคุณ ตรวจทุกฟิลด์และ response กับใบงาน
+โฟลเดอร์ -$id ใช้ชื่อตามเดิม ไม่ต้องเปลี่ยนเป็นรหัสนักศึกษา
+ไม่มี node_modules หรือ SQL ในชุดนี้
+เก็บงานแก้เองก่อนคัด src ชุดใหม่ทับ /health และ check-db เป็นเครื่องมือฝึก ตรวจข้อกำหนดส่งงานก่อนส่ง
+</pre>
