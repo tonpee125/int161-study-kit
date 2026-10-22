@@ -12,27 +12,29 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 <section class="panel" data-panel="0"><details><summary>ดาวน์โหลดโปรเจกต์พร้อมเปิดใน WebStorm</summary><p><a href="READY-STARTER.zip" download>ชุดเริ่มพร้อมใช้ · ฐานข้อมูลใดก็ได้</a></p><p><a href="READY-WEEK8.zip" download>ชุดตัวอย่าง Week 8 · API ครบทุกข้อ</a></p><p>แตก ZIP → เปิดโฟลเดอร์ใน WebStorm → เปิด 00-เปิดวิธีใช้.html มี config, error handling และ Postman ให้แล้ว ต้องตั้งฐานข้อมูลกับรหัสของคุณก่อนใช้</p></details>
 <h2>1. เปิดโปรเจกต์ให้ถูกก่อน</h2>
 <ol>
-<li>แตก <code>midterm-exam-esm-template.zip</code> เป็นโฟลเดอร์ฝึกใหม่ เก็บต้นฉบับไว้</li>
+<li>กด <a href="midterm-exam-esm-template-ORIGINAL.zip" download>ดาวน์โหลดเทมเพลตครู</a> → แตก ZIP เป็นโฟลเดอร์ฝึกใหม่ เก็บต้นฉบับไว้</li>
 <li>เปิด WebStorm → <strong>File → Open</strong> → เลือกโฟลเดอร์ที่เห็น <code>package.json</code> และ <code>src</code> พร้อมกัน</li>
 <li>เปิด Terminal ด้วย <strong>Alt+F12</strong> แล้วเตรียมแพ็กเกจขณะใช้อินเทอร์เน็ตได้:<pre>npm ci</pre>ถ้าใช้ชุดในเครื่องนี้ เปิด <code>01-WORK/node-express-esm-template</code> และตรวจว่าแพ็กเกจติดตั้งครบแล้ว</li>
 <li>เปิด <strong>Database → + → Data Source → MySQL</strong> ใส่ host/port/user/password ของเครื่อง → Test Connection → OK</li>
 <li>นำเข้า SQL ที่โจทย์ให้ แล้วดูชื่อตารางและคีย์ก่อนเลือกสูตร อย่ารันสคริปต์ล้างฐานซ้ำหลังเริ่มเพิ่มข้อมูล</li>
 </ol>
 <p class="hint">หน้านี้ประกอบโค้ดจากตัวอย่างที่เตรียมไว้ ไม่ใช้ AI และไม่ส่งข้อมูลออกอินเทอร์เน็ต</p>
+<p data-panel-message class="message" role="status" hidden></p>
 <div class="actions"><button class="primary" data-next="1">เปิดโปรเจกต์แล้ว → ตั้งค่า</button></div>
 </section>
 <section class="panel" data-panel="1" hidden>
 <h2>2. กรอกค่าของงานนี้</h2>
 <div class="grid">
-<label>ชุดงาน<select id="profile"></select></label><label>ชื่อฐานข้อมูล<input id="database" autocomplete="off"></label>
-<label>MySQL Host<input id="host" autocomplete="off"></label><label>MySQL Port<input id="port" type="number" min="1" max="65535"></label>
+<label>ชุดงาน<select id="profile"></select></label><label>ชื่อฐานข้อมูล<input id="database" autocomplete="off"><small>ดูคำว่า USE หรือ CREATE DATABASE ใน SQL ที่ครูให้</small></label>
+<label>MySQL Host<input id="host" autocomplete="off"><small>ใช้ค่าเดียวกับ WebStorm ที่ Test Connection ผ่าน</small></label><label>MySQL Port<input id="port" type="number" min="1" max="65535"></label>
 <label>MySQL User<input id="user" autocomplete="off"></label><label>MySQL Password<input id="password" type="password" autocomplete="new-password"><small>เว้นว่างเมื่อ MySQL ของเครื่องตั้งรหัสว่างจริง</small></label>
-<label>รหัสนักศึกษาตามโจทย์<input id="studentId" autocomplete="off"></label><label>ชื่อสำหรับข้อ student-info<input id="studentName" autocomplete="off"></label>
-<label>Secret Key ตามโจทย์<input id="secret" type="password" autocomplete="new-password"></label><label>Base path<input id="base" autocomplete="off"><small>เช่น /api/YOUR_STUDENT_ID หรือเว้นว่างถ้าโจทย์ไม่มีprefix</small></label>
+<label>รหัสนักศึกษาตามโจทย์<input id="studentId" autocomplete="off"><small>ดู Student Profile ในใบงานของคุณ</small></label><label>ชื่อสำหรับข้อ student-info<input id="studentName" autocomplete="off"></label>
+<label>Secret Key ตามโจทย์<input id="secret" type="password" autocomplete="new-password"><small>ใช้เฉพาะข้อ student-info ไม่ใช่รหัสผ่าน MySQL</small></label><label>Base path<input id="base" autocomplete="off"><small>เช่น /api/YOUR_STUDENT_ID หรือเว้นว่างถ้าโจทย์ไม่มีprefix</small></label>
 <label>Port ของแอป<input id="serverPort" type="number" min="1" max="65535"></label>
 </div>
 <p class="hint">เทมเพลตกลางภาคที่ตรวจไม่มี error-handler.js คู่มือนี้สร้างให้ และวางหลัง routes อัตโนมัติ</p>
 <p class="muted">เลือกชนิดงานก่อนเริ่มสะสม รหัสผ่านและ Secret Key จะไม่ถูกบันทึกไว้หลังโหลดหน้าใหม่</p>
+<p data-panel-message class="message" role="status" hidden></p>
 <div class="actions"><button class="primary" id="save-config">บันทึกค่า → เลือกข้อแรก</button><button data-next="0">ย้อนกลับ</button><button id="new-project" class="danger">เริ่มชุดใหม่</button></div>
 </section>
 <section class="panel" data-panel="2" hidden>
@@ -59,6 +61,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 <label class="checkline"><input id="accumulate" type="checkbox" checked><span>สะสมโค้ดกับข้อก่อน</span></label>
 <p id="task-description" class="hint" hidden></p>
 <div id="conflict" class="message" hidden><p id="conflict-text"></p><div class="actions"><button id="replace-task" class="danger">ใช้สูตรใหม่แทนข้อเดิม</button><button id="cancel-task">เก็บข้อเดิม</button></div></div>
+<p data-panel-message class="message" role="status" hidden></p>
 <div class="actions"><button id="add-task" class="primary">ดูโค้ดข้อนี้ →</button><button data-next="1">แก้ค่าการเชื่อมต่อ</button><button data-next="3">ดูโค้ดที่เก็บไว้</button></div>
 </section>
 <section class="panel" data-panel="3" hidden>
@@ -69,9 +72,12 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 <details><summary>เก็บแผนไว้ทำต่อ</summary><button id="export-plan">ดาวน์โหลดแผน JSON</button><label>เปิดแผนเดิม<input type="file" id="import-plan" accept=".json,application/json"></label></details>
 </aside>
 <div class="output">
-<p id="ready-note" class="message" hidden></p>
+<p data-panel-message class="message" role="status" hidden></p>
+<p id="ready-note" class="message" hidden></p><button id="fix-config" data-next="1" hidden>แก้ค่าที่ยังไม่ครบ</button>
+<div class="actions"><button class="primary" id="download-zip">ดาวน์โหลดโค้ดรวม ZIP</button><button id="include-preview" hidden>นำตัวอย่างนี้เข้าชุดสะสม</button></div>
+<p class="hint">วิธีง่าย: แตก ZIP → เปิดโฟลเดอร์ใน WebStorm → Terminal: <code>npm ci</code> → <code>node src/app.js</code></p>
 <details><summary>ไฟล์ไหนต้องสร้าง / แทน · เช็กทีละไฟล์</summary><p>ใช้ในสำเนาโปรเจกต์ฝึก โค้ดนี้เป็นไฟล์เต็ม ไม่วางต่อท้ายไฟล์เดิม</p><div id="file-checklist"></div></details>
-<p class="hint">เลือกไฟล์ → คัดลอก → วางไฟล์ชื่อเดียวกันใน WebStorm ให้ครบทุกไฟล์ เก็บงานที่แก้เองก่อนวางทับ</p>
+<p class="muted">หรือคัดลอกทีละไฟล์ด้านล่างไปใส่โปรเจกต์เดิม เก็บงานที่แก้เองก่อนวางทับ</p>
 <div class="codebar"><button id="view-full" aria-pressed="true">โค้ดเต็ม · ใช้ตัวนี้</button><button id="view-diff" aria-pressed="false">ดูส่วนที่เปลี่ยน</button></div>
 <div class="codebar"><select id="file-select" aria-label="เลือกไฟล์"></select><button id="copy-code">คัดลอกไฟล์นี้</button><button id="download-file">ดาวน์โหลดไฟล์นี้</button></div>
 <p id="file-note" class="muted"></p><pre id="code"><code id="code-text"></code></pre>
@@ -83,7 +89,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
 <li>ใช้ Postman ทดสอบข้อนี้ จากนั้นกด <strong>ทำข้อต่อไป</strong> ในหน้านี้ เมื่อเพิ่มข้อใหม่ให้ใช้ไฟล์รวมฉบับล่าสุด</li>
 </ol><p>ถ้าใช้ไฟล์จาก ZIP ครบชุด: รัน <code>npm ci</code> ก่อนครั้งแรก แล้ว <code>node src/app.js</code></p></details>
 <details id="request-panel"><summary>ทดสอบข้อนี้ใน Postman</summary><div id="test-checklist"></div><pre id="request-text"></pre><p>บันทึกไฟล์ → หยุดแอปเดิมด้วย Ctrl+C → <code>node src/app.js</code> แล้วส่ง request ของข้อนี้และข้อก่อนซ้ำ</p></details>
-<div class="actions"><button class="primary" id="download-zip">ดาวน์โหลดโค้ดรวม ZIP</button><button id="include-preview" hidden>นำตัวอย่างนี้เข้าชุดสะสม</button></div>
+
 <p class="muted">ZIP มีรหัสผ่านที่กรอกไว้ ไม่มีฐานข้อมูลหรือ node_modules</p>
 </div></div>
 </section>
@@ -253,7 +259,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   const configKeys=['host','port','user','password','database','studentId','studentName','secret','base','serverPort'];
   let state={version:1,profile:'mobile',config:engine.defaults('mobile',data),selected:[],counter:1,stage:0};
   let until=0,view='full',selectedFile='src/app.js',preview=null,pending=null,currentFiles={},diffs=[];
-  const message=(text,error=false)=>{const el=$('message');el.textContent=text;el.hidden=!text;el.classList.toggle('error',error);};
+  const message=(text,error=false)=>{const el=$('message'),local=document.querySelectorAll('[data-panel-message]');el.textContent=text;el.hidden=!text||local.length>0;el.classList.toggle('error',error);local.forEach(item=>{item.textContent=text;item.hidden=!text;item.classList.toggle('error',error);});};
   function safePlan(input){
     if(input.version!==1||!Object.hasOwn(data.profiles,input.profile)||!Array.isArray(input.selected)||input.selected.length>200)throw Error('รูปแบบแผนไม่ถูกต้อง');
     const config=engine.defaults(input.profile,data);
@@ -282,10 +288,11 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   function fillConfig(){
     $('profile').replaceChildren(...Object.entries(data.profiles).map(([key,p])=>new Option(p.label,key)));
     $('profile').value=state.profile;
-    for(const key of configKeys)$(key).value=state.config[key]??'';
+    for(const key of configKeys){const value=state.config[key]??'';$(key).value=key==='secret'&&value==='YOUR_SECRET'?'':value;}
   }
   function readConfig(){
     const config={};for(const key of configKeys)config[key]=['port','serverPort'].includes(key)?Number($(key).value):$(key).value;
+    if(!config.secret)config.secret='YOUR_SECRET';
     engine.assemble({...state,config},data);state.config=config;
   }
   function stage(value){
@@ -440,7 +447,7 @@ html{overflow-anchor:none;scroll-behavior:auto}*{box-sizing:border-box}body{marg
   function outputInstructions(){
     const paths=Object.keys(currentFiles),pendingValues=[];
     for(const [path,code] of Object.entries(currentFiles))if(/YOUR_[A-Z_]+/.test(code))pendingValues.push(path);
-    const note=$('ready-note');note.hidden=!pendingValues.length;
+    const note=$('ready-note');note.hidden=!pendingValues.length;$('fix-config').hidden=!pendingValues.length;
     note.textContent='ยังมีค่าตัวอย่าง YOUR_... ใน '+pendingValues.join(', ')+' → กลับขั้น 2 แก้ค่าก่อนรัน';
     $('file-checklist').replaceChildren();
     paths.sort().forEach(path=>{
